@@ -685,7 +685,7 @@ input[type="range"]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 3px rgba
   background: var(--bg);
   border: 1px solid rgba(255, 255, 255, .12);
   box-shadow: 0 30px 60px -25px rgba(0, 0, 0, .85);
-  transform: translate(-50%, -50%) translate(var(--x), var(--y)) rotate(var(--r)) scale(var(--s, 1));
+  transform: translate(-50%, -50%) translate(var(--x), var(--y)) rotate(var(--r)) scale(calc(var(--s, 1) * var(--fit, 1)));
   transition: transform .95s cubic-bezier(.2, .9, .25, 1.12), opacity .6s ease;
   opacity: .82;
   will-change: transform;
@@ -2028,6 +2028,19 @@ body.rk-open #app { visibility: hidden; }
 .rk-nav:disabled { opacity: 0; pointer-events: none; }
 .rk-nav.l { left: 6px; } .rk-nav.r { right: 6px; }
 .rk-vinfo { flex: none; padding: 8px 14px 2px; font-size: 12.5px; color: var(--fg-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rk-vrow { flex: none; display: flex; align-items: center; min-width: 0; }
+.rk-vrow .rk-vinfo { flex: 1; min-width: 0; }
+.rk-link {
+  -webkit-appearance: none; appearance: none; flex: none; display: inline-flex; align-items: center; gap: 8px;
+  height: 30px; margin: 6px 12px 0 0; padding: 0 12px 0 8px; border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, .16); background: rgba(255, 255, 255, .05); color: var(--fg-2);
+  font: 600 12.5px/1 var(--font); white-space: nowrap; cursor: pointer;
+}
+.rk-tgl { position: relative; flex: none; width: 26px; height: 15px; border-radius: 99px; background: rgba(255, 255, 255, .22); transition: background-color .15s ease; }
+.rk-tgl::after { content: ""; position: absolute; top: 2px; left: 2px; width: 11px; height: 11px; border-radius: 50%; background: #fff; transition: transform .15s ease; }
+.rk-link[aria-checked="true"] { color: #fff; border-color: rgba(255, 207, 107, .55); }
+.rk-link[aria-checked="true"] .rk-tgl { background: var(--rk-acc); }
+.rk-link[aria-checked="true"] .rk-tgl::after { transform: translateX(11px); }
 .rk-viewer .rk-strip { padding: 8px 12px calc(var(--sab) + 12px); background: var(--rk-bg); }
 /* Taggen: Tags umbrechen, höchstens drei Reihen sichtbar, der Rest scrollt */
 .rk-strip.rk-wrap {
@@ -2942,7 +2955,10 @@ body.rk-open #app { visibility: hidden; }
       <button type="button" class="rk-nav l" id="rkPrev" aria-label="Vorheriges" title="Vorheriges (←)"><svg class="i"><use href="#i-back"/></svg></button>
       <button type="button" class="rk-nav r" id="rkNext" aria-label="Nächstes" title="Nächstes (→)"><svg class="i"><use href="#i-chev-r"/></svg></button>
     </div>
-    <div class="rk-vinfo" id="rkVInfo"></div>
+    <div class="rk-vrow">
+      <div class="rk-vinfo" id="rkVInfo"></div>
+      <button type="button" class="rk-link" id="rkVLink" role="switch" aria-checked="false" title="Spulst du hier, springt das andere Video im Duell an dieselbe Stelle" hidden><span class="rk-tgl" aria-hidden="true"></span>Beide mitspulen</button>
+    </div>
     <div class="rk-strip rk-wrap" id="rkVStrip" data-all="1"></div>
   </section>
 
@@ -11815,10 +11831,42 @@ function deckGeometry() {
     sizes: frames.map(f => [f.offsetWidth, f.offsetHeight]),
   };
 }
+/* Breiter Bildschirm (genug Platz neben der Glaskarte): die Karten liegen locker verstreut in zwei Spalten links und
+   rechts, ganz sichtbar und etwas unter den Rand der Glaskarte geschoben. Sonst (Handy, hochkant, schmal) wie bisher
+   rundherum. Plätze: _slot 0–2 links, 3–5 rechts (je oben, Mitte, unten), _jx/_jy kleine Verschiebung. */
+const SIDE_ROWS = [[0.2, 0.5, 0.8], [0.18, 0.48, 0.79]];   // Höhe der Reihen (Anteil der Bildschirmhöhe) links / rechts
+const SIDE_COLS = [0.6, 0.38, 0.62];                         // Lage in der Spalte (0 = außen, 1 = an der Glaskarte)
+function sideRoom(g) {
+  const W = window.innerWidth, H = window.innerHeight;
+  const room = W / 2 + g.cx - g.hw - 28;                     // Platz links neben der Glaskarte
+  return W > H * 1.15 && room >= 220 ? room : 0;
+}
 function placeFrames(g) {
+  const room = g.orbit ? 0 : sideRoom(g);
+  const W = window.innerWidth, H = window.innerHeight;
   frames.forEach((f, i) => {
-    const th = (f._angle * Math.PI) / 180;
     const [w, h] = g.sizes[i];
+    if (room) {
+      const slot = Number.isInteger(f._slot) ? f._slot : i, right = slot >= 3, row = slot % 3;
+      const fit = Math.min(1.15, (room * 0.62) / w, (H * 0.27) / h);
+      const cardEdge = right ? W / 2 + g.cx + g.hw : W / 2 + g.cx - g.hw;
+      const inner = cardEdge + (right ? -26 : 26);              // etwas unter die Glaskarte schieben
+      const outer = right ? W - 28 : 28;
+      const fx = SIDE_COLS[row] + (f._jx || 0) * 0.08;
+      const x = outer + (inner - outer) * fx;
+      const y = H * (SIDE_ROWS[right ? 1 : 0][row] + (f._jy || 0) * 0.03);
+      const rot = f._rot * 0.75, th = (Math.abs(rot) * Math.PI) / 180;
+      const hx = ((w * Math.cos(th) + h * Math.sin(th)) * fit) / 2, hy = ((w * Math.sin(th) + h * Math.cos(th)) * fit) / 2;
+      const xs = right ? Math.min(x, W - 16 - hx) : Math.max(x, 16 + hx);     // ganz auf dem Bildschirm
+      const ys = Math.min(Math.max(y, 16 + hy), H - 16 - hy);
+      f.style.setProperty('--fit', fit.toFixed(3));
+      f.style.setProperty('--x', `${(xs - W / 2).toFixed(1)}px`);
+      f.style.setProperty('--y', `${(ys - H / 2).toFixed(1)}px`);
+      f.style.setProperty('--r', `${rot.toFixed(1)}deg`);
+      return;
+    }
+    const th = (f._angle * Math.PI) / 180;
+    f.style.setProperty('--fit', '1');
     f.style.setProperty('--x', `${(g.cx + Math.cos(th) * (g.hw + w * 0.2)).toFixed(1)}px`);
     f.style.setProperty('--y', `${(g.cy + Math.sin(th) * (g.hh + h * 0.2)).toFixed(1)}px`);
     f.style.setProperty('--r', `${f._rot.toFixed(1)}deg`);
@@ -11834,9 +11882,13 @@ function layoutDeck() {
 function shuffleDeck(withThumbs) {
   if (withThumbs) fillThumbs();   // vorhandene Vorschaubilder sofort, neue folgen
   const angles = shuffled(FRAME_ANGLES);
+  const slots = shuffled([0, 1, 2, 3, 4, 5]);
   frames.forEach((f, i) => {
     f._angle = angles[i] + rand(-12, 12);
     f._rot = rand(-13, 13);
+    f._slot = slots[i % slots.length];
+    f._jx = rand(-1, 1);
+    f._jy = rand(-1, 1);
     f.style.transition = '';
     f.style.transitionDelay = REDUCED ? '0ms' : `${i * 55}ms`;
     f.style.setProperty('--s', '1');
@@ -11896,7 +11948,7 @@ async function orbitDeck() {
       });
       if (!swapped && t >= 0.5) { swapped = true; fillThumbs(); }
       const g = deckGeometry();
-      if (g) placeFrames(g);
+      if (g) { g.orbit = true; placeFrames(g); }
       if (t < 1 && app.classList.contains('is-intro')) requestAnimationFrame(step);
       else resolve();
     };
@@ -13400,7 +13452,7 @@ function clean(raw) {
   b.fq = Math.max(1, int(raw.fq), ...b.fs.map(f => f.i + 1));
   b.last = int(raw.last);
   const ui = raw.ui && typeof raw.ui === 'object' ? raw.ui : {};
-  b.ui = { mode: ui.mode === 'grid' ? 'grid' : 'list', sort: SORTS.includes(ui.sort) ? ui.sort : 'best', hint: int(ui.hint), fh: int(ui.fh), tnum: Math.min(99, Math.max(0, int(ui.tnum))) };
+  b.ui = { mode: ui.mode === 'grid' ? 'grid' : 'list', sort: SORTS.includes(ui.sort) ? ui.sort : 'best', hint: int(ui.hint), fh: int(ui.fh), tnum: Math.min(99, Math.max(0, int(ui.tnum))), lk: !!ui.lk };
   return b;
 }
 let D = (() => { try { return clean(JSON.parse(localStorage.getItem(KEY) || 'null')); } catch (_) { return blank(); } })();
@@ -14786,6 +14838,20 @@ function forgetItems(f, ids) {
 
 /* ═══════════ Medium anzeigen (Duell und Ansicht) ═══════════ */
 function stopVid(v) { try { v.pause(); } catch (_) {} if (v.getAttribute('src')) { v.removeAttribute('src'); try { v.load(); } catch (_) {} } }
+/** Gleiche Stelle wie ein anderes Video; ist dieses kürzer, geht es von vorn weiter (45 s bei 30 s Länge → 15 s). */
+function seekWrap(v, t) {
+  if (!(t >= 0)) return;
+  const go = () => { const d = v.duration; if (!(d > 0) || !Number.isFinite(d)) return; try { v.currentTime = t % d; } catch (_) { /* egal */ } };
+  if (v.readyState >= 1) go(); else v.addEventListener('loadedmetadata', go, { once: true });
+}
+/** Video an Stelle t (Sekunden) setzen, auch wenn es gerade erst lädt. */
+function seekTo(v, t) {
+  if (!(t > 0)) return;
+  const go = () => {
+    try { const d = v.duration; v.currentTime = Number.isFinite(d) && d > 0 ? Math.min(t, Math.max(0, d - 0.1)) : t; } catch (_) { /* egal */ }
+  };
+  if (v.readyState >= 1) go(); else v.addEventListener('loadedmetadata', go, { once: true });
+}
 function setMedia(c, f, it, duel) {
   const url = it ? urlOf(f, it.i) : null;
   c.miss.hidden = true;
@@ -14865,7 +14931,11 @@ function buildCard(el, side) {
   el.replaceChildren(media, strip);
   const c = { el, media, img, vid, miss, vtag, zoom, strip, id: null, side };
   media.addEventListener('click', e => {
-    if (e.target.closest('.rk-zoom')) { e.stopPropagation(); if (c.id != null) openViewer(DU.f, [c.id], 0); return; }
+    if (e.target.closest('.rk-zoom')) {
+      e.stopPropagation();
+      if (c.id != null) openViewer(DU.f, [c.id], 0, { card: c, t: c.vid.hidden ? 0 : c.vid.currentTime });   // gleiche Stelle wie die Karte
+      return;
+    }
     const later = e.target.closest('[data-later]');
     if (later) { e.stopPropagation(); defer(DU.f, +later.dataset.later); toast('Kommt später dran, wenn es geladen ist.'); renderDuel(); return; }
     choose(side);
@@ -14895,6 +14965,15 @@ function renderDuel() {
   const top = d.f ? d.b : d.a, bot = d.f ? d.a : d.b;
   showCard(CARDS[0], f, top);
   showCard(CARDS[1], f, bot);
+  if (VW.card && topView() === 'duel') {
+    const vc = VW.card;
+    VW.card = null;
+    if (vc.id != null && vc.id === VC.id && !vc.vid.hidden && !VC.vid.hidden && VC.vid.currentTime > 0) {
+      const t = VC.vid.currentTime, o = CARDS[1 - vc.side];
+      seekTo(vc.vid, t);
+      if (D.ui.lk && o && o.id != null && !o.vid.hidden) seekWrap(o.vid, t);   // Beide mitspulen
+    }
+  }
   for (const c of CARDS) if (!c.vid.hidden && c.vid.paused) { const p = c.vid.play(); if (p && p.catch) p.catch(() => {}); }   // nach der großen Ansicht weiterlaufen lassen
   $('rkUndo').disabled = !(s && s.n > 0);
   preloadNext(f, s, d);
@@ -15011,11 +15090,13 @@ function renderDone(f) {
 }
 
 /* ═══════════ Ansicht: ein Medium groß, durchblättern und taggen ═══════════ */
-const VW = { f: null, ids: [], idx: 0 };
+const VW = { f: null, ids: [], idx: 0, seek: null, card: null };   // seek: Startstelle; card: Duell-Karte, die die Stelle zurückbekommt
 const VC = { img: $('rkVImg'), vid: $('rkVVid'), miss: $('rkVMiss'), vtag: null, id: null };
-function openViewer(f, ids, idx) {
+function openViewer(f, ids, idx, opt = {}) {
   if (!f || !ids.length) return;
   VW.f = f; VW.ids = ids; VW.idx = Math.min(Math.max(0, idx), ids.length - 1);
+  VW.seek = opt.t > 0 ? { id: ids[VW.idx], t: opt.t } : null;
+  VW.card = opt.card || null;
   VC.id = null;
   pushView('view');
 }
@@ -15033,8 +15114,17 @@ function renderViewer() {
   else title = 'Noch nicht gerankt';
   $('rkVTitle').textContent = title;
   $('rkVSub').textContent = VW.ids.length > 1 ? `${fmt(VW.idx + 1)} von ${fmt(VW.ids.length)}` : f.n;
-  if (VC.id !== id) { VC.id = id; setMedia(VC, f, it, false); swapIn(VC.img.hidden ? VC.vid : VC.img); }
+  if (VC.id !== id) {
+    VC.id = id;
+    setMedia(VC, f, it, false);
+    if (VW.seek && VW.seek.id === id && it.v) seekTo(VC.vid, VW.seek.t);
+    VW.seek = null;
+    swapIn(VC.img.hidden ? VC.vid : VC.img);
+  }
   $('rkVInfo').textContent = `${it.n}${it.v ? ' · Video' : ''}${isLoaded(f, id) ? '' : ' · nicht geladen'}`;
+  const oc = VW.card ? CARDS[1 - VW.card.side] : null;                 // aus dem Duell: das andere Video
+  $('rkVLink').hidden = !(VW.card && it.v && oc && oc.id != null && !oc.vid.hidden);
+  $('rkVLink').setAttribute('aria-checked', String(!!D.ui.lk));
   renderStrip($('rkVStrip'), f, it);
   $('rkPrev').disabled = VW.idx <= 0;
   $('rkNext').disabled = VW.idx >= VW.ids.length - 1;
@@ -15046,6 +15136,12 @@ function vNav(d) {
   VW.idx = n;
   renderViewer();
 }
+$('rkVLink').addEventListener('click', () => {
+  D.ui.lk = !D.ui.lk;
+  save();
+  $('rkVLink').setAttribute('aria-checked', String(D.ui.lk));
+  toast(D.ui.lk ? 'Beide mitspulen: Das andere Video springt an dieselbe Stelle.' : 'Nur dieses Video springt.', 2600);
+});
 $('rkPrev').addEventListener('click', () => vNav(-1));
 $('rkNext').addEventListener('click', () => vNav(1));
 $('rkVStrip').addEventListener('click', e => onStrip(e, (f, it) => openPicker(f, [it.i], { onChange: () => renderStrip($('rkVStrip'), f, itemOf(f, it.i)) })));
