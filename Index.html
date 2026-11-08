@@ -4,31 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#000000">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<script>
-/* iPhone als App auf dem Home-Bildschirm: Mit durchsichtiger Statusleiste reicht die Seite bis ganz oben, iOS rechnet
-   ihre Höhe aber um die Statusleiste zu kurz (WebKit-Fehler 237961) – unten bliebe ein Streifen frei.
-   Dort gilt deshalb die echte Bildschirmhöhe (--app-h). Überall sonst ändert sich nichts. */
-(() => {
-  const ua = navigator.userAgent || '';
-  const ios = /iP(hone|od|ad)/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  let app = false;
-  try { app = navigator.standalone === true || matchMedia('(display-mode: standalone)').matches; } catch (_) { app = false; }
-  if (!ios || !app) return;
-  const root = document.documentElement;
-  root.classList.add('ios-app');
-  const fit = () => {
-    const a = screen.width || 0, b = screen.height || 0;
-    const full = innerWidth > innerHeight ? Math.min(a, b) : Math.max(a, b);
-    root.style.setProperty('--app-h', `${Math.max(full, innerHeight)}px`);
-  };
-  fit();
-  addEventListener('resize', fit);
-  addEventListener('orientationchange', () => setTimeout(fit, 250));
-})();
-</script>
 <meta name="color-scheme" content="dark">
 <title>Shuffle – Bilder und Videos in zufälliger Reihenfolge</title>
 <!--
@@ -40,8 +15,6 @@
     GitHub Gist und ist auf PC und Handy gleich. Vor dem Start wird abgeglichen, beim Spielen hochgeladen;
     haben zwei Geräte ohne Abgleich gespielt, werden die Stände zusammengeführt. Kopplung per QR-Code.
     Dazu eine Sicherung des Spielstands als Datei. Dateien werden an Name + Größe erkannt.
-  • Als App auf dem iPhone-Home-Bildschirm liegt die Statusleiste durchsichtig über dem Bild; Bild und Video
-    reichen bis an alle Ränder, Knöpfe und Texte halten Abstand zu Notch und Home-Leiste (safe-area).
   • Zahlenbereich:  Untergrenze u(d) = 2·d − 10,  Obergrenze o(d) = 3·d
     (d = Anzeigedauer in Sekunden; exakt durch alle drei Stützpunkte).
   • Schwierigkeit s = −2 … +3 (sehr einfach … unmöglich, mittel = 0):
@@ -170,8 +143,6 @@ svg.i { display: block; width: 22px; height: 22px; flex: none; }
 :focus-visible { outline: 2px solid rgba(255, 255, 255, .85); outline-offset: 2px; }
 
 #app { position: fixed; inset: 0; overflow: hidden; }
-/* iPhone-App: echte Bildschirmhöhe (Skript im Kopf) */
-.ios-app #app, .ios-app .deck, .ios-app #rk, .ios-app .rk-sheet, .ios-app .rk-dlg, .ios-app #syncSplash { bottom: auto; height: var(--app-h, 100%); }
 
 /* ───────────── Bühne ───────────── */
 #stage { position: absolute; inset: 0; overflow: hidden; background: var(--black); touch-action: none; }
