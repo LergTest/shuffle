@@ -7,6 +7,28 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<script>
+/* iPhone als App auf dem Home-Bildschirm: Mit durchsichtiger Statusleiste reicht die Seite bis ganz oben, iOS rechnet
+   ihre Höhe aber um die Statusleiste zu kurz (WebKit-Fehler 237961) – unten bliebe ein Streifen frei.
+   Dort gilt deshalb die echte Bildschirmhöhe (--app-h). Überall sonst ändert sich nichts. */
+(() => {
+  const ua = navigator.userAgent || '';
+  const ios = /iP(hone|od|ad)/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  let app = false;
+  try { app = navigator.standalone === true || matchMedia('(display-mode: standalone)').matches; } catch (_) { app = false; }
+  if (!ios || !app) return;
+  const root = document.documentElement;
+  root.classList.add('ios-app');
+  const fit = () => {
+    const a = screen.width || 0, b = screen.height || 0;
+    const full = innerWidth > innerHeight ? Math.min(a, b) : Math.max(a, b);
+    root.style.setProperty('--app-h', `${Math.max(full, innerHeight)}px`);
+  };
+  fit();
+  addEventListener('resize', fit);
+  addEventListener('orientationchange', () => setTimeout(fit, 250));
+})();
+</script>
 <meta name="color-scheme" content="dark">
 <title>Shuffle – Bilder und Videos in zufälliger Reihenfolge</title>
 <!--
@@ -148,6 +170,8 @@ svg.i { display: block; width: 22px; height: 22px; flex: none; }
 :focus-visible { outline: 2px solid rgba(255, 255, 255, .85); outline-offset: 2px; }
 
 #app { position: fixed; inset: 0; overflow: hidden; }
+/* iPhone-App: echte Bildschirmhöhe (Skript im Kopf) */
+.ios-app #app, .ios-app .deck, .ios-app #rk, .ios-app .rk-sheet, .ios-app .rk-dlg, .ios-app #syncSplash { bottom: auto; height: var(--app-h, 100%); }
 
 /* ───────────── Bühne ───────────── */
 #stage { position: absolute; inset: 0; overflow: hidden; background: var(--black); touch-action: none; }
