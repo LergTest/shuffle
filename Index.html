@@ -1971,6 +1971,28 @@ body.rk-open #app { visibility: hidden; }
   display: grid; place-items: center; background: rgba(0, 0, 0, .5); color: #fff; cursor: pointer;
 }
 .rk-zoom svg { width: 19px; height: 19px; }
+/* Video-Leiste im Duell: nur mit Maus (beim Drüberfahren) */
+.rk-vbar {
+  position: absolute; left: 8px; right: 8px; bottom: 8px; z-index: 3; height: 38px; padding: 0 6px;
+  display: flex; align-items: center; gap: 4px; border-radius: 12px; cursor: default;
+  background: rgba(10, 10, 14, .74); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, .1); color: #fff;
+  opacity: 0; pointer-events: none; transition: opacity .15s ease;
+}
+.rk-media.has-vid:hover .rk-vbar, .rk-media.has-vid.scrub .rk-vbar { opacity: 1; pointer-events: auto; }
+@media (hover: none), (pointer: coarse) { .rk-vbar { display: none; } }
+.rk-vb {
+  -webkit-appearance: none; appearance: none; flex: none; height: 28px; min-width: 36px; padding: 0 7px; border: 0; border-radius: 8px;
+  display: grid; place-items: center; background: transparent; color: #fff; font: 650 12.5px/1 var(--font); cursor: pointer;
+}
+.rk-vb:hover { background: rgba(255, 255, 255, .13); }
+.rk-vb svg { width: 18px; height: 18px; }
+.rk-vb.rk-snd.on { color: var(--rk-acc); }
+.rk-vtrack { position: relative; flex: 1; min-width: 40px; height: 24px; cursor: pointer; touch-action: none; }
+.rk-vtrack::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 4px; margin-top: -2px; border-radius: 2px; background: rgba(255, 255, 255, .25); }
+.rk-vfill { position: absolute; left: 0; top: 50%; width: 0; height: 4px; margin-top: -2px; border-radius: 2px; background: #fff; pointer-events: none; }
+.rk-vknob { position: absolute; left: 0; top: 50%; width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; background: #fff; box-shadow: 0 1px 4px rgba(0, 0, 0, .5); pointer-events: none; }
+.rk-vtime { flex: none; min-width: 76px; text-align: center; font-size: 12px; font-variant-numeric: tabular-nums; color: rgba(255, 255, 255, .85); }
 .rk-vtag { position: absolute; left: 8px; top: 8px; z-index: 2; padding: 3px 8px; border-radius: 99px; font-size: 11.5px; font-weight: 600; background: rgba(0, 0, 0, .55); pointer-events: none; }
 .rk-miss {
   position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
@@ -14926,11 +14948,38 @@ function buildCard(el, side) {
   const vtag = mk('span', 'rk-vtag', 'Video'); vtag.hidden = true;
   const zoom = btn('rk-zoom', null, 'i-zoom', 'Groß ansehen');
   const badge = mk('span', 'rk-badge'); badge.append(ico('i-check'));
-  media.append(img, vid, miss, vtag, zoom, badge);
+  const bar = mk('div', 'rk-vbar');
+  const bBack = btn('rk-vb', '−15', null, '15 Sekunden zurück'), bFwd = btn('rk-vb', '+15', null, '15 Sekunden vor');
+  const track = mk('div', 'rk-vtrack'), fill = mk('div', 'rk-vfill'), knob = mk('div', 'rk-vknob'), time = mk('span', 'rk-vtime', '0:00');
+  const snd = btn('rk-vb rk-snd', null, 'i-mute', 'Ton an');
+  track.append(fill, knob);
+  for (const x of [bBack, bFwd, snd]) x.tabIndex = -1;           // kein Fokus: die Leertaste bleibt „gleich gut“
+  bar.append(bBack, track, time, bFwd, snd);
+  media.append(img, vid, miss, vtag, zoom, badge, bar);
   const strip = mk('div', 'rk-strip');
   el.replaceChildren(media, strip);
-  const c = { el, media, img, vid, miss, vtag, zoom, strip, id: null, side };
+  const c = { el, media, img, vid, miss, vtag, zoom, strip, id: null, side, bar, fill, knob, time, snd, sndOn: null };
+  bar.addEventListener('click', e => e.stopPropagation());       // in der Leiste wählt ein Klick nie den Sieger
+  bar.addEventListener('mousedown', e => e.preventDefault());
+  bBack.addEventListener('click', () => cardSeek(c, vid.currentTime - 15));
+  bFwd.addEventListener('click', () => cardSeek(c, vid.currentTime + 15));
+  snd.addEventListener('click', () => cardSound(c));
+  const at = e => { const r = track.getBoundingClientRect(); return r.width ? Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)) : 0; };
+  let scrub = false;
+  track.addEventListener('pointerdown', e => {
+    if (e.button !== 0) return;
+    e.preventDefault(); e.stopPropagation();
+    scrub = true; media.classList.add('scrub');
+    try { track.setPointerCapture(e.pointerId); } catch (_) { /* egal */ }
+    if (vid.duration > 0) cardSeek(c, at(e) * vid.duration);
+  });
+  track.addEventListener('pointermove', e => { if (scrub && vid.duration > 0) cardSeek(c, at(e) * vid.duration); });
+  const stop = () => { scrub = false; media.classList.remove('scrub'); };
+  track.addEventListener('pointerup', stop);
+  track.addEventListener('pointercancel', stop);
+  for (const ev of ['timeupdate', 'loadedmetadata', 'volumechange', 'seeked']) vid.addEventListener(ev, () => barSync(c));
   media.addEventListener('click', e => {
+    if (e.target.closest('.rk-vbar')) return;
     if (e.target.closest('.rk-zoom')) {
       e.stopPropagation();
       if (c.id != null) openViewer(DU.f, [c.id], 0, { card: c, t: c.vid.hidden ? 0 : c.vid.currentTime });   // gleiche Stelle wie die Karte
@@ -14942,6 +14991,46 @@ function buildCard(el, side) {
   });
   strip.addEventListener('click', e => onStrip(e, () => duelPicker(side)));
   return c;
+}
+const mmss = t => { const x = Math.max(0, Math.floor(t || 0)); return `${Math.floor(x / 60)}:${String(x % 60).padStart(2, '0')}`; };
+function barSync(c) {
+  if (!c.bar) return;
+  const v = c.vid, d = v.duration, ok = d > 0 && Number.isFinite(d);
+  c.media.classList.toggle('has-vid', !v.hidden);
+  const pc = ok ? Math.min(1, v.currentTime / d) * 100 : 0;
+  c.fill.style.width = `${pc.toFixed(2)}%`;
+  c.knob.style.left = `${pc.toFixed(2)}%`;
+  c.time.textContent = ok ? `${mmss(v.currentTime)} / ${mmss(d)}` : mmss(v.currentTime);
+  const on = !v.hidden && !v.muted;
+  if (c.sndOn !== on) {
+    c.sndOn = on;
+    c.snd.classList.toggle('on', on);
+    c.snd.replaceChildren(ico(on ? 'i-vol' : 'i-mute'));
+    c.snd.setAttribute('aria-label', on ? 'Ton aus' : 'Ton an');
+    c.snd.title = on ? 'Ton aus' : 'Ton an';
+  }
+}
+/** Spulen in der Duell-Karte; mit „Beide mitspulen“ springt das andere Video an dieselbe Stelle (kürzeres von vorn). */
+function cardSeek(c, t) {
+  const v = c.vid, d = v.duration;
+  if (v.hidden || !(d > 0) || !Number.isFinite(d)) return;
+  const x = Math.min(Math.max(0, t), Math.max(0, d - 0.1));
+  try { v.currentTime = x; } catch (_) { /* egal */ }
+  const o = CARDS[1 - c.side];
+  if (D.ui.lk && o && o.id != null && !o.vid.hidden) seekWrap(o.vid, x);
+  barSync(c);
+}
+/** Ton an/aus; es hat immer nur ein Video Ton. */
+function cardSound(c) {
+  const v = c.vid;
+  if (v.hidden) return;
+  v.muted = !v.muted;
+  if (!v.muted) {
+    const o = CARDS[1 - c.side];
+    if (o && !o.vid.muted) { o.vid.muted = true; barSync(o); }
+    if (v.paused) { const p = v.play(); if (p && p.catch) p.catch(() => {}); }
+  }
+  barSync(c);
 }
 const CARDS = [buildCard($('rkC0'), 0), buildCard($('rkC1'), 1)];
 const sideWords = () => (mq('(orientation: landscape) and (min-aspect-ratio: 5/4)') ? ['Links', 'Rechts'] : ['Oben', 'Unten']);
@@ -14985,6 +15074,7 @@ function showCard(c, f, id) {
     c.el.dataset.name = it ? it.n : '';
     setMedia(c, f, it, true);
     swapIn(c.media);
+    barSync(c);
   }
   renderStrip(c.strip, f, it);
 }
