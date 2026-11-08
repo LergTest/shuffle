@@ -14,6 +14,7 @@
   • Geräte abgleichen (freiwillig, Einstellungen): Der Spielstand liegt dann gepackt in einem privaten
     GitHub Gist und ist auf PC und Handy gleich. Vor dem Start wird abgeglichen, beim Spielen hochgeladen;
     haben zwei Geräte ohne Abgleich gespielt, werden die Stände zusammengeführt. Kopplung per QR-Code.
+    Runde und Presets bleiben je Gerät; das Preset des Tages gilt je Gerät ab dem ersten Start dort.
     Dazu eine Sicherung des Spielstands als Datei. Dateien werden an Name + Größe erkannt.
   • Zahlenbereich:  Untergrenze u(d) = 2·d − 10,  Obergrenze o(d) = 3·d
     (d = Anzeigedauer in Sekunden; exakt durch alle drei Stützpunkte).
@@ -3018,8 +3019,9 @@ body.rk-open #app { visibility: hidden; }
    Geräte abgleichen (privates GitHub Gist)
    ═══════════════════════════════════════════════════════════════════════
    • Abgeglichen wird nur der Spielstand: Verlauf, Tagesziele, Schulden, Münzen, Abzeichen,
-     Runde, Favoriten, Presets und die Einstellungen, die das Spiel betreffen. Bilder und Videos
-     werden nie hochgeladen. Er liegt gepackt (gzip) als eine Datei in einem privaten Gist.
+     Favoriten und die Einstellungen, die das Spiel betreffen. Runde und Presets bleiben je Gerät
+     (jedes Gerät hat eigene Dateien). Bilder und Videos werden nie hochgeladen. Der Stand liegt
+     gepackt (gzip) als eine Datei in einem privaten Gist.
    • Beim Öffnen holt die App zuerst den neuesten Stand, erst dann startet das Spiel (höchstens
      7 Sekunden Warten, dann geht es mit dem Stand auf dem Gerät weiter). Beim Spielen wird
      gebündelt hochgeladen (höchstens alle 30 Sekunden), beim Verlassen sofort.
@@ -3037,9 +3039,8 @@ const DESC = 'Shuffle: Spielstand (wird von der App verwaltet, bitte nicht von H
 const K = { cfg: 'shuffle-sync/cfg', base: 'shuffle-sync/base', pend: 'shuffle-sync/pending', note: 'shuffle-sync/note',
             force: 'shuffle-sync/force', dn: 'shuffle-sync/dn', fast: 'shuffle-sync/fast' };
 const SET_KEY = 'shuffle-player/v1', DAYS = 'shuffle-player/days-v1', META = 'shuffle-player/meta-v1',
-      PROG = 'shuffle-player/progress-v1', LISTS = 'shuffle-player/lists-v1', PRESETS = 'shuffle-player/presets-v1',
-      BIG = 'shuffle-player/big-v1';
-const STORES = [DAYS, META, PROG, LISTS, PRESETS, BIG];
+      LISTS = 'shuffle-player/lists-v1', BIG = 'shuffle-player/big-v1';
+const STORES = [DAYS, META, LISTS, BIG];                 // Runde (PROG) und Presets bleiben je Gerät
 const SET_FIELDS = ['min', 'max', 'mode', 'difficulty', 'peak', 'weight', 'theme', 'sound'];   // Ton, Vibration usw. bleiben je Gerät
 const LS = (() => { try { return window.localStorage; } catch (_) { return null; } })();
 const get = k => { try { return LS ? LS.getItem(k) : null; } catch (_) { return null; } };
@@ -3121,13 +3122,12 @@ const played = v => !!(v && typeof v === 'object' && (v.gl || n0(v.media) > 0 ||
 /* Was zählt als „hier wurde gespielt“: Tage mit Fortschritt, Zähler, Münzen, Abzeichen, Runde, Listen, Presets,
    Einstellungen. Nicht dazu gehört, was die App beim Öffnen von selbst macht (neuer Tag, Ereignisse ziehen). */
 function fp(s) {
-  const d = daysOf(s), m = P(s[META]) || {}, g = P(s[PROG]) || {}, pr = P(s[PRESETS]) || {};
+  const d = daysOf(s), m = P(s[META]) || {};
   return JSON.stringify([
     Object.keys(d).sort().filter(k => played(d[k])).map(k => { const v = d[k]; return [k, n0(v.sum), n0(v.media), n0(v.pen), v.gl ? 1 : 0, v.hit ? 1 : 0, n0(v.zg)]; }),
     m.tot || null, n0(m.coins), n0(m.jokers), n0(m.shields), Object.keys(m.badges || {}).sort(), m.items || null, m.up || null,
     m.themes || null, m.sounds || null, m.hints || null, m.bossKills || null,
-    [n0(g.round), n0(g.shown), n0(g.sum), (g.done || []).length, (g.skipped || []).length],
-    s[LISTS] || '', (Array.isArray(pr.list) ? pr.list : []).map(x => [x && x.id, x && x.n]), n0(pr.active), s[SET_KEY] || '',
+    s[LISTS] || '', s[SET_KEY] || '',
   ]);
 }
 const hasPlay = s => Object.values(daysOf(s)).some(played) || n0(((P(s[META]) || {}).tot || {}).media) > 0;
@@ -3149,9 +3149,7 @@ function merge(L, R, B) {
   const put2 = (k, v) => { if (typeof v === 'string') out[k] = v; };
   put2(DAYS, mergeDays(w, o));
   put2(META, mergeMeta(P(w[META]), P(o[META]), b && P(b[META]), w[META], o[META], !!b));
-  put2(PROG, mergeProg(P(w[PROG]), P(o[PROG]), b && P(b[PROG]), w[PROG], o[PROG], !!b));
   put2(LISTS, mergeLists(P(w[LISTS]), P(o[LISTS]), b && P(b[LISTS]), w[LISTS], o[LISTS]));
-  put2(PRESETS, mergePresets(P(w[PRESETS]), P(o[PRESETS]), w[PRESETS], o[PRESETS]));
   put2(BIG, w[BIG] ?? o[BIG]);
   put2(SET_KEY, w[SET_KEY] ?? o[SET_KEY]);
   return out;
@@ -3198,20 +3196,6 @@ function mergeMeta(w, o, b, wt, ot, hb) {
     bossKills: perKey(w.bossKills, o.bossKills, bm.bossKills, cnt), favCnt: perKey(w.favCnt, o.favCnt, bm.favCnt, cnt),
   });
 }
-function mergeProg(w, o, b, wt, ot, hb) {
-  if (!w) return ot;
-  if (!o) return wt;
-  const bb = b || {};
-  const r = { ...w, ever: uni(w.ever, o.ever), shown: cnt(hb, w.shown, o.shown, bb.shown), sum: cnt(hb, w.sum, o.sum, bb.sum),
-              watched: cnt(hb, w.watched, o.watched, bb.watched) };
-  if (n0(w.round) === n0(o.round)) {
-    const done = uni(w.done, o.done), ds = new Set(done);
-    r.done = done;
-    r.skipped = uni(w.skipped, o.skipped).filter(k => !ds.has(k));
-    r.roundSum = cnt(hb && n0(bb.round) === n0(w.round), w.roundSum, o.roundSum, bb.roundSum);
-  }
-  return JSON.stringify(r);
-}
 function mergeLists(w, o, b, wt, ot) {
   if (!w) return ot;
   if (!o) return wt;
@@ -3223,14 +3207,6 @@ function mergeLists(w, o, b, wt, ot) {
   };
   return JSON.stringify({ ...w, fav: s3(w.fav, o.fav, b && b.fav), excl: s3(w.excl, o.excl, b && b.excl) });
 }
-function mergePresets(w, o, wt, ot) {
-  if (!w) return ot;
-  if (!o) return wt;
-  const wl = Array.isArray(w.list) ? w.list : [], ids = new Set(wl.map(x => x && x.id));
-  const list = [...wl, ...(Array.isArray(o.list) ? o.list : []).filter(x => x && !ids.has(x.id))];
-  return JSON.stringify({ ...w, list, seq: Math.max(n0(w.seq), n0(o.seq), ...list.map(x => n0(x && x.id) + 1)) });
-}
-
 /* ── Packen (gzip + Base64) ── */
 function b64(u8) {
   let s = '';
@@ -4678,7 +4654,8 @@ let restoring = false;
 /* ── Presets: mehrere gemerkte Auswahlen ──
    Jeder gemerkte Eintrag gehört zu einem Preset (Feld p). Geladen ist immer nur das aktive Preset;
    `sources` sind dessen Einträge, `allSrc` alle. Jedes Preset hat seinen eigenen Rundenfortschritt.
-   Das Preset des Tages wird beim ersten Start festgelegt (d.pr) und lässt sich erst nach dem Tagesziel wechseln. */
+   Das Preset des Tages gilt je Gerät: festgelegt beim ersten Start an diesem Gerät (PRLOCK_KEY, wird nicht
+   abgeglichen) und erst nach dem Tagesziel wechselbar. Ohne diesen Eintrag gilt wie früher d.pr des Tages. */
 const PRESET_KEY = 'shuffle-player/presets-v1';
 const P = { list: [], active: 0, seq: 1 };
 const allSrc = [];
@@ -4719,15 +4696,32 @@ function ensureActive() {
   if (!p) { p = newPreset(nextPresetName()); P.active = p.id; savePresets(); }
   return p;
 }
-/** Heute gesperrt? Dann der Tag (mit d.pr), sonst null. */
+const PRLOCK_KEY = 'shuffle-player/prlock';
+function localPrLock() {
+  try {
+    const o = JSON.parse(localStorage.getItem(PRLOCK_KEY) || 'null');
+    return o && o.day === dayKey() && Number(o.pr) > 0 ? o : null;
+  } catch (_) { return null; }
+}
+/** Erster Start an diesem Gerät heute: aktives Preset für heute festhalten. */
+function setLocalPrLock() {
+  if (!canRemember() || localPrLock()) return;
+  const pa = presetById(P.active);
+  if (!pa) return;
+  try { localStorage.setItem(PRLOCK_KEY, JSON.stringify({ day: dayKey(), pr: pa.id, prn: pa.n })); } catch (_) { /* dann eben ohne */ }
+}
+/** Heute gesperrt? Dann { pr, prn }, sonst null. */
 function presetLock() {
   if (!canRemember()) return null;
   const d = todayRec(false);
-  return d && d.gl && !d.hit && d.pr ? d : null;
+  if (!d || !d.gl || d.hit) return null;
+  const l = localPrLock();
+  if (l) return { pr: Number(l.pr), prn: String(l.prn || '') };
+  return d.pr ? { pr: d.pr, prn: d.prn } : null;
 }
 function lockText(d) {
   const p = presetById(d.pr);
-  return `Heute bleibt es bei „${p ? p.n : d.prn || 'deinem Preset'}“, bis dein Tagesziel geschafft ist. Danach kannst du wechseln.`;
+  return `Heute bleibt es an diesem Gerät bei „${p ? p.n : d.prn || 'deinem Preset'}“, bis dein Tagesziel geschafft ist. Danach kannst du wechseln.`;
 }
 /** Ändern gesperrt? Dann Hinweis zeigen und true. */
 function lockBlock() {
@@ -8360,6 +8354,7 @@ function start(opts = {}) {
   state.started = true;
   playDay = dayKey();
   lockGoal();                     // Tagesziel für heute festlegen, falls noch nicht geschehen
+  setLocalPrLock();               // Preset des Tages an diesem Gerät
   renderGoalUI();
   app.classList.remove('is-intro');
   setPlaying(true);
@@ -12992,8 +12987,9 @@ function renderSync() {
   syncStateEl.textContent = s.on ? 'an' : 'aus';
   resetSyncEl.hidden = !s.on;
   if (!s.on) {
-    syncNoteEl.textContent = 'Gleicht deinen Spielstand zwischen PC und Handy ab: Verlauf, Tagesziele, Schulden, Münzen, Abzeichen, '
-      + 'Runde, Favoriten und Presets. Läuft über ein kostenloses GitHub-Konto. Bilder und Videos bleiben auf dem Gerät.';
+    syncNoteEl.textContent = 'Gleicht deinen Spielstand zwischen PC und Handy ab: Verlauf, Tagesziele, Schulden, Münzen, Abzeichen '
+      + 'und Favoriten. Läuft über ein kostenloses GitHub-Konto. Bilder und Videos bleiben auf dem Gerät, '
+      + 'Runde und Presets auch: jedes Gerät hat seine eigenen.';
     privacyEl.textContent = PRIVACY_OFF;
     return;
   }
@@ -13001,7 +12997,7 @@ function renderSync() {
   if (s.last) parts.push(`Zuletzt abgeglichen: ${syncWhen(s.last)}.`);
   if (s.err) parts.push(syncErrText(s.err));
   else if (s.pending) parts.push('Neue Änderungen werden gleich hochgeladen.');
-  parts.push('Das Ranking und gemerkte Ordner bleiben auf jedem Gerät für sich.');
+  parts.push('Runde, Presets, Ranking und gemerkte Ordner bleiben auf jedem Gerät für sich.');
   syncNoteEl.textContent = parts.join(' ');
   privacyEl.textContent = s.err
     ? '☁ Gerade kein Abgleich möglich. Bilder und Videos bleiben auf dem Gerät.'
