@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="shuffle-version" content="41">
+<meta name="shuffle-version" content="42">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <meta name="color-scheme" content="dark">
@@ -2288,10 +2288,21 @@ body.rk-open #app { visibility: hidden; }
 .sv-lvl small { font-size: 12.5px; color: rgba(255, 255, 255, .78); font-variant-numeric: tabular-nums; }
 .sv-ib { flex: none; width: 42px; height: 42px; border-radius: 50%; border: 0; display: grid; place-items: center; background: rgba(0, 0, 0, .45); color: #fff; cursor: pointer; }
 .sv-ib svg { width: 20px; height: 20px; }
-.sv-barw { position: absolute; left: calc(var(--sal) + 14px); right: calc(var(--sar) + 14px); top: calc(var(--sat) + 62px); z-index: 2; height: 5px; border-radius: 99px; background: rgba(255, 255, 255, .2); overflow: hidden; }
-.sv-barw i { display: block; height: 100%; background: #fff; transform-origin: left center; }
-.sv-barw.low i { background: #ff5c7a; }
-.sv-time { position: absolute; right: calc(var(--sar) + 14px); top: calc(var(--sat) + 73px); z-index: 2; font: 650 13px/1 var(--font); font-variant-numeric: tabular-nums; text-shadow: 0 1px 3px rgba(0, 0, 0, .8); }
+.sv-num { position: absolute; top: calc(var(--sat) + 66px); right: calc(var(--sar) + 14px); z-index: 2; display: flex; align-items: stretch; gap: 10px; --sv-lens: clamp(72px, 11vmin, 100px); }
+.sv-lens { position: relative; width: var(--sv-lens); height: var(--sv-lens); border-radius: 50%; display: grid; place-items: center; background: rgba(0, 0, 0, .38); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.sv-lens svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible; }
+.sv-lens circle { fill: none; stroke-width: 4; }
+.sv-lens .track { stroke: rgba(255, 255, 255, .16); }
+.sv-lens .bar { stroke: #fff; stroke-linecap: round; filter: drop-shadow(0 0 4px rgba(255, 255, 255, .45)); transition: stroke .3s ease; }
+.sv-num.low .sv-lens .bar { stroke: #ff5c7a; filter: drop-shadow(0 0 5px rgba(255, 92, 122, .6)); }
+#svNum { position: relative; font-family: var(--font-num); font-weight: 600; font-size: calc(var(--sv-lens) * .38); line-height: 1; letter-spacing: -.02em; font-variant-numeric: tabular-nums; text-shadow: 0 1px 12px rgba(0, 0, 0, .45); }
+#svNum[data-len="3"] { font-size: calc(var(--sv-lens) * .31); }
+#svNum[data-len="4"] { font-size: calc(var(--sv-lens) * .245); }
+#svNum.pop { animation: pop .6s var(--ease); }
+.sv-beat { position: relative; flex: none; width: clamp(16px, 2.6vmin, 22px); border-radius: 999px; overflow: hidden; background: rgba(255, 255, 255, .12); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08); }
+.sv-beat[hidden] { display: none; }
+.sv-beat-fill { position: absolute; inset: 0; background: linear-gradient(to top, rgba(255, 255, 255, .45), rgba(255, 255, 255, .1)); transform-origin: 50% 100%; transform: scaleY(0); }
+.sv-beat-thumb { position: absolute; left: 3px; right: 3px; bottom: 3px; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff, rgba(255, 255, 255, .88) 60%, rgba(255, 140, 160, .9)); box-shadow: 0 0 8px rgba(255, 255, 255, .55), 0 1px 3px rgba(0, 0, 0, .35); will-change: transform; }
 .sv-ctl {
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; display: flex; justify-content: center; gap: 10px;
   padding: 26px calc(var(--sar) + 14px) calc(var(--sab) + 16px) calc(var(--sal) + 14px); background: linear-gradient(transparent, rgba(0, 0, 0, .65));
@@ -2305,7 +2316,7 @@ body.rk-open #app { visibility: hidden; }
   opacity: 0; transform: translate(-50%, -50%) scale(.96); pointer-events: none; transition: opacity .2s ease, transform .2s var(--ease);
 }
 .sv-msg.on { opacity: 1; transform: translate(-50%, -50%); }
-#sv:not(.is-run) .sv-top, #sv:not(.is-run) .sv-barw, #sv:not(.is-run) .sv-time, #sv:not(.is-run) .sv-ctl, #sv:not(.is-run) .sv-keys { display: none; }
+#sv:not(.is-run) .sv-top, #sv:not(.is-run) .sv-num, #sv:not(.is-run) .sv-ctl, #sv:not(.is-run) .sv-keys { display: none; }
 .sv-panel { position: absolute; inset: 0; z-index: 4; display: grid; place-items: center; padding: calc(var(--sat) + 16px) 16px calc(var(--sab) + 16px); background: rgba(0, 0, 0, .6); }
 .sv-panel[hidden] { display: none; }
 .sv-card {
@@ -3031,8 +3042,10 @@ body.rk-open #app { visibility: hidden; }
     <button type="button" class="sv-ib" id="svSnd" aria-label="Ton aus" title="Ton (M)"><svg class="i"><use href="#i-vol"/></svg></button>
     <button type="button" class="sv-ib" id="svQuit" aria-label="Lauf beenden" title="Lauf beenden (Esc)"><svg class="i"><use href="#i-close"/></svg></button>
   </div>
-  <div class="sv-barw"><i id="svBar"></i></div>
-  <div class="sv-time" id="svTime"></div>
+  <div class="sv-num" id="svNumBox">
+    <div class="sv-beat" id="svBeat"><div class="sv-beat-fill" id="svBeatFill"></div><div class="sv-beat-thumb" id="svBeatThumb"></div></div>
+    <div class="sv-lens"><svg viewBox="0 0 100 100" aria-hidden="true"><circle class="track" cx="50" cy="50" r="46"/><circle class="bar" id="svRing" cx="50" cy="50" r="46"/></svg><span id="svNum"></span></div>
+  </div>
   <div class="sv-ctl">
     <button type="button" class="pill" id="svPause" title="Pause (Leertaste), kostet ein Leben"><svg class="i"><use href="#i-pause"/></svg>Pause</button>
     <button type="button" class="pill" id="svJoker" title="Joker (J): überspringen, ohne ein Leben zu verlieren"><svg class="i"><use href="#i-joker"/></svg>Joker</button>
@@ -3542,7 +3555,7 @@ function xObj(raw) {
   return {
     v: 1, al,
     alr: [...new Set(rkArr(o.alr).filter(x => typeof x === 'string' && x))].sort(),
-    sv: { best: xInt(sv.best), bestN: xInt(sv.bestN), day: xDay(sv.day), runs: xInt(sv.runs) },
+    sv: { best: xInt(sv.best), bestN: xInt(sv.bestN), bestS: xInt(sv.bestS), day: xDay(sv.day), runs: xInt(sv.runs) },
     rg: { best: xInt(rg.best), day: xDay(rg.day), plays: xInt(rg.plays) },
   };
 }
@@ -3561,9 +3574,12 @@ function xMerge(at, bt) {
   }
   const today = (p, q, f) => (p.day === q.day ? Math.max(p[f], q[f]) : p.day > q.day ? p[f] : q[f]);
   const later = (p, q) => (p.day > q.day ? p.day : q.day);
+  // Überleben: Rekord ist ein Lauf: höhere Stufe, bei gleicher Stufe die größere Summe
+  const aw = a.sv.best !== b.sv.best ? a.sv.best > b.sv.best : a.sv.bestS !== b.sv.bestS ? a.sv.bestS > b.sv.bestS : a.sv.bestN >= b.sv.bestN;
+  const R = aw ? a.sv : b.sv;
   return rkJ(xObj({
     al, alr: [...a.alr, ...b.alr],
-    sv: { best: Math.max(a.sv.best, b.sv.best), bestN: Math.max(a.sv.bestN, b.sv.bestN), day: later(a.sv, b.sv), runs: today(a.sv, b.sv, 'runs') },
+    sv: { best: R.best, bestN: R.bestN, bestS: R.bestS, day: later(a.sv, b.sv), runs: today(a.sv, b.sv, 'runs') },
     rg: { best: Math.max(a.rg.best, b.rg.best), day: later(a.rg, b.rg), plays: today(a.rg, b.rg, 'plays') },
   }));
 }
@@ -13735,7 +13751,9 @@ function syncGate(opts) {
    Rankings (siehe Ranking-Teil), ohne fertiges Ranking ist sie „?“. Gespeichert im abgeglichenen Speicher x.
    Überleben: eigenes Spiel nebenher. 3 Leben, jede Stufe 5 Medien, Stufe 1 je 10 s, jede Stufe 5 s mehr (höchstens
    2 min). Überspringen, „Nicht mehr zeigen“ und Pause kosten ein Leben, der Joker (einmal je Lauf) nicht. Alle 5 Stufen
-   ein Rettungspunkt (+1 Leben). Zählt nicht fürs Tagesziel, keine Strafen. Münzen nur für die ersten 3 Läufe am Tag. */
+   ein Rettungspunkt (+1 Leben). Zählt nicht fürs Tagesziel, keine Strafen. Münzen nur für die ersten 3 Läufe am Tag.
+   Jedes Medium hat seine Zahl wie im Spiel (aus Dauer und eingestellter Schwierigkeit), mit Takt-Slider und Takt-Ton.
+   Rekord: höchste Stufe, bei gleicher Stufe die größere Summe der geschafften Zahlen. */
 const RAR_NAME = ['?', 'normal', 'selten', 'episch', 'legendär'];
 /** Karte gutschreiben. Ergebnis: { msg } für einen Hinweis bei seltenen neuen oder aufgewerteten Karten. */
 function albumGot(item) {
@@ -13771,10 +13789,15 @@ const SV_BASE = Number.isFinite(TEST.svBase) ? TEST.svBase : 10, SV_INC = Number
 const svDur = l => Math.min(SV_MAXDUR, SV_BASE + SV_INC * (l - 1));
 const svSec = v => String(Math.round(v * 10) / 10).replace('.', ',');   // 10 → „10“, 0,35 → „0,4“
 const svEl = $('sv'), svImg = $('svImg'), svVid = $('svVid'), svStage = $('svStage'), svHearts = $('svHearts'), svLvl = $('svLvl'),
-      svStepEl = $('svStep'), svBar = $('svBar'), svTime = $('svTime'), svPanel = $('svPanel'), svMsg = $('svMsg'),
+      svStepEl = $('svStep'), svRing = $('svRing'), svNum = $('svNum'), svNumBox = $('svNumBox'), svBeat = $('svBeat'),
+      svBeatFill = $('svBeatFill'), svBeatThumb = $('svBeatThumb'), svPanel = $('svPanel'), svMsg = $('svMsg'),
       svJokerBtn = $('svJoker'), svPauseBtn = $('svPause'), svSkipBtn = $('svSkip'), svSnd = $('svSnd'), svQuit = $('svQuit');
 const SV = { open: false, run: false, lives: 0, level: 1, step: 0, done: 0, joker: true, item: null, D: 0, t0: 0, acc: 0, ready: false,
-             paused: false, bag: [], last: null, bad: new Set(), secs: 0, raf: 0, tok: 0, muted: false, lock: null };
+             paused: false, bag: [], last: null, bad: new Set(), secs: 0, raf: 0, tok: 0, muted: false, lock: null,
+             n: 0, sum: 0, ck: 1, bpos: 0, bflip: false };
+const SV_RING = 2 * Math.PI * 46;
+svRing.style.strokeDasharray = SV_RING.toFixed(2);
+if (TEST.svExpose) window.__sv = SV;
 let svMsgT = 0;
 const svBtn = (label, cls, fn) => { const b = mk('button', `pill${cls ? ` ${cls}` : ''}`, label); b.type = 'button'; b.addEventListener('click', fn); return b; };
 const svToday = x => (x.sv.day === dayKey() ? x.sv.runs : 0);
@@ -13822,9 +13845,10 @@ function svIntro() {
                    `Jede Stufe hat ${SV_STEP} Medien. Auf Stufe 1 läuft jedes ${svSec(svDur(1))} s, jede Stufe ${svSec(SV_INC)} s länger.`,
                    'Einmal je Lauf: Joker, überspringen ohne ein Leben zu verlieren.',
                    `Alle ${SV_SAVE} Stufen ein Rettungspunkt: ein Leben zurück.`,
+                   'Jedes Medium hat seine Zahl mit Takt wie im Spiel. Rekord: höchste Stufe, bei gleicher Stufe die größere Summe.',
                    'Was ganz durchläuft, kommt als Karte ins Album.']) ul.append(mk('li', '', t));
   card.append(ul);
-  card.append(mk('p', 'sv-p', x.sv.best ? `Rekord: Stufe ${x.sv.best} · ${fmtInt(x.sv.bestN)} Medien` : 'Noch kein Rekord.'));
+  card.append(mk('p', 'sv-p', x.sv.best ? `Rekord: Stufe ${x.sv.best} · Summe ${fmtInt(x.sv.bestS)}` : 'Noch kein Rekord.'));
   card.append(mk('p', 'sv-p', left ? `Münzen gibt es heute noch für ${left === 1 ? 'einen Lauf' : `${left} Läufe`}: ${SV_LVL_COINS} je geschaffte Stufe, ${SV_REC_COINS} für einen neuen Rekord.`
     : 'Heute gibt es keine Münzen mehr, Rekorde zählen aber.'));
   const go = svBtn('Los geht’s', 'primary', svStart);
@@ -13834,7 +13858,8 @@ function svIntro() {
   svPanelShow(card, go);
 }
 function svStart() {
-  Object.assign(SV, { run: true, lives: SV_LIVES, level: 1, step: 0, done: 0, joker: true, paused: false, secs: 0, bag: [], last: null, item: null });
+  Object.assign(SV, { run: true, lives: SV_LIVES, level: 1, step: 0, done: 0, joker: true, paused: false, secs: 0, bag: [], last: null, item: null, sum: 0, n: 0 });
+  if (settings.click) audioReady();               // Takt-Ton: braucht den Tipp auf „Los geht's“
   svPanel.hidden = true;
   svEl.classList.add('is-run');
   svWake(true);
@@ -13852,6 +13877,7 @@ function svPick() {
   return it;
 }
 function svStopMedia() {
+  cancelClicks();
   try { svVid.pause(); } catch (_) {}
   svVid.onplaying = svVid.onerror = svVid.onloadedmetadata = null;
   if (svVid.getAttribute('src')) { svVid.removeAttribute('src'); try { svVid.load(); } catch (_) {} }
@@ -13864,6 +13890,14 @@ function svNext() {
   const it = svPick();
   if (!it) { svOver('empty'); return; }
   Object.assign(SV, { item: it, D: svDur(SV.level), acc: 0, t0: 0, ready: false });
+  const r = rangeFor(SV.D, currentLevel(), false);   // Zahl wie im Spiel: aus Dauer und Schwierigkeit
+  SV.n = weightedInt(r.lo, r.hi, settings.peak, kOf(settings.weight));
+  SV.ck = 1;
+  SV.bflip = SV.bpos > 0.5;                         // steht der Slider oben, geht es nach unten weiter
+  cancelClicks();
+  svNum.textContent = fmtInt(SV.n);
+  svNum.dataset.len = String(String(SV.n).length);
+  svNum.classList.remove('pop'); void svNum.offsetWidth; svNum.classList.add('pop');
   svHud();
   const ready = () => { if (tok !== SV.tok || SV.ready) return; SV.ready = true; SV.t0 = performance.now(); };
   const fail = () => { if (tok !== SV.tok) return; SV.bad.add(it.id); svNext(); };     // lädt nicht: ohne Strafe weiter
@@ -13902,10 +13936,40 @@ function svTick() {
   if (!SV.open || !SV.run) return;
   SV.raf = requestAnimationFrame(svTick);
   const el = svElapsed(), rest = Math.max(0, SV.D - el);
-  svBar.style.transform = `scaleX(${(rest / SV.D).toFixed(4)})`;
-  svBar.parentElement.classList.toggle('low', rest <= 3 && SV.D > 6);
-  svTime.textContent = `${Math.ceil(rest)} s`;
+  svRing.style.strokeDashoffset = (SV_RING * (1 - rest / SV.D)).toFixed(2);
+  svNumBox.classList.toggle('low', rest <= 3 && SV.D > 6);
+  svBeatDraw(el);
+  svClicks();
   if (SV.ready && !SV.paused && el >= SV.D) svDone();
+}
+/** Takt-Slider: N Bewegungen über die Dauer, wie im Spiel. */
+function svBeatDraw(el) {
+  const show = !!settings.beat && SV.n > 0;
+  if (svBeat.hidden === show) svBeat.hidden = !show;
+  if (!(SV.n > 0 && SV.D > 0)) return;
+  const c = Math.cos((Math.PI * Math.min(Math.max(el, 0), SV.D) * SV.n) / SV.D);
+  let pos = (1 - c) / 2;
+  if (SV.bflip) pos = 1 - pos;
+  SV.bpos = pos;
+  if (!show) return;
+  const h = svBeat.clientHeight, knob = svBeatThumb.offsetHeight, pad = 3, y = pos * Math.max(0, h - knob - 2 * pad);
+  const glow = REDUCED ? 0 : Math.pow(c * c, 10);
+  svBeatThumb.style.transform = `translate3d(0, ${(-y).toFixed(2)}px, 0) scale(${(1 + 0.28 * glow).toFixed(3)})`;
+  svBeatFill.style.transform = `scaleY(${h ? ((pad + knob / 2 + y) / h).toFixed(4) : 0})`;
+}
+/** Takt-Ton: anstehende Klicks einplanen (wie im Spiel, mit derselben Klangauswahl und Lautstärke). */
+function svClicks() {
+  if (!settings.click || !clk.ctx || clk.ctx.state !== 'running' || !SV.ready || SV.paused || !(SV.n > 0)) return;
+  const iv = SV.D / SV.n, origin = SV.t0 - SV.acc * 1000;    // Seitenzeit bei t = 0
+  const c = clk.ctx, ctxNow = c.currentTime, perfNow = performance.now();
+  const every = Math.max(1, Math.ceil(CLICK_MIN_IV / iv - 1e-9));
+  while (SV.ck <= SV.n) {
+    const when = ctxTimeFor(origin + SV.ck * iv * 1000, perfNow);
+    if (when > ctxNow + CLICK_AHEAD) break;
+    if (when >= ctxNow - 0.03 && SV.ck % every === 0) playClick(Math.max(ctxNow, when), (SV.ck % 2 === 1) !== SV.bflip, iv * every);
+    SV.ck++;
+  }
+  if (clk.pending.length > 24) clk.pending = clk.pending.filter(q => q.end > ctxNow);
 }
 function svHud() {
   const hearts = [];
@@ -13928,6 +13992,7 @@ function svDone() {
   const it = SV.item;
   SV.secs += SV.D;
   SV.done++;
+  SV.sum += SV.n;
   SV.step++;
   const g = albumGot(it);
   const lines = [];
@@ -13976,10 +14041,13 @@ function svHold(on) {
   if (on && !SV.paused) {
     if (SV.ready) SV.acc += (performance.now() - SV.t0) / 1000;
     SV.paused = true;
+    cancelClicks();
     try { svVid.pause(); } catch (_) {}
   } else if (!on && SV.paused) {
     SV.paused = false;
     SV.t0 = performance.now();
+    SV.ck = SV.n > 0 ? Math.floor((SV.acc * SV.n) / SV.D + 1e-6) + 1 : 1;   // Takt-Ton ab der jetzigen Stelle
+    if (settings.click) audioReady();
     if (SV.item && SV.item.kind === 'video') svVid.play().catch(() => {});
   }
 }
@@ -14027,8 +14095,8 @@ function svOver(why) {
   clearTimeout(svMsgT); svMsg.classList.remove('on');
   const x = ShuffleSync.xGet(), today = dayKey();
   const runs = svToday(x) + 1;
-  const rec = SV.level > x.sv.best || (SV.level === x.sv.best && SV.done > x.sv.bestN);
-  if (SV.level > x.sv.best) { x.sv.best = SV.level; x.sv.bestN = SV.done; } else if (SV.level === x.sv.best) x.sv.bestN = Math.max(x.sv.bestN, SV.done);
+  const rec = SV.level > x.sv.best || (SV.level === x.sv.best && SV.sum > x.sv.bestS);
+  if (rec) { x.sv.best = SV.level; x.sv.bestS = SV.sum; x.sv.bestN = SV.done; }
   x.sv.day = today;
   x.sv.runs = runs;
   ShuffleSync.xSet(x);
@@ -14037,8 +14105,8 @@ function svOver(why) {
   const card = mk('div', 'sv-card');
   card.append(mk('p', 'sv-kick', why === 'quit' ? 'Lauf beendet' : why === 'empty' ? 'Keine Medien mehr' : 'Keine Leben mehr'),
               mk('h2', '', `Stufe ${SV.level}`),
-              mk('p', 'sv-p', `${fmtInt(SV.done)} ${SV.done === 1 ? 'Medium' : 'Medien'} geschafft · ${mmss(SV.secs)} min`));
-  card.append(mk('p', `sv-p${rec && SV.level > 1 ? ' gold' : ''}`, rec && SV.level > 1 ? '🏆 Neuer Rekord!' : `Rekord: Stufe ${x.sv.best} · ${fmtInt(x.sv.bestN)} Medien`));
+              mk('p', 'sv-p', `Summe ${fmtInt(SV.sum)} · ${fmtInt(SV.done)} ${SV.done === 1 ? 'Medium' : 'Medien'} · ${mmss(SV.secs)} min`));
+  card.append(mk('p', `sv-p${rec && SV.level > 1 ? ' gold' : ''}`, rec && SV.level > 1 ? '🏆 Neuer Rekord!' : `Rekord: Stufe ${x.sv.best} · Summe ${fmtInt(x.sv.bestS)}`));
   card.append(mk('p', 'sv-p', coins ? `+${fmtInt(coins)} Münzen` : runs > SV_FREE ? `Heute keine Münzen mehr (${SV_FREE} Läufe gespielt).` : 'Münzen gibt es ab Stufe 2.'));
   const again = svBtn('Nochmal', 'primary', svStart);
   const row = mk('div', 'sv-btns');
