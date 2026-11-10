@@ -2,6 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
+<meta name="shuffle-version" content="41">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <meta name="color-scheme" content="dark">
@@ -1757,6 +1758,11 @@ svg.i.coin { width: 16px; height: 16px; display: inline-block; vertical-align: -
    schwachen Handys sofort reagiert. Nur transform/opacity werden animiert. */
 .rank-entry { width: 100%; height: 46px; margin-top: 8px; }
 .rank-entry svg { color: var(--gold); }
+.mode-row { display: flex; gap: 8px; margin-top: 8px; }
+.mode-row .pill { flex: 1 1 0; min-width: 0; height: 46px; margin-top: 0; }
+.sv-entry svg { color: #ff5c7a; }
+.mode-row .rk-short, .mode-row.two .rk-long { display: none; }
+.mode-row.two .rk-short { display: inline; }
 body.rk-open #app { visibility: hidden; }
 #rk {
   --rk-bg: #0b0b0f; --rk-s1: #15151c; --rk-s2: #1e1e27; --rk-s3: #2a2a35;
@@ -1795,6 +1801,68 @@ body.rk-open #app { visibility: hidden; }
   background: var(--rk-s2); color: var(--fg); font-size: 16px; outline: none;
 }
 .rk-in:focus { border-color: rgba(255, 255, 255, .45); }
+
+
+/* Sammelalbum */
+#rk { --r1: #b8c0c8; --r2: #4dabf7; --r3: #b197fc; --r4: #ffcf6b; }
+.al-entry svg { color: var(--rk-acc); }
+.al-sum { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 12px; }
+.al-chip { display: inline-flex; align-items: center; gap: 7px; height: 30px; padding: 0 12px; border-radius: 999px; background: var(--rk-s1); border: 1px solid var(--rk-line); font-size: 13px; color: var(--fg-2); font-variant-numeric: tabular-nums; }
+.al-chip i { width: 9px; height: 9px; border-radius: 50%; background: var(--c, var(--fg-3)); }
+.al-chip b { color: var(--fg); font-weight: 650; }
+.al-acts { display: grid; gap: 8px; }
+.al-acts:empty { display: none; }
+.al-acts .pill { width: 100%; height: 46px; }
+.al-acts .pill svg { color: var(--rk-acc); }
+.al-tabs { display: flex; gap: 8px; overflow-x: auto; margin: 14px -16px 2px; padding: 0 16px 6px; scrollbar-width: none; }
+.al-tabs::-webkit-scrollbar { display: none; }
+@media (min-width: 920px) { .al-tabs { margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0; flex-wrap: wrap; } }
+.al-tab { flex: none; height: 34px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--rk-line); background: var(--rk-s1); color: var(--fg-2); font: 600 13px/1 var(--font); white-space: nowrap; cursor: pointer; }
+.al-tab small { margin-left: 6px; font-weight: 500; color: var(--fg-3); font-variant-numeric: tabular-nums; }
+.al-tab[aria-selected="true"] { background: var(--fg); color: #0b0b0f; border-color: var(--fg); }
+.al-tab[aria-selected="true"] small { color: rgba(11, 11, 15, .6); }
+.al-page { margin: 8px 2px 10px; font-size: 13px; color: var(--fg-3); }
+.al-page:empty { display: none; }
+.al-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(102px, 1fr)); gap: 10px; }
+.al-card {
+  position: relative; display: flex; flex-direction: column; min-width: 0; padding: 0; border-radius: 14px; overflow: hidden; border: 0;
+  background: var(--rk-s1); color: var(--fg); text-align: left; cursor: pointer; box-shadow: inset 0 0 0 2px var(--c);
+}
+.al-card.r0 { --c: rgba(255, 255, 255, .16); }
+.al-card.r1 { --c: var(--r1); }
+.al-card.r2 { --c: var(--r2); }
+.al-card.r3 { --c: var(--r3); }
+.al-card.r4 { --c: var(--r4); box-shadow: inset 0 0 0 2px var(--r4), 0 0 18px rgba(255, 207, 107, .35); }
+.al-th { position: relative; display: grid; place-items: center; aspect-ratio: 3 / 4; margin: 3px 3px 0; border-radius: 11px 11px 6px 6px; overflow: hidden; background: var(--rk-s3); color: var(--fg-3); }
+.al-th img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .18s ease; }
+.al-th img.ok { opacity: 1; }
+.al-th svg { width: 22px; height: 22px; }
+.al-q { position: absolute; right: 7px; top: 5px; z-index: 1; font: 800 16px/1 var(--font); color: #fff; text-shadow: 0 1px 4px #000; }
+.al-cap { display: grid; gap: 1px; padding: 6px 8px 8px; min-width: 0; }
+.al-r { font-size: 10.5px; font-weight: 750; letter-spacing: .04em; text-transform: uppercase; color: var(--c); }
+.al-card.r0 .al-r { color: var(--fg-3); }
+.al-n { font-size: 12px; color: var(--fg-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.al-x { position: absolute; left: 7px; top: 7px; z-index: 1; padding: 2px 7px; border-radius: 99px; background: rgba(0, 0, 0, .68); font: 650 11.5px/1.3 var(--font); font-variant-numeric: tabular-nums; }
+.al-card.off { box-shadow: inset 0 0 0 1px var(--rk-line); opacity: .5; }
+.al-card.off .al-th { background: repeating-linear-gradient(45deg, var(--rk-s2) 0 8px, var(--rk-s1) 8px 16px); }
+.al-card.off .al-r { color: var(--fg-3); }
+.al-empty { grid-column: 1 / -1; margin: 6px 2px; font-size: 14px; line-height: 1.55; color: var(--fg-2); }
+/* Rang-Raten */
+.rk-card.bad::after { box-shadow: inset 0 0 0 3px var(--rk-bad); opacity: 1; }
+.gs-rank {
+  position: absolute; left: 50%; bottom: 12px; z-index: 2; transform: translateX(-50%); padding: 6px 14px; border-radius: 999px;
+  background: rgba(0, 0, 0, .74); color: #fff; font: 750 15px/1.2 var(--font); white-space: nowrap; font-variant-numeric: tabular-nums; pointer-events: none;
+}
+.gs-rank[hidden] { display: none; }
+.rk-card.win .gs-rank { background: var(--rk-win); color: #06200d; }
+.rk-card.bad .gs-rank { background: var(--rk-bad); color: #2a0509; }
+.gs-end { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 20px 20px calc(var(--sab) + 30px); text-align: center; }
+.gs-end[hidden] { display: none; }
+.gs-score { font-size: 56px; font-weight: 800; letter-spacing: -.02em; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.gs-line { margin: 0; font-size: 15px; line-height: 1.5; color: var(--fg-2); }
+.gs-line.gold { color: var(--rk-acc); font-weight: 650; }
+.gs-btns { display: grid; gap: 8px; width: min(320px, 100%); margin-top: 16px; }
+.gs-btns .pill { width: 100%; height: 48px; }
 
 /* Ordnerliste */
 .rk-folders { display: grid; gap: 10px; }
@@ -2198,6 +2266,61 @@ body.rk-open #app { visibility: hidden; }
   #stage.springing .media, #stage.springing #fade, #stage.flying .media, #stage.flying #fade { transition: none; }
 }
 
+/* ───────────── Überleben ───────────── */
+#sv { position: fixed; inset: 0; z-index: 60; background: #000; color: #fff; overflow: hidden; font: 15px/1.45 var(--font); -webkit-user-select: none; user-select: none; }
+#sv[hidden] { display: none; }
+.sv-stage { position: absolute; inset: 0; touch-action: none; }
+.sv-stage > img, .sv-stage > video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; -webkit-user-drag: none; }
+.sv-stage > [hidden] { display: none; }
+#sv.swap .sv-stage > img, #sv.swap .sv-stage > video { animation: sv-in .22s var(--ease); }
+@keyframes sv-in { from { opacity: 0; transform: scale(.985); } }
+#sv.hit .sv-stage { animation: sv-hit .36s ease; }
+@keyframes sv-hit { 20% { transform: translateX(-12px); } 40% { transform: translateX(9px); } 60% { transform: translateX(-6px); } 80% { transform: translateX(3px); } }
+.sv-top {
+  position: absolute; left: 0; right: 0; top: 0; z-index: 2; display: flex; align-items: center; gap: 12px;
+  padding: calc(var(--sat) + 10px) calc(var(--sar) + 12px) 22px calc(var(--sal) + 14px); background: linear-gradient(rgba(0, 0, 0, .65), transparent);
+}
+.sv-hearts { display: flex; gap: 3px; }
+.sv-hearts svg { width: 25px; height: 25px; color: #ff5c7a; filter: drop-shadow(0 1px 3px rgba(0, 0, 0, .6)); transition: transform .2s var(--ease), color .2s; }
+.sv-hearts svg.off { color: rgba(255, 255, 255, .25); transform: scale(.82); }
+.sv-lvl { flex: 1; min-width: 0; display: grid; text-shadow: 0 1px 3px rgba(0, 0, 0, .7); }
+.sv-lvl b { font-size: 16px; font-weight: 750; }
+.sv-lvl small { font-size: 12.5px; color: rgba(255, 255, 255, .78); font-variant-numeric: tabular-nums; }
+.sv-ib { flex: none; width: 42px; height: 42px; border-radius: 50%; border: 0; display: grid; place-items: center; background: rgba(0, 0, 0, .45); color: #fff; cursor: pointer; }
+.sv-ib svg { width: 20px; height: 20px; }
+.sv-barw { position: absolute; left: calc(var(--sal) + 14px); right: calc(var(--sar) + 14px); top: calc(var(--sat) + 62px); z-index: 2; height: 5px; border-radius: 99px; background: rgba(255, 255, 255, .2); overflow: hidden; }
+.sv-barw i { display: block; height: 100%; background: #fff; transform-origin: left center; }
+.sv-barw.low i { background: #ff5c7a; }
+.sv-time { position: absolute; right: calc(var(--sar) + 14px); top: calc(var(--sat) + 73px); z-index: 2; font: 650 13px/1 var(--font); font-variant-numeric: tabular-nums; text-shadow: 0 1px 3px rgba(0, 0, 0, .8); }
+.sv-ctl {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; display: flex; justify-content: center; gap: 10px;
+  padding: 26px calc(var(--sar) + 14px) calc(var(--sab) + 16px) calc(var(--sal) + 14px); background: linear-gradient(transparent, rgba(0, 0, 0, .65));
+}
+.sv-ctl .pill { height: 48px; padding: 0 18px; background: rgba(20, 20, 26, .78); border-color: rgba(255, 255, 255, .16); color: #fff; }
+.sv-ctl .pill[disabled] { opacity: .35; }
+.sv-keys { position: absolute; left: 0; right: 0; bottom: calc(var(--sab) + 74px); z-index: 2; margin: 0; text-align: center; font-size: 12px; color: rgba(255, 255, 255, .55); text-shadow: 0 1px 2px #000; }
+.sv-msg {
+  position: absolute; left: 50%; top: 40%; z-index: 3; max-width: min(440px, calc(100% - 40px)); padding: 12px 18px; border-radius: 16px;
+  background: rgba(12, 12, 16, .84); text-align: center; font: 650 15px/1.45 var(--font); white-space: pre-line;
+  opacity: 0; transform: translate(-50%, -50%) scale(.96); pointer-events: none; transition: opacity .2s ease, transform .2s var(--ease);
+}
+.sv-msg.on { opacity: 1; transform: translate(-50%, -50%); }
+#sv:not(.is-run) .sv-top, #sv:not(.is-run) .sv-barw, #sv:not(.is-run) .sv-time, #sv:not(.is-run) .sv-ctl, #sv:not(.is-run) .sv-keys { display: none; }
+.sv-panel { position: absolute; inset: 0; z-index: 4; display: grid; place-items: center; padding: calc(var(--sat) + 16px) 16px calc(var(--sab) + 16px); background: rgba(0, 0, 0, .6); }
+.sv-panel[hidden] { display: none; }
+.sv-card {
+  width: min(420px, 100%); max-height: 100%; overflow-y: auto; padding: 22px 22px 18px; border-radius: 26px;
+  background: rgba(22, 22, 28, .95); border: 1px solid rgba(255, 255, 255, .1); box-shadow: 0 20px 60px rgba(0, 0, 0, .5);
+}
+.sv-card h2 { margin: 2px 0 10px; font-size: 26px; font-weight: 800; letter-spacing: -.01em; }
+.sv-kick { margin: 0; font-size: 12px; font-weight: 700; color: #ff8fa3; text-transform: uppercase; letter-spacing: .05em; }
+.sv-rules { margin: 0 0 10px; padding-left: 18px; font-size: 14px; line-height: 1.5; color: rgba(255, 255, 255, .82); }
+.sv-rules li { margin: 3px 0; }
+.sv-p { margin: 6px 0 0; font-size: 14px; color: rgba(255, 255, 255, .82); }
+.sv-p.gold { color: var(--gold, #ffcf6b); font-weight: 650; }
+.sv-btns { display: grid; gap: 8px; margin-top: 16px; }
+.sv-btns .pill { width: 100%; height: 48px; }
+
 /* ───────────── Geräte abgleichen ───────────── */
 #syncSplash {
   position: fixed; inset: 0; z-index: 90; display: flex; align-items: center; justify-content: center;
@@ -2528,12 +2651,16 @@ body.rk-open #app { visibility: hidden; }
       <p class="lib-prog today" id="introToday" hidden></p>
       <button type="button" class="pill primary start" id="btnStart" hidden><svg class="i"><use href="#i-play"/></svg><span id="startLabel">Wiedergabe starten</span></button>
       <button type="button" class="pill fav-start" id="btnFavStart" hidden><svg class="i"><use href="#i-heart-fill"/></svg><span id="favStartLabel">Nur Favoriten abspielen</span></button>
-      <button type="button" class="pill rank-entry" id="btnRank" title="Eigene Medien im 1v1 ranken und taggen"><svg class="i"><use href="#i-trophy"/></svg>Ranking: vergleichen und taggen</button>
+      <div class="mode-row" id="modeRow">
+        <button type="button" class="pill sv-entry" id="btnSurvive" hidden title="Eigenes Spiel nebenher: 3 Leben, jede Stufe dauert länger"><svg class="i"><use href="#i-heart-fill"/></svg>Überleben</button>
+        <button type="button" class="pill rank-entry" id="btnRank" title="Eigene Medien im 1v1 ranken und taggen"><svg class="i"><use href="#i-trophy"/></svg><span class="rk-long">Ranking: vergleichen und taggen</span><span class="rk-short">Ranking</span></button>
+      </div>
       <div class="foot">
         <span id="introDur"></span>
         <span class="foot-links">
           <button type="button" class="link" id="introVerlauf" aria-controls="today">Heute &amp; Verlauf</button>
           <button type="button" class="link" id="introFavs" aria-controls="favs">Favoriten</button>
+          <button type="button" class="link" id="introAlbum">Album</button>
           <button type="button" class="link" id="introShop" aria-controls="shop">Shop</button>
           <button type="button" class="link" id="introSet" aria-controls="settings">Einstellungen</button>
         </span>
@@ -2688,6 +2815,14 @@ body.rk-open #app { visibility: hidden; }
         <button type="button" class="pill sm" id="bkLoad"><svg class="i"><use href="#i-folder"/></svg>Aus Datei laden …</button>
       </div>
       <input type="file" id="bkInput" accept=".json,application/json" hidden>
+    </section>
+
+    <section class="grp" id="updGrp">
+      <h3>Version <small id="updVer"></small></h3>
+      <p class="note" id="updNote"></p>
+      <div class="row-btns mt" id="updRow">
+        <button type="button" class="pill sm" id="updCheck"><svg class="i"><use href="#i-cloud"/></svg>Nach Updates suchen</button>
+      </div>
     </section>
 
     <section class="grp">
@@ -2888,6 +3023,25 @@ body.rk-open #app { visibility: hidden; }
   <input type="file" id="dirInput" class="vh" multiple webkitdirectory tabindex="-1" aria-hidden="true">
 </div>
 
+<div id="sv" hidden>
+  <div class="sv-stage" id="svStage"><img id="svImg" alt="" draggable="false" hidden><video id="svVid" playsinline loop hidden></video></div>
+  <div class="sv-top">
+    <div class="sv-hearts" id="svHearts" role="img"></div>
+    <div class="sv-lvl"><b id="svLvl"></b><small id="svStep"></small></div>
+    <button type="button" class="sv-ib" id="svSnd" aria-label="Ton aus" title="Ton (M)"><svg class="i"><use href="#i-vol"/></svg></button>
+    <button type="button" class="sv-ib" id="svQuit" aria-label="Lauf beenden" title="Lauf beenden (Esc)"><svg class="i"><use href="#i-close"/></svg></button>
+  </div>
+  <div class="sv-barw"><i id="svBar"></i></div>
+  <div class="sv-time" id="svTime"></div>
+  <div class="sv-ctl">
+    <button type="button" class="pill" id="svPause" title="Pause (Leertaste), kostet ein Leben"><svg class="i"><use href="#i-pause"/></svg>Pause</button>
+    <button type="button" class="pill" id="svJoker" title="Joker (J): überspringen, ohne ein Leben zu verlieren"><svg class="i"><use href="#i-joker"/></svg>Joker</button>
+    <button type="button" class="pill" id="svSkip" title="Überspringen (→), kostet ein Leben"><svg class="i"><use href="#i-next"/></svg>Weiter</button>
+  </div>
+  <p class="sv-keys only-mouse">→ weiter · J Joker · Entf nicht mehr zeigen · Leertaste Pause · M Ton · Esc beenden</p>
+  <div class="sv-msg" id="svMsg" role="status" aria-live="polite"></div>
+  <div class="sv-panel" id="svPanel" hidden></div>
+</div>
 <div id="rk" hidden>
   <section class="rk-view" id="rkHome" aria-labelledby="rkHomeTitle">
     <header class="rk-head">
@@ -2901,7 +3055,9 @@ body.rk-open #app { visibility: hidden; }
       <p class="rk-lead" id="rkHomeLead">Lege einen Ranking-Ordner an und lade Bilder oder Videos hinein. Dann trittst du sie im 1v1 gegeneinander an, Runde für Runde, bis jedes seinen festen Platz hat. Nebenbei kannst du alles taggen und später nach Tags suchen.</p>
       <div class="rk-folders" id="rkFolders"></div>
       <button type="button" class="pill rk-new" id="rkNew"><svg class="i"><use href="#i-plus"/></svg>Neuer Ranking-Ordner</button>
+      <button type="button" class="pill rk-new al-entry" id="rkAlbumBtn"><svg class="i"><use href="#i-star-fill"/></svg>Sammelalbum</button>
       <p class="rk-fine">Die Medien bleiben, wo sie sind, und werden jedes Mal neu geladen. Gespeichert werden nur Ranking, Tags und kleine Vorschaubilder. Die App erkennt jedes Medium am Dateinamen und an der Größe wieder.</p>
+      <p class="rk-fine" id="rkSyncFine" hidden>☁ Rankings und Tags kommen über „Geräte abgleichen“ auch auf deine anderen Geräte. Die Medien selbst lädst du dort aus deinem eigenen Ordner.</p>
     </div>
   </section>
 
@@ -3044,6 +3200,37 @@ body.rk-open #app { visibility: hidden; }
     </div>
   </div>
 
+  <section class="rk-view" id="rkAlbum" aria-labelledby="rkATitle">
+    <header class="rk-head">
+      <button type="button" class="ib sm" data-back aria-label="Zurück" title="Zurück (Esc)"><svg class="i"><use href="#i-back"/></svg></button>
+      <div class="rk-ht"><h2 class="rk-title" id="rkATitle">Sammelalbum</h2><small id="rkASub"></small></div>
+    </header>
+    <div class="rk-scroll" id="rkAScroll">
+      <div class="al-sum" id="rkASum"></div>
+      <div class="al-acts" id="rkAActs"></div>
+      <div class="al-tabs" id="rkATabs" role="tablist" aria-label="Albumseiten"></div>
+      <p class="al-page" id="rkAPage"></p>
+      <div class="al-grid" id="rkAGrid"></div>
+      <p class="rk-fine">Karten bekommst du, wenn ein Medium im Spiel oder im Überleben ganz durchläuft. Wie selten eine Karte ist, hängt von deinen fertigen Rankings ab (ab 10 Medien): Top 5 % legendär, Top 20 % episch, Top 50 % selten, sonst normal. Steht ein Medium in mehreren Rankings, zählt die beste Platzierung. Ohne fertiges Ranking bleibt die Karte ein Fragezeichen, bis du sie rankst. Abgewertet wird nie.</p>
+    </div>
+  </section>
+
+  <section class="rk-view" id="rkGuess" aria-labelledby="rkGTitle">
+    <header class="rk-head">
+      <button type="button" class="ib sm" data-back aria-label="Zurück zum Ordner" title="Zurück (Esc)"><svg class="i"><use href="#i-close"/></svg></button>
+      <div class="rk-ht"><h2 class="rk-title" id="rkGTitle">Rang-Raten</h2><small id="rkGSub"></small></div>
+    </header>
+    <div class="rk-bar"><i id="rkGBar"></i></div>
+    <p class="rk-dhint" id="rkGHint">Welches steht in deinem Ranking weiter oben? Tippe darauf.</p>
+    <div class="rk-arena" id="rkGArena">
+      <div class="rk-card gs-card" id="rkG0"><div class="rk-media"><img alt="" draggable="false" hidden><video muted loop playsinline hidden></video><span class="gs-rank" hidden></span></div></div>
+      <span class="rk-vs" aria-hidden="true">VS</span>
+      <div class="rk-card gs-card" id="rkG1"><div class="rk-media"><img alt="" draggable="false" hidden><video muted loop playsinline hidden></video><span class="gs-rank" hidden></span></div></div>
+    </div>
+    <div class="gs-end" id="rkGEnd" hidden></div>
+    <p class="rk-keys only-mouse" id="rkGKeys">← oder ↑ erstes · → oder ↓ zweites</p>
+  </section>
+
   <div class="rk-dlg" id="rkDlg" hidden><div class="rk-dlg-in" role="dialog" aria-modal="true"></div></div>
   <div class="rk-toast" id="rkToast" role="status" aria-live="polite"></div>
   <input type="file" id="rkFile" class="vh" multiple tabindex="-1" aria-hidden="true" accept="image/*,video/*,.mkv,.mov,.m4v,.webm,.avif,.heic,.heif">
@@ -3056,9 +3243,10 @@ body.rk-open #app { visibility: hidden; }
 /* ═══════════════════════════════════════════════════════════════════════
    Geräte abgleichen (privates GitHub Gist)
    ═══════════════════════════════════════════════════════════════════════
-   • Abgeglichen wird nur der Spielstand: Verlauf, Tagesziele, Schulden, Münzen, Abzeichen,
-     Favoriten und die Einstellungen, die das Spiel betreffen. Runde und Presets bleiben je Gerät
-     (jedes Gerät hat eigene Dateien). Bilder und Videos werden nie hochgeladen. Der Stand liegt
+   • Abgeglichen wird der Spielstand: Verlauf, Tagesziele, Schulden, Münzen, Abzeichen,
+     Favoriten und die Einstellungen, die das Spiel betreffen. Dazu die Rankings (Ordner, Ranglisten,
+     Tags). Runde und Presets bleiben je Gerät (jedes Gerät hat eigene Dateien), beim Ranking auch
+     Ansicht und gemerkte Ordner. Bilder und Videos werden nie hochgeladen. Der Stand liegt
      gepackt (gzip) als eine Datei in einem privaten Gist.
    • Beim Öffnen holt die App zuerst den neuesten Stand, erst dann startet das Spiel (höchstens
      7 Sekunden Warten, dann geht es mit dem Stand auf dem Gerät weiter). Beim Spielen wird
@@ -3067,6 +3255,8 @@ body.rk-open #app { visibility: hidden; }
      neuere hochgeladen und hier wurde nichts Wesentliches gespielt, gilt dessen Stand. Haben beide
      gespielt, werden die Stände zusammengeführt (Tage von beiden, doppelter Tag: mehr Fortschritt
      gewinnt; Zähler, Münzen und Vorräte bekommen den Zuwachs des anderen Geräts dazu).
+   • Album, Rekorde aus Überleben und Rang-Raten liegen extra (x): Das wächst nur und wird immer
+     zusammengeführt (Karten von beiden, jeweils das Höhere), auch ohne Neuladen.
    • Läuft die App schon, wird ein neuer Stand erst nach dem Neuladen übernommen.
    • Vor jedem Start muss ein Abgleich höchstens eine Minute alt sein, sonst fragt die App nach. */
 const ShuffleSync = (() => {
@@ -3080,6 +3270,9 @@ const SET_KEY = 'shuffle-player/v1', DAYS = 'shuffle-player/days-v1', META = 'sh
       LISTS = 'shuffle-player/lists-v1', BIG = 'shuffle-player/big-v1';
 const STORES = [DAYS, META, LISTS, BIG];                 // Runde (PROG) und Presets bleiben je Gerät
 const SET_FIELDS = ['min', 'max', 'mode', 'difficulty', 'peak', 'weight', 'theme', 'sound'];   // Ton, Vibration usw. bleiben je Gerät
+const RANK = 'shuffle-rank/v1', RDEV = 'shuffle-rank/dev';   // Rankings (eigener Speicher) und die Kennung dieses Geräts dafür
+const RK0 = '{"t":[],"f":[]}';                                // keine Rankings
+const XKEY = 'shuffle-player/x-v1';                          // Album, Überleben, Rang-Raten
 const LS = (() => { try { return window.localStorage; } catch (_) { return null; } })();
 const get = k => { try { return LS ? LS.getItem(k) : null; } catch (_) { return null; } };
 const put = (k, v) => { try { if (LS) LS.setItem(k, v); return true; } catch (_) { return false; } };
@@ -3124,7 +3317,7 @@ if (LS) {
   const raw = Storage.prototype.setItem;
   Storage.prototype.setItem = function (k, v) {
     raw.call(this, k, v);
-    if (this === LS && !applying && (k === SET_KEY || STORES.includes(k))) changed();
+    if (this === LS && !applying && (k === SET_KEY || k === RANK || k === XKEY || STORES.includes(k))) changed();
   };
 }
 
@@ -3150,6 +3343,246 @@ function writeLocal(s) {
     }
   } finally { applying = false; }
 }
+/* ── Rankings ──
+   Jedes Gerät nummeriert seine Ranking-Ordner und Tags selbst (an den Nummern hängen z. B. gemerkte Ordner).
+   Für den Abgleich hat jeder Ordner und jeder Tag eine feste Kennung (uid); verglichen und hochgeladen wird eine
+   Form ohne die Nummern des Geräts. Ansicht, zuletzt benutzte Tags und der zuletzt offene Ordner bleiben je Gerät.
+   Zusammenführen: Ordner und Tags von beiden Seiten; gelöscht wird nur, was die andere Seite nicht verändert hat.
+   Hat derselbe Ordner auf beiden Geräten Neues, gilt das Ranking mit mehr Entscheidungen (sonst das neuere), neue
+   Medien und Tags von der anderen Seite kommen dazu. Rankings gehen beim Verbinden nie verloren. */
+let rkHooks = null;                        // { flush, reload, idle } vom Ranking-Teil
+let rkMemo = ['', RK0];
+function rankDev() {
+  let d = get(RDEV);
+  if (!d || !/^[0-9a-z]{4,24}$/.test(d)) { d = randId(); put(RDEV, d); }
+  return d;
+}
+const rkUid = (kind, i) => `${rankDev()}-${kind}${i}`;
+const rkU = (x, kind) => (typeof x.uid === 'string' && x.uid ? x.uid : rkUid(kind, n0(x.i)));
+const rkArr = a => (Array.isArray(a) ? a : []);
+const rkJ = x => JSON.stringify(x);
+/** Gespeichertes Ranking dieses Geräts → geräteunabhängige Form (Text). */
+function rkCanon(txt) {
+  const d = P(txt);
+  if (!d || typeof d !== 'object') return RK0;
+  const tu = new Map(), t = [], f = [];
+  for (const x of rkArr(d.tags)) {
+    if (!x || !(n0(x.i) > 0)) continue;
+    const u = rkU(x, 't');
+    tu.set(n0(x.i), u);
+    t.push({ u, n: x.n, c: x.c, p: x.p, g: x.g });
+  }
+  for (const x of rkArr(d.fs)) {
+    if (!x || !(n0(x.i) > 0)) continue;
+    f.push({
+      u: rkU(x, 'f'), n: x.n, c: x.c, m: x.u, ni: x.ni,
+      it: rkArr(x.it).map(y => ({ i: y.i, k: y.k, n: y.n, s: y.s, v: y.v, t: rkArr(y.t).map(id => tu.get(n0(id))).filter(Boolean), a: y.a })),
+      r: x.r && typeof x.r === 'object' ? { seed: x.r.seed, log: x.r.log, st: x.r.st } : null,
+    });
+  }
+  return rkJ({ t, f });
+}
+function readRank() {
+  if (rkHooks && rkHooks.flush) { try { rkHooks.flush(); } catch (_) { /* egal */ } }
+  const raw = get(RANK) || '';
+  if (raw !== rkMemo[0]) rkMemo = [raw, raw ? rkCanon(raw) : RK0];
+  return rkMemo[1];
+}
+/** Abgeglichene Form → Speicher dieses Geräts: bekannte Ordner und Tags behalten ihre Nummer, neue bekommen freie. */
+function rkLocal(ct, curTxt) {
+  const c = P(ct);
+  if (!c || !Array.isArray(c.t) || !Array.isArray(c.f)) return null;
+  const cur = P(curTxt) || {};
+  const tagId = new Map(), fId = new Map();
+  let ts = Math.max(1, n0(cur.ts)), fq = Math.max(1, n0(cur.fq));
+  for (const x of rkArr(cur.tags)) if (x && n0(x.i) > 0) { tagId.set(rkU(x, 't'), n0(x.i)); ts = Math.max(ts, n0(x.i) + 1); }
+  for (const x of rkArr(cur.fs)) if (x && n0(x.i) > 0) { fId.set(rkU(x, 'f'), n0(x.i)); fq = Math.max(fq, n0(x.i) + 1); }
+  const usedT = new Set(), usedF = new Set(), tOf = new Map();
+  const tags = c.t.map(x => {
+    let i = tagId.get(x.u);
+    if (!i || usedT.has(i)) i = ts++;
+    usedT.add(i); tOf.set(x.u, i);
+    return { i, uid: x.u, n: x.n, c: x.c, p: x.p, g: x.g };
+  });
+  const fs = c.f.map(x => {
+    let i = fId.get(x.u);
+    if (!i || usedF.has(i)) i = fq++;
+    usedF.add(i);
+    return { i, uid: x.u, n: x.n, c: x.c, u: x.m, ni: x.ni,
+             it: rkArr(x.it).map(y => ({ i: y.i, k: y.k, n: y.n, s: y.s, v: y.v, t: rkArr(y.t).map(u => tOf.get(u)).filter(Boolean), a: y.a })),
+             r: x.r || null };
+  });
+  const rec = rkArr(cur.rec).filter(id => usedT.has(n0(id)));
+  const last = usedF.has(n0(cur.last)) ? n0(cur.last) : 0;
+  return rkJ({ v: 1, tags, ts, rec, fs, fq, last, ui: cur.ui && typeof cur.ui === 'object' ? cur.ui : {} });
+}
+function writeRank(ct) {
+  if (typeof ct !== 'string' || ct === readRank()) return;
+  const out = rkLocal(ct, get(RANK));
+  if (!out) return;
+  applying = true;
+  try { put(RANK, out); } finally { applying = false; }
+  if (rkHooks && rkHooks.reload) { try { rkHooks.reload(); } catch (e) { console.error(e); } }
+}
+const rkIdle = () => !!(rkHooks && rkHooks.idle && rkHooks.idle());
+const rkNorm = x => String(x || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, ' ').trim();
+const rkDec = f => (f && f.r ? rkArr(f.r.log).filter(op => typeof op === 'string').length : 0);
+/** Tags eines Mediums: was die eine Seite dazu getan oder weggenommen hat, gilt (w = Grundlage). */
+function rkSet3(w, o, b) {
+  const r = [...rkArr(w)], R = new Set(r), O = new Set(rkArr(o));
+  if (!b) { for (const x of O) if (!R.has(x)) { r.push(x); R.add(x); } return r; }
+  const B = new Set(b);
+  for (const x of O) if (!B.has(x) && !R.has(x)) { r.push(x); R.add(x); }
+  return r.filter(x => !(B.has(x) && !O.has(x)));
+}
+/** Derselbe Ordner wurde auf beiden Seiten verändert. */
+function rkPickFolder(l, r, b) {
+  let w;
+  if (l.r && r.r && l.r.st === r.r.st) { const a = rkDec(l), c = rkDec(r); w = a !== c ? (a > c ? l : r) : n0(l.m) >= n0(r.m) ? l : r; }
+  else w = n0(l.m) >= n0(r.m) ? l : r;
+  const o = w === l ? r : l;
+  const out = JSON.parse(rkJ(w));
+  out.it = rkArr(out.it);
+  const has = new Map(out.it.map(x => [x.k, x]));
+  const bk = new Map((b ? rkArr(b.it) : []).map(x => [x.k, x]));
+  const ok = new Map(rkArr(o.it).map(x => [x.k, x]));
+  for (const x of rkArr(o.it)) {                         // auf der anderen Seite neu dazugekommen
+    if (has.has(x.k) || bk.has(x.k)) continue;
+    const y = { ...x, t: [...rkArr(x.t)], i: n0(out.ni) };
+    out.ni = y.i + 1;
+    out.it.push(y); has.set(y.k, y);
+    if (out.r) out.r.log.push(['+', y.i]);
+  }
+  for (const k of bk.keys()) {                           // auf der anderen Seite entfernt
+    if (ok.has(k) || !has.has(k)) continue;
+    const y = has.get(k);
+    out.it = out.it.filter(z => z !== y); has.delete(k);
+    if (out.r) out.r.log.push(['x', y.i]);
+  }
+  for (const y of out.it) { const z = ok.get(y.k); if (z) { const bz = bk.get(y.k); y.t = rkSet3(y.t, z.t, bz ? bz.t : null); } }
+  if (b && out.n === b.n && o.n !== b.n) out.n = o.n;    // auf der anderen Seite umbenannt
+  out.m = Math.max(n0(l.m), n0(r.m));
+  return out;
+}
+/** Listen mit uid: Neues von beiden Seiten, Gelöschtes nur, wenn die andere Seite es nicht verändert hat. */
+function rkMerge3(L, R, B, pick) {
+  const lm = new Map(L.map(x => [x.u, x])), rm = new Map(R.map(x => [x.u, x])), bm = new Map(rkArr(B).map(x => [x.u, x]));
+  const out = [], seen = new Set();
+  for (const u of [...lm.keys(), ...rm.keys()]) {
+    if (seen.has(u)) continue;
+    seen.add(u);
+    const l = lm.get(u), r = rm.get(u), b = bm.get(u);
+    let v = null;
+    if (l && r) v = rkJ(l) === rkJ(r) ? l : b && rkJ(l) === rkJ(b) ? r : b && rkJ(r) === rkJ(b) ? l : pick(l, r, b);
+    else if (l) v = b && rkJ(l) === rkJ(b) ? null : l;
+    else if (r) v = b && rkJ(r) === rkJ(b) ? null : r;
+    if (v) out.push(v);
+  }
+  return out;
+}
+/** Rankings zusammenführen (l = dieses Gerät, r = Cloud, b = gemeinsamer letzter Stand oder null). */
+function mergeRank(lt, rt, bt) {
+  const L = P(lt), R = P(rt), B0 = P(bt);
+  if (!L || !Array.isArray(L.f) || !Array.isArray(L.t)) return rt;
+  if (!R || !Array.isArray(R.f) || !Array.isArray(R.t)) return lt;
+  const B = B0 && Array.isArray(B0.f) && Array.isArray(B0.t) ? B0 : null;
+  const byName = new Map(), alias = new Map();
+  const t = rkMerge3(L.t, R.t, B && B.t, l => l).filter(x => {         // auf beiden Geräten neu angelegt: ein Tag
+    const k = rkNorm(x.n), y = byName.get(k);
+    if (y) { alias.set(x.u, y.u); return false; }
+    byName.set(k, x);
+    return true;
+  });
+  const tu = new Set(t.map(x => x.u));
+  const lu = new Set(L.f.map(x => x.u)), bu = new Set(B ? B.f.map(x => x.u) : []);
+  const names = new Set();
+  const f = rkMerge3(L.f, R.f, B && B.f, rkPickFolder).map(x0 => {
+    const x = JSON.parse(rkJ(x0));
+    for (const y of rkArr(x.it)) y.t = [...new Set(rkArr(y.t).map(u => alias.get(u) || u))].filter(u => tu.has(u));
+    if (!lu.has(x.u) && !bu.has(x.u) && typeof x.n === 'string') {    // neu von der anderen Seite, gleicher Name: „(2)“
+      const n0n = x.n;
+      for (let k = 2; names.has(rkNorm(x.n)) && k < 100; k++) x.n = `${n0n.slice(0, 54)} (${k})`;
+    }
+    names.add(rkNorm(x.n));
+    return x;
+  });
+  return rkJ({ t, f });
+}
+/** Beim Verbinden: Rankings von beiden Seiten. */
+const rkJoin = (lrk, rrk) => (typeof rrk !== 'string' ? lrk : lrk === RK0 ? rrk : rrk === RK0 ? lrk : mergeRank(lrk, rrk, null));
+/** Neuer Stand von einem anderen Gerät: was wird aus den Rankings? */
+function rkNext(lrk, r) {
+  const rrk = r.p.rk;
+  if (typeof rrk !== 'string') return { rk: lrk, mine: false, merged: false, push: lrk !== RK0 };   // ältere App ohne Rankings: hiesige bleiben
+  const brk = base && typeof base.rk === 'string' ? base.rk : null;
+  const mine = brk != null ? lrk !== brk : lrk !== RK0;
+  if (!mine) return { rk: rrk, mine: false, merged: false, push: false };
+  const rk = mergeRank(lrk, rrk, brk);
+  return { rk, mine: true, merged: rk !== rrk && rk !== lrk, push: rk !== rrk };
+}
+/* ── Album, Überleben, Rang-Raten (Speicher x) ──
+   Alles darin wächst nur (Karten, Rekorde, Zähler für heute). Deshalb wird es immer zusammengeführt, ganz ohne
+   gemeinsamen Stand: Karten von beiden Seiten, jeweils das Höhere. Ältere App-Versionen kennen x nicht; fehlt es
+   in der Cloud, bleibt das hiesige. Karte = [Seltenheit 0–4, erster Tag, wie oft ganz gesehen, davon eingetauscht]. */
+let xMemo = null;
+const xHooks = [];
+const xDay = d => (typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d) ? d : '');
+const xInt = v => Math.floor(n0(v));
+function xObj(raw) {
+  const o = raw && typeof raw === 'object' ? raw : {};
+  const src = o.al && typeof o.al === 'object' ? o.al : {};
+  const al = {};
+  for (const k of Object.keys(src).sort()) {
+    const c = src[k];
+    if (!k || !Array.isArray(c)) continue;
+    const n = Math.max(1, xInt(c[2]));
+    al[k] = [Math.min(4, Math.max(0, xInt(c[0]))), xDay(c[1]), n, Math.min(n - 1, Math.max(0, xInt(c[3])))];
+  }
+  const sv = o.sv && typeof o.sv === 'object' ? o.sv : {}, rg = o.rg && typeof o.rg === 'object' ? o.rg : {};
+  return {
+    v: 1, al,
+    alr: [...new Set(rkArr(o.alr).filter(x => typeof x === 'string' && x))].sort(),
+    sv: { best: xInt(sv.best), bestN: xInt(sv.bestN), day: xDay(sv.day), runs: xInt(sv.runs) },
+    rg: { best: xInt(rg.best), day: xDay(rg.day), plays: xInt(rg.plays) },
+  };
+}
+const X0 = rkJ(xObj(null));
+function readX() {
+  const raw = get(XKEY) || '';
+  if (!xMemo || raw !== xMemo[0]) xMemo = [raw, raw ? rkJ(xObj(P(raw))) : X0];
+  return xMemo[1];
+}
+function xMerge(at, bt) {
+  const a = xObj(P(at)), b = xObj(P(bt));
+  const al = { ...a.al };
+  for (const [k, c] of Object.entries(b.al)) {
+    const m = al[k];
+    al[k] = m ? [Math.max(m[0], c[0]), m[1] && c[1] ? (m[1] < c[1] ? m[1] : c[1]) : m[1] || c[1], Math.max(m[2], c[2]), Math.max(m[3], c[3])] : c;
+  }
+  const today = (p, q, f) => (p.day === q.day ? Math.max(p[f], q[f]) : p.day > q.day ? p[f] : q[f]);
+  const later = (p, q) => (p.day > q.day ? p.day : q.day);
+  return rkJ(xObj({
+    al, alr: [...a.alr, ...b.alr],
+    sv: { best: Math.max(a.sv.best, b.sv.best), bestN: Math.max(a.sv.bestN, b.sv.bestN), day: later(a.sv, b.sv), runs: today(a.sv, b.sv, 'runs') },
+    rg: { best: Math.max(a.rg.best, b.rg.best), day: later(a.rg, b.rg), plays: today(a.rg, b.rg, 'plays') },
+  }));
+}
+function writeX(ct) {
+  if (typeof ct !== 'string' || ct === readX()) return;
+  applying = true;
+  try { put(XKEY, ct); } finally { applying = false; }
+  for (const f of xHooks) { try { f(); } catch (e) { console.error(e); } }
+}
+/** Neuer Stand von einem anderen Gerät: x immer zusammenführen (geht sofort, ohne Neuladen). */
+function xNext(lx, r) {
+  const rx = r.p.x;
+  if (typeof rx !== 'string') return { x: lx, push: lx !== X0 };
+  const x = xMerge(lx, rx);
+  return { x, push: x !== rx };
+}
+const xJoin = (lx, rx) => (typeof rx !== 'string' ? lx : xMerge(lx, rx));
+/** Gibt es hier etwas, das noch nicht in der Cloud ist? */
+const unsynced = () => !base || !same(readLocal(), base.s) || readRank() !== base.rk || readX() !== base.x;
 function same(a, b) {
   if (!a || !b) return false;
   for (const k of new Set([...Object.keys(a), ...Object.keys(b)])) if ((a[k] ?? null) !== (b[k] ?? null)) return false;
@@ -3298,7 +3731,7 @@ async function api(method, path, body, opt = {}) {
   return { status: res.status, res, json, etag: res.headers.get('ETag') || '' };
 }
 const idOf = p => `${p.dev}:${p.rev}`;
-const baseOf = r => ({ id: idOf(r.p), rev: r.p.rev, at: r.p.at, dn: r.p.dn, etag: r.etag || '', s: r.p.s });
+const baseOf = r => ({ id: idOf(r.p), rev: r.p.rev, at: r.p.at, dn: r.p.dn, etag: r.etag || '', s: r.p.s, rk: r.p.rk, x: r.p.x });
 /** Stand aus der Cloud; null = unverändert seit dem letzten Mal. */
 async function getRemote(useEtag, c = cfg) {
   const r = await api('GET', `/gists/${c.gist}`, null, { token: c.token, etag: useEtag && base && base.etag ? base.etag : '' });
@@ -3324,7 +3757,7 @@ function fail(e) {
   lastErr = e && e.code ? e : E('http');
   status();
   if (!retryTimer && cfg && running && !blocked && lastErr.code !== 'auth' && lastErr.code !== 'gone') {
-    retryTimer = setTimeout(() => { retryTimer = 0; if (base && !same(readLocal(), base.s)) pushNow(); }, RETRY);
+    retryTimer = setTimeout(() => { retryTimer = 0; if (base && unsynced()) pushNow(); }, RETRY);
   }
 }
 
@@ -3332,29 +3765,35 @@ function fail(e) {
 function reconcile(r) {
   if (r.p.dev === cfg.dev) {                     // eigener Stand, nur die Antwort kam nicht mehr an
     base = baseOf(r); saveBase(); ok(); status();
-    if (!same(readLocal(), base.s)) schedule(0);
+    if (unsynced()) schedule(0);
     return { ok: true };
   }
-  const local = readLocal();
+  const local = readLocal(), lrk = readRank(), lx = readX();
   const mine = base ? fp(local) !== fp(base.s) : hasPlay(local);
   const next = mine ? merge(local, r.p.s, base && base.s) : r.p.s;
+  const R = rkNext(lrk, r), X = xNext(lx, r);
+  const push = mine || R.mine || R.push || X.push;
+  if (X.x !== lx) writeX(X.x);                   // Album & Co.: gleich übernehmen
   const nb = baseOf(r);
   ok();
-  if (same(next, local)) {                       // hier ändert sich nichts
+  const gameSame = same(next, local);
+  if (gameSame && (R.rk === lrk || (running && rkIdle()))) {   // fürs Spiel nichts Neues; neue Rankings gleich übernehmen, wenn das Ranking zu ist
+    if (R.rk !== lrk) writeRank(R.rk);
     base = nb; saveBase(); status();
-    if (mine) schedule(0);
+    if (push) schedule(0);
     return { ok: true };
   }
-  const note = mine ? { kind: 'merged' } : r.p.dev !== cfg.dev ? { kind: 'adopt', from: r.p.dn, at: r.p.at } : null;
+  const note = mine ? { kind: 'merged' } : R.merged ? { kind: 'rkmerged' } : { kind: 'adopt', from: r.p.dn, at: r.p.at };
   if (!running) {
     writeLocal(next);
+    writeRank(R.rk);
     base = nb; saveBase();
-    if (mine) pushAfterBoot = true;
-    if (note) put(K.note, JSON.stringify(note));
+    if (push) pushAfterBoot = true;
+    put(K.note, JSON.stringify(note));
     return { ok: true, adopted: true };
   }
-  put(K.pend, JSON.stringify({ s: next, base: nb, push: mine, note }));
-  block({ merged: mine, from: r.p.dn, at: r.p.at });
+  put(K.pend, JSON.stringify({ s: next, rk: R.rk, base: nb, push, note }));
+  block({ merged: mine, rk: !mine && R.merged, only: gameSame ? 'rk' : '', from: r.p.dn, at: r.p.at });
   return { ok: true, reload: true };
 }
 function block(info) {
@@ -3377,14 +3816,14 @@ async function pullInner() {
   ok();
   if (r && st === 'same' && base) { base.etag = r.etag; saveBase(); }
   status();
-  if (running && base && !same(readLocal(), base.s)) schedule();
+  if (running && base && unsynced()) schedule();
   return { ok: true };
 }
 async function pushInner() {
   if (!cfg || blocked) return { ok: false };
   const force = get(K.force) === '1';
-  const local = readLocal();
-  if (!force && base && same(local, base.s)) return { ok: true, idle: true };
+  const local = readLocal(), lrk = readRank(), lx = readX();
+  if (!force && base && same(local, base.s) && lrk === base.rk && lx === base.x) return { ok: true, idle: true };
   let r = null;
   try { r = await getRemote(!force); } catch (e) { fail(e); return { ok: false, err: lastErr }; }
   if (!force) {
@@ -3393,17 +3832,17 @@ async function pushInner() {
     if (r && st === 'same' && base) base.etag = r.etag;
   }
   const rev = Math.max(base ? n0(base.rev) : 0, r ? n0(r.p.rev) : 0) + 1;
-  const p = { app: 'shuffle', v: 1, rev, at: Date.now(), dev: cfg.dev, dn: DEV_NAME, s: local };
+  const p = { app: 'shuffle', v: 1, rev, at: Date.now(), dev: cfg.dev, dn: DEV_NAME, s: local, rk: lrk, x: lx };
   try {
     const w = await api('PATCH', `/gists/${cfg.gist}`, { files: { [FILE]: { content: await pack(p) } } });
-    base = { id: idOf(p), rev, at: p.at, dn: p.dn, etag: w.etag || '', s: local };
+    base = { id: idOf(p), rev, at: p.at, dn: p.dn, etag: w.etag || '', s: local, rk: lrk, x: lx };
     saveBase();
     if (force) del(K.force);
     ok();
     lastPush = Date.now();
     status();
   } catch (e) { fail(e); return { ok: false, err: lastErr }; }
-  if (!same(readLocal(), base.s)) schedule();
+  if (unsynced()) schedule();
   return { ok: true };
 }
 const pushNow = () => serial(pushInner);
@@ -3461,20 +3900,28 @@ async function connect(text) {
   c.login = (u.json && typeof u.json.login === 'string' && u.json.login) || '';
   const gid = inp.gist || await findGist(c.token);
   if (!gid) {
-    const local = readLocal();
-    const p = { app: 'shuffle', v: 1, rev: 1, at: Date.now(), dev: c.dev, dn: DEV_NAME, s: local };
+    const local = readLocal(), lrk = readRank(), lx = readX();
+    const p = { app: 'shuffle', v: 1, rev: 1, at: Date.now(), dev: c.dev, dn: DEV_NAME, s: local, rk: lrk, x: lx };
     let res;
     try { res = await api('POST', '/gists', { description: DESC, public: false, files: { [FILE]: { content: await pack(p) } } }, { token: c.token }); }
     catch (e) { throw e.code === 'gone' ? E('scope') : e; }
     c.gist = res.json && res.json.id;
     if (!c.gist) throw E('http');
-    linkUp(c, { id: idOf(p), rev: 1, at: p.at, dn: p.dn, etag: '', s: local });
+    linkUp(c, { id: idOf(p), rev: 1, at: p.at, dn: p.dn, etag: '', s: local, rk: lrk, x: lx });
     return { state: 'created' };
   }
   c.gist = gid;
   const r = await getRemote(false, c);
+  writeX(xJoin(readX(), r.p.x));                  // Album & Co. kommen immer von beiden
   const local = readLocal();
-  if (same(local, r.p.s)) { linkUp(c, baseOf(r)); return { state: 'linked' }; }
+  if (same(local, r.p.s)) {
+    const lrk = readRank(), rk = rkJoin(lrk, r.p.rk);
+    linkUp(c, baseOf(r));
+    if (rk === lrk) { schedule(0); return { state: 'linked' }; }
+    put(K.pend, JSON.stringify({ s: local, rk, base: baseOf(r), push: rk !== r.p.rk, note: null }));   // Rankings von dort dazuholen
+    block(null);
+    return { state: 'reload', rk: true, from: r.p.dn, at: r.p.at };
+  }
   pendingLink = { c, r };
   if (!hasPlay(local)) return choose('remote');
   return { state: 'choose', local: summary(local), remote: summary(r.p.s), from: r.p.dn, at: r.p.at };
@@ -3485,17 +3932,18 @@ async function choose(mode) {
   if (!pl) throw E('input');
   const { c, r } = pl;
   const b = baseOf(r);
-  if (mode === 'local') {
+  const lrk = readRank(), rk = rkJoin(lrk, r.p.rk);           // Rankings kommen immer von beiden
+  if (mode === 'local' && rk === lrk) {
     linkUp(c, b);
     const res = await pushNow();
     return { state: 'linked', ok: res.ok, err: res.err };
   }
   const local = readLocal();
-  const next = mode === 'merge' ? merge(local, r.p.s, null) : r.p.s;
+  const next = mode === 'merge' ? merge(local, r.p.s, null) : mode === 'local' ? local : r.p.s;
   linkUp(c, b);
-  put(K.pend, JSON.stringify({ s: next, base: b, push: mode === 'merge', note: null }));
+  put(K.pend, JSON.stringify({ s: next, rk, base: b, push: mode !== 'remote' || rk !== r.p.rk, note: null }));
   block(null);
-  return { state: 'reload', merged: mode === 'merge', from: r.p.dn, at: r.p.at };
+  return { state: 'reload', merged: mode === 'merge', rk: mode === 'local', from: r.p.dn, at: r.p.at };
 }
 function disconnect() {
   clearTimeout(pushTimer); pushTimer = 0;
@@ -3511,6 +3959,7 @@ function applyPending() {
   del(K.pend);
   if (!pd || !pd.s || !pd.base || typeof pd.s !== 'object') return;
   writeLocal(pd.s);
+  if (typeof pd.rk === 'string') writeRank(pd.rk);
   base = pd.base; saveBase();
   if (pd.push) pushAfterBoot = true;
   if (pd.note) put(K.note, JSON.stringify(pd.note));
@@ -3536,7 +3985,7 @@ function run(main) {
       del(K.note);
       if (n) ui('note', n);
       status();
-      if (pushAfterBoot || get(K.force) === '1' || !base || !same(readLocal(), base.s)) schedule(FAST ? 50 : 1500);
+      if (pushAfterBoot || get(K.force) === '1' || unsynced()) schedule(FAST ? 50 : 1500);
     }
   }
 }
@@ -3572,7 +4021,7 @@ return {
   info() {
     if (!cfg) return { on: false };
     return { on: true, login: cfg.login, last: contact, err: lastErr, busy: false, blocked,
-             pending: !blocked && !!base && !same(readLocal(), base.s) };
+             pending: !blocked && !!base && unsynced() };
   },
   check: () => serial(pullInner),
   async syncNow() { const r = await serial(pullInner); if (!r.ok || r.reload) return r; return pushNow(); },
@@ -3583,6 +4032,13 @@ return {
   qrSvg,
   suspend() { block(null); },
   forceNext() { put(K.force, '1'); },
+  /** Album, Überleben, Rang-Raten: lesen (immer frisch) und speichern (wird dann hochgeladen). */
+  xGet: () => JSON.parse(readX()),
+  xSet(o) { put(XKEY, rkJ(xObj(o))); },
+  xOn(f) { xHooks.push(f); },
+  rankBind(h) { rkHooks = h; },
+  rankUid: rkUid,
+  _t: { readRank, mergeRank, rkLocal, rkCanon, RK0, readX, xMerge, X0 },
 };
 })();
 
@@ -4198,6 +4654,7 @@ function finishCurrent(how) {
   const key = cur.item.key;
   const back = list => list.splice(Math.floor(Math.random() * (list.length + 1)), 0, cur.item.id);
   recordDay(cur, how, secs);
+  if (how === 'done') { const g = albumGot(cur.item); if (g && g.msg) toast(g.msg, 2800); }
   if (cur.run === 'fav') {
     if (how === 'done') { favRun.done.add(key); favRun.skipped.delete(key); }
     else if (how !== 'done' && how !== 'excluded' && how !== 'abandon' && !favRun.done.has(key)) favRun.skipped.add(key);
@@ -9232,6 +9689,10 @@ function updateLibraryUI() {
   libCount.textContent = library.length ? text : 'noch keine';
   introLib.hidden = library.length === 0;
   btnStart.hidden = !any;
+  {
+    const sb = document.getElementById('btnSurvive');
+    if (sb) { sb.hidden = library.filter(usable).length < 2; document.getElementById('modeRow').classList.toggle('two', !sb.hidden); }
+  }
   pickLabel.textContent = any ? 'Weitere hinzufügen' : 'Dateien wählen';
   btnPick.classList.toggle('primary', !any && resumeBox.hidden);
   setClear.disabled = library.length === 0 && !sources.length;
@@ -12866,7 +13327,7 @@ stage.addEventListener('pointercancel', e => {
 app.addEventListener('pointermove', e => { if (e.pointerType === 'mouse' && state.started && !gest) pokeUI(); });
 
 window.addEventListener('keydown', e => {
-  if (rkOpen()) return;                            // das Ranking hat eigene Tasten
+  if (rkOpen() || document.body.classList.contains('sv-open')) return;   // Ranking und Überleben haben eigene Tasten
   const t = e.target;
   const typing = t && t.matches && t.matches('input:not([type="range"]):not([type="checkbox"])');
   // Strg+Z / ⌘Z: Ausschließen rückgängig machen
@@ -13061,8 +13522,8 @@ function renderSync() {
   syncStateEl.textContent = s.on ? 'an' : 'aus';
   resetSyncEl.hidden = !s.on;
   if (!s.on) {
-    syncNoteEl.textContent = 'Gleicht deinen Spielstand zwischen PC und Handy ab: Verlauf, Tagesziele, Schulden, Münzen, Abzeichen '
-      + 'und Favoriten. Läuft über ein kostenloses GitHub-Konto. Bilder und Videos bleiben auf dem Gerät, '
+    syncNoteEl.textContent = 'Gleicht deinen Spielstand zwischen PC und Handy ab: Verlauf, Tagesziele, Schulden, Münzen, Abzeichen, '
+      + 'Favoriten und deine Rankings. Läuft über ein kostenloses GitHub-Konto. Bilder und Videos bleiben auf dem Gerät, '
       + 'Runde und Presets auch: jedes Gerät hat seine eigenen.';
     privacyEl.textContent = PRIVACY_OFF;
     return;
@@ -13071,7 +13532,7 @@ function renderSync() {
   if (s.last) parts.push(`Zuletzt abgeglichen: ${syncWhen(s.last)}.`);
   if (s.err) parts.push(syncErrText(s.err));
   else if (s.pending) parts.push('Neue Änderungen werden gleich hochgeladen.');
-  parts.push('Runde, Presets, Ranking und gemerkte Ordner bleiben auf jedem Gerät für sich.');
+  parts.push('Rankings und Tags werden mit abgeglichen. Runde, Presets und gemerkte Ordner bleiben auf jedem Gerät für sich.');
   syncNoteEl.textContent = parts.join(' ');
   privacyEl.textContent = s.err
     ? '☁ Gerade kein Abgleich möglich. Bilder und Videos bleiben auf dem Gerät.'
@@ -13083,6 +13544,25 @@ function syncBtn(label, cls, fn) {
   b.type = 'button';
   b.addEventListener('click', fn);
   return b;
+}
+const rankOpen = () => !!(window.ShuffleRank && window.ShuffleRank.isOpen());
+/** Texte für „Neuer Stand … – Laden“ (im Fenster hier oder, wenn das Ranking offen ist, in dessen Fenster). */
+function reloadText(ctx) {
+  const where = fromName(ctx.from) === 'vom Handy' ? 'Am Handy' : fromName(ctx.from) === 'vom PC' ? 'Am PC' : 'Am anderen Gerät';
+  const when = ctx.at ? ` (${syncWhen(ctx.at)})` : '';
+  const title = ctx.merged || ctx.rk ? 'Stände werden zusammengeführt' : ctx.linked ? 'Verbunden'
+    : ctx.only === 'rk' ? `Neue Rankings ${fromName(ctx.from)}` : `Neuer Stand ${fromName(ctx.from)}`;
+  const text = ctx.merged
+    ? (ctx.linked ? 'Die App führt die beiden Spielstände jetzt zusammen und lädt neu.' : 'Beide Geräte hatten ohne Abgleich gespielt. Die App führt die Stände jetzt zusammen und lädt neu.')
+    : ctx.rk ? (ctx.linked ? 'Die App holt jetzt die Rankings vom anderen Gerät dazu und lädt neu. Deine Rankings hier bleiben.'
+      : 'Auf beiden Geräten wurde gerankt. Die App führt die Rankings jetzt zusammen und lädt neu.')
+    : ctx.linked ? `Die App lädt jetzt den Spielstand ${fromName(ctx.from)}.`
+    : ctx.only === 'rk' ? `${where} wurde inzwischen gerankt${when}. Die App lädt jetzt neu, damit du hier damit weitermachen kannst.`
+    : `${where} wurde inzwischen weitergespielt${when}. Die App lädt jetzt den neuen Stand.`;
+  const notes = [];
+  if (library.length) notes.push(canRemember() ? 'Deine gemerkten Dateien kannst du danach gleich wieder laden.' : 'Danach wählst du deine Dateien kurz neu.');
+  if (rankOpen()) notes.push('Im Ranking lädst du deine Medien danach kurz neu.');
+  return { title, text, notes };
 }
 /** Fenster „Geräte abgleichen“ in verschiedenen Schritten. */
 function openSyncDlg(mode, ctx = {}) {
@@ -13136,7 +13616,8 @@ function openSyncDlg(mode, ctx = {}) {
     ul.append(line('In der Cloud', ctx.remote), line('Auf diesem Gerät', ctx.local));
     body.push(ul);
     note('Beim Zusammenführen kommen die gespielten Tage von beiden zusammen. Gibt es einen Tag doppelt, zählt der mit mehr Fortschritt. '
-      + 'Bei Münzen, Zählern und Rekorden gilt jeweils der höhere Stand, Abzeichen und Käufe kommen von beiden.');
+      + 'Bei Münzen, Zählern und Rekorden gilt jeweils der höhere Stand, Abzeichen und Käufe kommen von beiden. '
+      + 'Deine Rankings von beiden Geräten bleiben in jedem Fall erhalten.');
     const err = note('', 'sync-err');
     err.hidden = true;
     acts.append(syncBtn('Zusammenführen', 'primary', () => doChoose('merge', err)),
@@ -13164,12 +13645,10 @@ function openSyncDlg(mode, ctx = {}) {
     });
     acts.append(syncBtn('Fertig', 'primary', () => closeModal()), cp);
   } else if (mode === 'reload') {
-    syncTitle.textContent = ctx.merged ? 'Stände werden zusammengeführt' : ctx.linked ? 'Verbunden' : `Neuer Stand ${fromName(ctx.from)}`;
-    sub(ctx.merged
-      ? (ctx.linked ? 'Die App führt die beiden Spielstände jetzt zusammen und lädt neu.' : 'Beide Geräte hatten ohne Abgleich gespielt. Die App führt die Stände jetzt zusammen und lädt neu.')
-      : ctx.linked ? `Die App lädt jetzt den Spielstand ${fromName(ctx.from)}.`
-      : `${fromName(ctx.from) === 'vom Handy' ? 'Am Handy' : fromName(ctx.from) === 'vom PC' ? 'Am PC' : 'Am anderen Gerät'} wurde inzwischen weitergespielt${ctx.at ? ` (${syncWhen(ctx.at)})` : ''}. Die App lädt jetzt den neuen Stand.`);
-    if (library.length) note(canRemember() ? 'Deine gemerkten Dateien kannst du danach gleich wieder laden.' : 'Danach wählst du deine Dateien kurz neu.');
+    const t = reloadText(ctx);
+    syncTitle.textContent = t.title;
+    sub(t.text);
+    for (const n of t.notes) note(n);
     acts.append(syncBtn('Laden', 'primary', () => location.reload()));
   } else if (mode === 'offline') {
     syncTitle.textContent = 'Gerade kein Abgleich';
@@ -13185,6 +13664,11 @@ function openSyncDlg(mode, ctx = {}) {
     sub(`Sicherung vom ${new Date(d.at).toLocaleDateString('de-DE')}, ${new Date(d.at).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}. `
       + `Sie ersetzt deinen jetzigen Spielstand auf diesem Gerät${ShuffleSync.on() ? ' und danach auch auf deinen anderen Geräten' : ''}.`);
     acts.append(syncBtn('Laden', 'primary', () => doRestore(d)), syncBtn('Abbrechen', '', () => closeModal()));
+  } else if (mode === 'update') {
+    syncTitle.textContent = 'Neue Version da';
+    sub(`Auf GitHub liegt Version ${ctx.v}, hier läuft noch Version ${APP_VER}. Dein Spielstand bleibt, wie er ist.`);
+    if (library.length) note(canRemember() ? 'Deine gemerkten Dateien kannst du danach gleich wieder laden.' : 'Danach wählst du deine Dateien kurz neu.');
+    acts.append(syncBtn('Jetzt laden', 'primary', () => updGo(ctx.v)), syncBtn('Später', '', () => closeModal()));
   }
   syncBody.replaceChildren(...body, acts);
   openModal(syncDlg);
@@ -13243,6 +13727,387 @@ function syncGate(opts) {
     else openSyncDlg('offline', { err: r && r.err, opts });
   });
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Sammelalbum (Spiel-Teil) und Überleben
+   ═══════════════════════════════════════════════════════════════════════
+   Album: Läuft ein Medium ganz durch (im Spiel oder im Überleben), gibt es seine Karte. Die Seltenheit kommt aus den
+   Rankings (siehe Ranking-Teil), ohne fertiges Ranking ist sie „?“. Gespeichert im abgeglichenen Speicher x.
+   Überleben: eigenes Spiel nebenher. 3 Leben, jede Stufe 5 Medien, Stufe 1 je 10 s, jede Stufe 5 s mehr (höchstens
+   2 min). Überspringen, „Nicht mehr zeigen“ und Pause kosten ein Leben, der Joker (einmal je Lauf) nicht. Alle 5 Stufen
+   ein Rettungspunkt (+1 Leben). Zählt nicht fürs Tagesziel, keine Strafen. Münzen nur für die ersten 3 Läufe am Tag. */
+const RAR_NAME = ['?', 'normal', 'selten', 'episch', 'legendär'];
+/** Karte gutschreiben. Ergebnis: { msg } für einen Hinweis bei seltenen neuen oder aufgewerteten Karten. */
+function albumGot(item) {
+  if (!item || !item.key) return null;
+  let r = 0;
+  try { r = window.ShuffleRank && window.ShuffleRank.rarityOf ? window.ShuffleRank.rarityOf(item.key) : 0; } catch (_) { r = 0; }
+  const x = ShuffleSync.xGet(), c = x.al[item.key];
+  let msg = '';
+  if (!c) {
+    x.al[item.key] = [r, dayKey(), 1, 0];
+    if (r >= 2) msg = `🃏 Neue Karte, ${RAR_NAME[r]}: ${shortName(item.name)}`;
+  } else {
+    c[2] += 1;
+    if (r > c[0]) { msg = c[0] ? `🃏 Karte aufgewertet: jetzt ${RAR_NAME[r]}` : `🃏 Karte aufgedeckt: ${RAR_NAME[r]}`; c[0] = r; }
+  }
+  ShuffleSync.xSet(x);
+  return { msg, r, neu: !c };
+}
+/* Für den Ranking-Teil (Album, Rang-Raten): Münzen, Spieltag, geladene Dateien. */
+window.ShuffleGame = {
+  addCoins: n => addCoins(n, { quiet: true }),
+  dayKey: () => dayKey(),
+  fileOf(k) { const it = library.find(i => i.key === k && !i.broken); return it ? { file: it.file, video: it.kind === 'video', name: it.name } : null; },
+};
+$('introAlbum').addEventListener('click', () => {
+  if (state.started || !window.ShuffleRank) return;
+  closePanel(); closeSheet();
+  window.ShuffleRank.open('album');
+});
+
+const SV_LIVES = 3, SV_STEP = 5, SV_MAXDUR = 120, SV_FREE = 3, SV_LVL_COINS = 5, SV_REC_COINS = 25, SV_SAVE = 5;
+const SV_BASE = Number.isFinite(TEST.svBase) ? TEST.svBase : 10, SV_INC = Number.isFinite(TEST.svInc) ? TEST.svInc : 5;
+const svDur = l => Math.min(SV_MAXDUR, SV_BASE + SV_INC * (l - 1));
+const svSec = v => String(Math.round(v * 10) / 10).replace('.', ',');   // 10 → „10“, 0,35 → „0,4“
+const svEl = $('sv'), svImg = $('svImg'), svVid = $('svVid'), svStage = $('svStage'), svHearts = $('svHearts'), svLvl = $('svLvl'),
+      svStepEl = $('svStep'), svBar = $('svBar'), svTime = $('svTime'), svPanel = $('svPanel'), svMsg = $('svMsg'),
+      svJokerBtn = $('svJoker'), svPauseBtn = $('svPause'), svSkipBtn = $('svSkip'), svSnd = $('svSnd'), svQuit = $('svQuit');
+const SV = { open: false, run: false, lives: 0, level: 1, step: 0, done: 0, joker: true, item: null, D: 0, t0: 0, acc: 0, ready: false,
+             paused: false, bag: [], last: null, bad: new Set(), secs: 0, raf: 0, tok: 0, muted: false, lock: null };
+let svMsgT = 0;
+const svBtn = (label, cls, fn) => { const b = mk('button', `pill${cls ? ` ${cls}` : ''}`, label); b.type = 'button'; b.addEventListener('click', fn); return b; };
+const svToday = x => (x.sv.day === dayKey() ? x.sv.runs : 0);
+const mmss = s => { const t = Math.max(0, Math.round(s)); return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`; };
+
+function svOpen() {
+  if (state.started || SV.open) return;
+  if (library.filter(usable).length < 2) { toast('Für Überleben brauchst du mindestens zwei Bilder oder Videos.'); return; }
+  if (ShuffleSync.on() && ShuffleSync.isBlocked()) { ShuffleSync.reopen(); return; }
+  closePanel(); closeSheet();
+  SV.open = true;
+  SV.muted = settings.muted;
+  svEl.hidden = false;
+  document.body.classList.add('sv-open');
+  svIntro();
+  if (ShuffleSync.on()) ShuffleSync.check();          // Rekord und Zähler vom anderen Gerät holen
+}
+function svClose() {
+  SV.tok++;
+  SV.run = false; SV.paused = false;
+  svStopMedia();
+  svWake(false);
+  cancelAnimationFrame(SV.raf); SV.raf = 0;
+  SV.open = false;
+  svEl.hidden = true;
+  svPanel.hidden = true;
+  svEl.classList.remove('is-run');
+  document.body.classList.remove('sv-open');
+  renderCoins();
+  if (ShuffleSync.on() && ShuffleSync.isBlocked()) ShuffleSync.reopen();   // kam inzwischen ein neuer Stand?
+}
+function svPanelShow(card, focus) {
+  svPanel.replaceChildren(card);
+  svPanel.hidden = false;
+  if (focus) setTimeout(() => { try { focus.focus({ preventScroll: true }); } catch (_) {} }, 60);
+}
+function svIntro() {
+  svStopMedia();
+  svEl.classList.remove('is-run');
+  const x = ShuffleSync.xGet(), left = Math.max(0, SV_FREE - svToday(x));
+  const card = mk('div', 'sv-card');
+  card.append(mk('p', 'sv-kick', 'Eigenes Spiel · zählt nicht fürs Tagesziel'), mk('h2', '', 'Überleben'));
+  const ul = mk('ul', 'sv-rules');
+  for (const t of [`${SV_LIVES} Leben. Überspringen, „Nicht mehr zeigen“ und Pause kosten je eins.`,
+                   `Jede Stufe hat ${SV_STEP} Medien. Auf Stufe 1 läuft jedes ${svSec(svDur(1))} s, jede Stufe ${svSec(SV_INC)} s länger.`,
+                   'Einmal je Lauf: Joker, überspringen ohne ein Leben zu verlieren.',
+                   `Alle ${SV_SAVE} Stufen ein Rettungspunkt: ein Leben zurück.`,
+                   'Was ganz durchläuft, kommt als Karte ins Album.']) ul.append(mk('li', '', t));
+  card.append(ul);
+  card.append(mk('p', 'sv-p', x.sv.best ? `Rekord: Stufe ${x.sv.best} · ${fmtInt(x.sv.bestN)} Medien` : 'Noch kein Rekord.'));
+  card.append(mk('p', 'sv-p', left ? `Münzen gibt es heute noch für ${left === 1 ? 'einen Lauf' : `${left} Läufe`}: ${SV_LVL_COINS} je geschaffte Stufe, ${SV_REC_COINS} für einen neuen Rekord.`
+    : 'Heute gibt es keine Münzen mehr, Rekorde zählen aber.'));
+  const go = svBtn('Los geht’s', 'primary', svStart);
+  const row = mk('div', 'sv-btns');
+  row.append(go, svBtn('Zurück', '', svClose));
+  card.append(row);
+  svPanelShow(card, go);
+}
+function svStart() {
+  Object.assign(SV, { run: true, lives: SV_LIVES, level: 1, step: 0, done: 0, joker: true, paused: false, secs: 0, bag: [], last: null, item: null });
+  svPanel.hidden = true;
+  svEl.classList.add('is-run');
+  svWake(true);
+  svNext();
+}
+function svPick() {
+  const ok = it => usable(it) && !SV.bad.has(it.id);
+  SV.bag = SV.bag.filter(id => { const it = byId.get(id); return it && ok(it); });
+  if (!SV.bag.length) SV.bag = shuffled(library.filter(ok).map(it => it.id));
+  if (!SV.bag.length) return null;
+  const last = SV.bag.length - 1;
+  if (last > 0 && SV.bag[last] === SV.last) { const j = Math.floor(Math.random() * last); [SV.bag[j], SV.bag[last]] = [SV.bag[last], SV.bag[j]]; }
+  const it = byId.get(SV.bag.pop());
+  SV.last = it.id;
+  return it;
+}
+function svStopMedia() {
+  try { svVid.pause(); } catch (_) {}
+  svVid.onplaying = svVid.onerror = svVid.onloadedmetadata = null;
+  if (svVid.getAttribute('src')) { svVid.removeAttribute('src'); try { svVid.load(); } catch (_) {} }
+  svImg.onload = svImg.onerror = null;
+  svImg.removeAttribute('src');
+  svImg.hidden = svVid.hidden = true;
+}
+function svNext() {
+  const tok = ++SV.tok;
+  const it = svPick();
+  if (!it) { svOver('empty'); return; }
+  Object.assign(SV, { item: it, D: svDur(SV.level), acc: 0, t0: 0, ready: false });
+  svHud();
+  const ready = () => { if (tok !== SV.tok || SV.ready) return; SV.ready = true; SV.t0 = performance.now(); };
+  const fail = () => { if (tok !== SV.tok) return; SV.bad.add(it.id); svNext(); };     // lädt nicht: ohne Strafe weiter
+  if (it.kind === 'image') {
+    try { svVid.pause(); } catch (_) {}
+    svVid.onplaying = svVid.onerror = svVid.onloadedmetadata = null;
+    svVid.hidden = true;
+    svImg.onload = ready; svImg.onerror = fail;
+    svImg.src = it.url;
+    svImg.hidden = false;
+    if (svImg.complete && svImg.naturalWidth) ready();
+  } else {
+    svImg.onload = svImg.onerror = null;
+    svImg.hidden = true;
+    svVid.onerror = fail;
+    svVid.onplaying = ready;
+    svVid.onloadedmetadata = () => {                 // lange Videos: ab einer zufälligen Stelle, kurze laufen in Schleife
+      if (tok !== SV.tok) return;
+      const d = svVid.duration;
+      if (Number.isFinite(d) && d > SV.D + 1) { try { svVid.currentTime = Math.random() * (d - SV.D); } catch (_) {} }
+    };
+    svVid.loop = true;
+    svVid.muted = SV.muted;
+    svVid.volume = Math.min(1, settings.volume * settings.volume);
+    svVid.src = it.url;
+    svVid.hidden = false;
+    const pr = svVid.play();
+    if (pr && pr.catch) pr.catch(() => { if (tok === SV.tok && !svVid.muted) { svVid.muted = true; svVid.play().catch(() => {}); } });
+  }
+  svEl.classList.remove('swap'); void svEl.offsetWidth; svEl.classList.add('swap');
+  if (!SV.raf) SV.raf = requestAnimationFrame(svTick);
+}
+const svElapsed = () => (SV.ready ? SV.acc + (SV.paused ? 0 : (performance.now() - SV.t0) / 1000) : SV.acc);
+function svTick() {
+  SV.raf = 0;
+  if (!SV.open || !SV.run) return;
+  SV.raf = requestAnimationFrame(svTick);
+  const el = svElapsed(), rest = Math.max(0, SV.D - el);
+  svBar.style.transform = `scaleX(${(rest / SV.D).toFixed(4)})`;
+  svBar.parentElement.classList.toggle('low', rest <= 3 && SV.D > 6);
+  svTime.textContent = `${Math.ceil(rest)} s`;
+  if (SV.ready && !SV.paused && el >= SV.D) svDone();
+}
+function svHud() {
+  const hearts = [];
+  for (let i = 0; i < SV_LIVES; i++) { const h = useIcon(i < SV.lives ? 'i-heart-fill' : 'i-heart'); if (i >= SV.lives) h.classList.add('off'); hearts.push(h); }
+  svHearts.replaceChildren(...hearts);
+  svHearts.setAttribute('aria-label', `${SV.lives} von ${SV_LIVES} Leben`);
+  svLvl.textContent = `Stufe ${SV.level}`;
+  svStepEl.textContent = `Medium ${SV.step + 1} von ${SV_STEP} · ${svSec(svDur(SV.level))} s`;
+  svJokerBtn.disabled = !SV.joker;
+  svSnd.replaceChildren(useIcon(SV.muted ? 'i-mute' : 'i-vol'));
+  svSnd.setAttribute('aria-label', SV.muted ? 'Ton an' : 'Ton aus');
+}
+function svFlash(msg, ms = 1900) {
+  svMsg.textContent = msg;
+  svMsg.classList.add('on');
+  clearTimeout(svMsgT);
+  svMsgT = setTimeout(() => svMsg.classList.remove('on'), ms);
+}
+function svDone() {
+  const it = SV.item;
+  SV.secs += SV.D;
+  SV.done++;
+  SV.step++;
+  const g = albumGot(it);
+  const lines = [];
+  if (SV.step >= SV_STEP) {
+    SV.level++;
+    SV.step = 0;
+    lines.push(`Stufe ${SV.level} · ${svSec(svDur(SV.level))} s je Medium`);
+    if ((SV.level - 1) % SV_SAVE === 0) lines.push(SV.lives < SV_LIVES ? (SV.lives++, 'Rettungspunkt: ein Leben zurück ❤') : 'Rettungspunkt (Leben schon voll)');
+    vibrate([18, 40, 18]);
+  }
+  if (g && g.msg) lines.push(g.msg);
+  if (lines.length) svFlash(lines.join('\n'), 2200);
+  svNext();
+}
+/** Ein Leben weg. true = vorbei. */
+function svLose(why) {
+  SV.lives = Math.max(0, SV.lives - 1);
+  svHud();
+  vibrate([30, 50, 30]);
+  svEl.classList.remove('hit'); void svEl.offsetWidth; svEl.classList.add('hit');
+  if (SV.lives <= 0) { svOver(why); return true; }
+  return false;
+}
+const svBusy = () => !SV.run || SV.paused || !svPanel.hidden;
+function svSkip() {
+  if (svBusy()) return;
+  if (!svLose('skip')) { svFlash(`−1 Leben · noch ${SV.lives}`); svNext(); }
+}
+function svExclude() {
+  if (svBusy() || !SV.item) return;
+  const it = SV.item;
+  excluded.add(it.key);
+  favs.delete(it.key);
+  saveLists();
+  renderExcluded();
+  updateLibraryUI();
+  if (!svLose('skip')) { svFlash(`„${shortName(it.name)}“ wird nicht mehr gezeigt\n−1 Leben · noch ${SV.lives}`); svNext(); }
+}
+function svUseJoker() {
+  if (svBusy() || !SV.joker) return;
+  SV.joker = false;
+  svFlash('🃏 Joker: übersprungen, kein Leben weg');
+  svNext();
+}
+function svHold(on) {
+  if (on && !SV.paused) {
+    if (SV.ready) SV.acc += (performance.now() - SV.t0) / 1000;
+    SV.paused = true;
+    try { svVid.pause(); } catch (_) {}
+  } else if (!on && SV.paused) {
+    SV.paused = false;
+    SV.t0 = performance.now();
+    if (SV.item && SV.item.kind === 'video') svVid.play().catch(() => {});
+  }
+}
+function svPausePanel(text) {
+  const card = mk('div', 'sv-card');
+  card.append(mk('p', 'sv-kick', `Stufe ${SV.level} · ${SV.lives} ${SV.lives === 1 ? 'Leben' : 'Leben'} übrig`), mk('h2', '', 'Pause'), mk('p', 'sv-p', text));
+  const go = svBtn('Weiter', 'primary', svResume);
+  const row = mk('div', 'sv-btns');
+  row.append(go, svBtn('Lauf beenden', '', () => svOver('quit')));
+  card.append(row);
+  svPanelShow(card, go);
+}
+function svTogglePause() {
+  if (!SV.run) return;
+  if (SV.paused) { svResume(); return; }
+  if (!svPanel.hidden) return;
+  if (svLose('pause')) return;
+  svHold(true);
+  svPausePanel(`Die Pause hat ein Leben gekostet, noch ${SV.lives}.`);
+}
+function svResume() {
+  if (!SV.run) return;
+  svPanel.hidden = true;
+  svHold(false);
+}
+function svAskQuit() {
+  if (!SV.run) { svClose(); return; }
+  if (!svPanel.hidden) { svResume(); return; }
+  svHold(true);
+  const card = mk('div', 'sv-card');
+  card.append(mk('h2', '', 'Lauf beenden?'), mk('p', 'sv-p', `Du bist auf Stufe ${SV.level}. Der Lauf zählt dann so, wie er gerade steht.`));
+  const go = svBtn('Weiterspielen', 'primary', svResume);
+  const row = mk('div', 'sv-btns');
+  row.append(go, svBtn('Beenden', '', () => svOver('quit')));
+  card.append(row);
+  svPanelShow(card, go);
+}
+function svOver(why) {
+  if (!SV.run) return;
+  SV.run = false;
+  SV.tok++;
+  SV.paused = false;
+  svStopMedia();
+  svWake(false);
+  clearTimeout(svMsgT); svMsg.classList.remove('on');
+  const x = ShuffleSync.xGet(), today = dayKey();
+  const runs = svToday(x) + 1;
+  const rec = SV.level > x.sv.best || (SV.level === x.sv.best && SV.done > x.sv.bestN);
+  if (SV.level > x.sv.best) { x.sv.best = SV.level; x.sv.bestN = SV.done; } else if (SV.level === x.sv.best) x.sv.bestN = Math.max(x.sv.bestN, SV.done);
+  x.sv.day = today;
+  x.sv.runs = runs;
+  ShuffleSync.xSet(x);
+  const want = SV_LVL_COINS * (SV.level - 1) + (rec && SV.level > 1 ? SV_REC_COINS : 0);
+  const coins = runs <= SV_FREE && want > 0 ? addCoins(want, { quiet: true }) : 0;
+  const card = mk('div', 'sv-card');
+  card.append(mk('p', 'sv-kick', why === 'quit' ? 'Lauf beendet' : why === 'empty' ? 'Keine Medien mehr' : 'Keine Leben mehr'),
+              mk('h2', '', `Stufe ${SV.level}`),
+              mk('p', 'sv-p', `${fmtInt(SV.done)} ${SV.done === 1 ? 'Medium' : 'Medien'} geschafft · ${mmss(SV.secs)} min`));
+  card.append(mk('p', `sv-p${rec && SV.level > 1 ? ' gold' : ''}`, rec && SV.level > 1 ? '🏆 Neuer Rekord!' : `Rekord: Stufe ${x.sv.best} · ${fmtInt(x.sv.bestN)} Medien`));
+  card.append(mk('p', 'sv-p', coins ? `+${fmtInt(coins)} Münzen` : runs > SV_FREE ? `Heute keine Münzen mehr (${SV_FREE} Läufe gespielt).` : 'Münzen gibt es ab Stufe 2.'));
+  const again = svBtn('Nochmal', 'primary', svStart);
+  const row = mk('div', 'sv-btns');
+  row.append(again, svBtn('Zurück', '', svClose));
+  card.append(row);
+  svEl.classList.remove('is-run');
+  svPanelShow(card, again);
+}
+async function svWake(on) {
+  if (!on) { const l = SV.lock; SV.lock = null; if (l) l.release().catch(() => {}); return; }
+  if (!('wakeLock' in navigator) || SV.lock || document.hidden) return;
+  try { SV.lock = await navigator.wakeLock.request('screen'); if (!SV.run) svWake(false); } catch (_) { /* nicht erlaubt */ }
+}
+function svToggleSound() {
+  SV.muted = !SV.muted;
+  svVid.muted = SV.muted;
+  if (!SV.muted && SV.item && SV.item.kind === 'video' && !SV.paused) svVid.play().catch(() => {});
+  svHud();
+}
+$('btnSurvive').addEventListener('click', svOpen);
+svSkipBtn.addEventListener('click', svSkip);
+svJokerBtn.addEventListener('click', svUseJoker);
+svPauseBtn.addEventListener('click', svTogglePause);
+svSnd.addEventListener('click', svToggleSound);
+svQuit.addEventListener('click', svAskQuit);
+let svPt = null;
+svStage.addEventListener('pointerdown', e => { if (!svBusy()) svPt = { x: e.clientX, y: e.clientY, id: e.pointerId }; });
+svStage.addEventListener('pointerup', e => {
+  const pt = svPt;
+  svPt = null;
+  if (!pt || pt.id !== e.pointerId) return;
+  const dx = e.clientX - pt.x, dy = e.clientY - pt.y;
+  if (Math.max(Math.abs(dx), Math.abs(dy)) < 60) return;
+  if (Math.abs(dx) > Math.abs(dy)) { if (dx < 0) svSkip(); else svExclude(); }
+  else if (dy < 0) svUseJoker();
+});
+svStage.addEventListener('pointercancel', () => { svPt = null; });
+window.addEventListener('keydown', e => {
+  if (!SV.open) return;
+  e.stopImmediatePropagation();                    // das Spiel darunter hört nicht mit
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  const k = e.key;
+  if (!SV.run) { if (k === 'Escape') { e.preventDefault(); svClose(); } return; }
+  if (!svPanel.hidden) {
+    if (k === 'Escape' || (k === ' ' && !(e.target && e.target.closest && e.target.closest('button')))) { e.preventDefault(); svResume(); }
+    return;
+  }
+  switch (k) {
+    case 'ArrowRight': case 'n': case 'N': svSkip(); break;
+    case 'Delete': case 'Backspace': svExclude(); break;
+    case 'ArrowUp': case 'j': case 'J': svUseJoker(); break;
+    case ' ': case 'p': case 'P': svTogglePause(); break;
+    case 'm': case 'M': svToggleSound(); break;
+    case 'Escape': svAskQuit(); break;
+    default: return;
+  }
+  e.preventDefault();
+}, true);
+document.addEventListener('visibilitychange', () => {
+  if (!SV.open || !SV.run) return;
+  if (document.hidden) {
+    if (!SV.paused && svPanel.hidden) {
+      svHold(true);
+      SV.acc = 0;                                  // nicht weiter gezählt: das Medium fängt von vorn an
+      svPausePanel('Unterbrochen. Das Medium fängt von vorn an, ein Leben kostet das nicht.');
+    }
+    svWake(false);
+  } else svWake(true);
+});
 
 /* ── Sicherung als Datei ── */
 function backupData() {
@@ -13309,13 +14174,108 @@ ShuffleSync.bind({
   status: renderSync,
   note: n => {
     if (n.kind === 'merged') toast('☁ Beide Geräte hatten ohne Abgleich gespielt. Die Stände sind jetzt zusammengeführt.', 6500);
+    else if (n.kind === 'rkmerged') toast('☁ Auf beiden Geräten wurde gerankt. Die Rankings sind jetzt zusammengeführt.', 6000);
     else if (n.kind === 'adopt') toast(`☁ Stand ${fromName(n.from)} übernommen${n.at ? ` (${syncWhen(n.at)})` : ''}.`, 5000);
   },
   reload: info => {
-    if (!state.started && !library.length && !modalOpen) { location.reload(); return; }
+    if (document.body.classList.contains('sv-open')) return;   // Überleben läuft: danach (svClose fragt nach)
+    if (!state.started && !library.length && !modalOpen && !rankOpen()) { location.reload(); return; }
+    if (rankOpen() && window.ShuffleRank.ask) {        // das Ranking liegt über allem: dort fragen
+      const t = reloadText(info);
+      window.ShuffleRank.ask({ title: t.title, text: [t.text, ...t.notes].join(' '), buttons: [{ label: 'Laden', kind: 'primary', act: 'ok' }] })
+        .then(() => location.reload());
+      return;
+    }
     openSyncDlg('reload', info);
   },
 });
+
+/* ── Neue Version (GitHub Pages) ──
+   Läuft die App über eine Internetadresse, schaut sie beim Start und danach höchstens alle 10 Minuten nach, ob dort
+   eine neuere Datei liegt. Gelesen wird nur der Anfang (die Versionsnummer steht ganz oben). Gibt es eine neuere und
+   gerade läuft nichts, fragt sie, ob sie sie laden soll. Die Adresse bekommt dabei einen frischen Zusatz (?v=…),
+   damit kein alter Zwischenspeicher dazwischenfunkt. Spielstand und Einstellungen bleiben, die Seite ist dieselbe. */
+const APP_VER = Number((document.querySelector('meta[name="shuffle-version"]') || {}).content) || 0;
+const UPD_WEB = /^https?:$/.test(location.protocol);
+const UPD_KEY = 'shuffle-upd';            // sessionStorage: diese Version sollte gerade geladen werden
+const UPD_EVERY = 10 * 60e3;
+let updLast = 0, updSeen = 0, updWant = 0, updBusy = false, updTimer = 0;
+const updFind = t => { const m = /<meta name="shuffle-version" content="(\d+)"/.exec(t); return m ? Number(m[1]) : 0; };
+async function updRemote() {
+  const ctl = typeof AbortController === 'function' ? new AbortController() : null;
+  const timer = ctl ? setTimeout(() => ctl.abort(), 15000) : 0;
+  try {
+    const res = await fetch(`${location.pathname}?vc=${Date.now().toString(36)}`, { cache: 'no-store', signal: ctl ? ctl.signal : undefined });
+    if (!res.ok) return 0;
+    if (!res.body || typeof res.body.getReader !== 'function') return updFind(await res.text());
+    const rd = res.body.getReader(), dec = new TextDecoder();
+    let txt = '';
+    try {
+      while (txt.length < 300000) {
+        const { done, value } = await rd.read();
+        if (done) break;
+        txt += dec.decode(value, { stream: true });
+        const v = updFind(txt);
+        if (v) return v;
+      }
+    } finally { rd.cancel().catch(() => {}); }
+    return updFind(txt);
+  } finally { clearTimeout(timer); }
+}
+/** Nachsehen. manual = aus den Einstellungen. Ergebnis: Version dort (0 = nicht erreichbar, -1 = läuft schon). */
+async function updCheck(manual) {
+  if (!UPD_WEB || !APP_VER) return 0;
+  if (updBusy) return -1;
+  updBusy = true;
+  updLast = Date.now();
+  let v = 0;
+  try { v = await updRemote(); } catch (_) { v = 0; } finally { updBusy = false; }
+  if (v > APP_VER) { updWant = Math.max(updWant, v); updOffer(manual); }
+  return v;
+}
+const updSafe = () => !state.started && !modalOpen && !sheetOpen && !document.hidden && !rankOpen();
+/** Fragen, sobald gerade nichts läuft (nicht mitten im Spiel, im Ranking oder in einem anderen Fenster). */
+function updOffer(manual) {
+  clearTimeout(updTimer); updTimer = 0;
+  if (!updWant || (!manual && updSeen >= updWant)) return;
+  if (!manual && !updSafe()) { updTimer = setTimeout(() => updOffer(false), 4000); return; }
+  updSeen = updWant;
+  openSyncDlg('update', { v: updWant });
+}
+function updGo(v) {
+  try { sessionStorage.setItem(UPD_KEY, String(v)); } catch (_) { /* egal */ }
+  try { saveProgress(true); } catch (_) { /* egal */ }
+  location.replace(`${location.pathname}?v=${v}.${Date.now().toString(36)}`);
+}
+function updBoot() {
+  let want = 0;
+  try { want = Number(sessionStorage.getItem(UPD_KEY)) || 0; sessionStorage.removeItem(UPD_KEY); } catch (_) { want = 0; }
+  if (want && APP_VER >= want) setTimeout(() => toast(`Shuffle ist jetzt auf Version ${APP_VER}.`, 4500), 1200);
+  else if (want) {                            // Neuladen hat noch die alte Datei gebracht: nicht gleich wieder fragen
+    updSeen = want;
+    setTimeout(() => toast('Die neue Version kam noch nicht an. Versuch es in ein paar Minuten noch einmal (Einstellungen → Version).', 7000), 1200);
+  }
+  if (!UPD_WEB || !APP_VER) return;
+  setTimeout(() => updCheck(false), 2500);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && Date.now() - updLast > UPD_EVERY) updCheck(false); });
+  setInterval(() => { if (!document.hidden && Date.now() - updLast > UPD_EVERY) updCheck(false); }, 60000);
+}
+{
+  const updBtn = $('updCheck');
+  $('updVer').textContent = APP_VER ? String(APP_VER) : '';
+  $('updNote').textContent = UPD_WEB
+    ? 'Die App schaut beim Öffnen selbst nach, ob auf GitHub eine neue Version liegt, und fragt dann, ob sie sie laden soll. Dein Spielstand bleibt dabei.'
+    : 'Diese App läuft aus einer Datei auf diesem Gerät. Eine neue Version bekommst du hier, indem du die Datei ersetzt. Über deinen GitHub-Link aktualisiert sie sich von selbst.';
+  $('updRow').hidden = !UPD_WEB;
+  updBtn.addEventListener('click', async () => {
+    if (updBtn.disabled) return;
+    updBtn.disabled = true;
+    const v = await updCheck(true);
+    updBtn.disabled = false;
+    if (v > APP_VER) return;                  // Fenster „Neue Version da“ ist offen
+    toast(v === -1 ? 'Wird gerade schon geprüft …' : v ? 'Du hast schon die neueste Version.' : 'GitHub ist gerade nicht erreichbar. Versuch es gleich noch einmal.', 4200);
+  });
+}
 
 /* ═══════════════════════════════════════════════════════════════════════
    11 · Start
@@ -13363,6 +14323,7 @@ if (awayNote && modalOpen !== dayEl) toast(awayNote, 6000);
   const got = checkBadges({ quiet: true });   // was der bisherige Verlauf schon erfüllt
   if (got.length) { if (firstRun) bootBadges = got; else badgeQueue.push(...got); flushBadges(); }
 }
+updBoot();                          // neue Version auf GitHub?
 
 };
 ShuffleSync.boot(__shuffleMain);
@@ -13430,15 +14391,29 @@ const KEY = 'shuffle-rank/v1';
 const SORTS = ['best', 'worst', 'name', 'new'];
 const OPS = new Set(['x', '+', 'i']);
 function blank() { return { v: 1, tags: [], ts: 1, rec: [], fs: [], fq: 1, last: 0, ui: { mode: 'list', sort: 'best', hint: 0, fh: 0 } }; }
+/* Feste Kennung je Ordner und Tag für den Abgleich mit anderen Geräten (die Nummern i gelten nur auf diesem Gerät).
+   Fehlt sie, ist sie aus Gerät und Nummer abgeleitet, genau wie im Abgleich. */
+const SYNC = typeof ShuffleSync !== 'undefined' ? ShuffleSync : null;   // Abgleich (eigenes Skript weiter oben)
+const UID = (kind, i) => (SYNC && SYNC.rankUid ? SYNC.rankUid(kind, i) : `x-${kind}${i}`);
+const UID_OK = /^[\w-]{3,80}$/;
+let uidFixed = false;
+function uidPick(u, kind, i, used) {
+  let v = typeof u === 'string' && UID_OK.test(u) && !used.has(u) ? u : UID(kind, i);
+  for (let k = 2; used.has(v); k++) v = `${UID(kind, i)}-${k}`;
+  if (v !== u) uidFixed = true;
+  used.add(v);
+  return v;
+}
+const newUid = (kind, i) => uidPick('', kind, i, new Set([...D.tags, ...D.fs].map(x => x.uid)));
 function clean(raw) {
   const b = blank();
   if (!raw || typeof raw !== 'object') return b;
-  const tids = new Set();
+  const tids = new Set(), uids = new Set();
   for (const t of Array.isArray(raw.tags) ? raw.tags : []) {
     const i = int(t && t.i), n = t && typeof t.n === 'string' ? t.n.replace(/\s+/g, ' ').trim().slice(0, 40) : '';
     if (i <= 0 || !n || tids.has(i)) continue;
     tids.add(i);
-    b.tags.push({ i, n, c: ((int(t.c) % PAL.length) + PAL.length) % PAL.length, p: t.p ? 1 : 0, g: Math.min(99, Math.max(0, int(t.g))) });
+    b.tags.push({ i, uid: uidPick(t.uid, 't', i, uids), n, c: ((int(t.c) % PAL.length) + PAL.length) % PAL.length, p: t.p ? 1 : 0, g: Math.min(99, Math.max(0, int(t.g))) });
   }
   b.ts = Math.max(1, int(raw.ts), ...b.tags.map(t => t.i + 1));
   b.rec = [...new Set((Array.isArray(raw.rec) ? raw.rec : []).map(int))].filter(i => tids.has(i)).slice(0, 12);
@@ -13467,7 +14442,7 @@ function clean(raw) {
       };
     }
     b.fs.push({
-      i, n: typeof f.n === 'string' && f.n.trim() ? f.n.trim().slice(0, 60) : `Ranking ${i}`, c: int(f.c), u: int(f.u),
+      i, uid: uidPick(f.uid, 'f', i, uids), n: typeof f.n === 'string' && f.n.trim() ? f.n.trim().slice(0, 60) : `Ranking ${i}`, c: int(f.c), u: int(f.u),
       ni: Math.max(1, int(f.ni), ...it.map(x => x.i + 1)), it, r,
     });
   }
@@ -13479,6 +14454,7 @@ function clean(raw) {
 }
 let D = (() => { try { return clean(JSON.parse(localStorage.getItem(KEY) || 'null')); } catch (_) { return blank(); } })();
 let saveT = 0, dirty = false, quotaWarned = false;
+if (uidFixed && localStorage.getItem(KEY)) { dirty = true; setTimeout(flush, 0); }   // Kennungen gleich mit speichern
 function save(now) { dirty = true; clearTimeout(saveT); if (now) flush(); else saveT = setTimeout(flush, 250); }
 function flush() {
   clearTimeout(saveT);
@@ -13953,6 +14929,7 @@ function thumbsGc() {
   setTimeout(async () => {
     const used = new Set();
     for (const f of D.fs) for (const it of f.it) used.add(it.k);
+    try { if (SYNC) for (const k of Object.keys(SYNC.xGet().al)) used.add(k); } catch (_) { /* egal */ }   // Albumkarten behalten ihr Bild
     try {
       const keys = await thTx('readonly', st => st.getAllKeys());
       const drop = (keys || []).filter(k => !used.has(k));
@@ -14159,7 +15136,8 @@ function createTag(name, g = 0) {
   for (const t of D.tags) use[t.c]++;
   let c = 0;
   for (let i = 1; i < PAL.length; i++) if (use[i] < use[c]) c = i;   // die bisher seltenste Farbe
-  const t = { i: D.ts++, n: name, c, p: 0, g: Math.max(0, g | 0) };
+  const t = { i: D.ts++, uid: '', n: name, c, p: 0, g: Math.max(0, g | 0) };
+  t.uid = newUid('t', t.i);
   D.tags.push(t);
   retag(); bump(); save();
   return t;
@@ -14212,7 +15190,7 @@ function chipEl(t, cls) {
 }
 
 /* ═══════════ Navigation (mit Zurück-Taste des Handys) ═══════════ */
-const VIEWS = { home: $('rkHome'), folder: $('rkFolder'), duel: $('rkDuel'), view: $('rkView'), pro: $('rkPro'), tags: $('rkTags') };
+const VIEWS = { home: $('rkHome'), folder: $('rkFolder'), duel: $('rkDuel'), view: $('rkView'), pro: $('rkPro'), tags: $('rkTags'), album: $('rkAlbum'), guess: $('rkGuess') };
 const stack = [];
 const SID = Math.random().toString(36).slice(2);
 let hist = true, isOpen = false, waiters = [];
@@ -14264,13 +15242,13 @@ window.addEventListener('popstate', e => {
   const w = waiters; waiters = [];
   for (const f of w) f();
 });
-function open() {
+function open(v) {
   if (isOpen) return;
   isOpen = true;
   stack.length = 0;
   root.hidden = false;
   document.body.classList.add('rk-open');
-  pushView('home');
+  pushView(v === 'album' ? 'album' : 'home');
 }
 function finishClose() {
   isOpen = false;
@@ -14290,6 +15268,8 @@ function enter(v) {
   else if (v === 'view') renderViewer();
   else if (v === 'pro') renderPro();
   else if (v === 'tags') renderTagEd();
+  else if (v === 'album') renderAlbum();
+  else if (v === 'guess') renderGuess();
 }
 /** Gerade offener Ordner (Ordner, Duell oder Ansicht). */
 function curFolder() {
@@ -14416,6 +15396,7 @@ function renderHome() {
     return b;
   }));
   $('rkHomeLead').hidden = fs.length > 0;
+  $('rkSyncFine').hidden = !(SYNC && SYNC.on());
 }
 $('rkFolders').addEventListener('click', e => {
   const b = e.target.closest('[data-f]');
@@ -14433,7 +15414,8 @@ $('rkNew').addEventListener('click', async () => {
       : [{ label: 'Anlegen und Medien wählen', kind: 'primary', act: 'ok' }, { label: 'Abbrechen', act: null }],
   });
   if (r.act !== 'ok' && r.act !== 'dir') return;
-  const f = { i: D.fq++, n: r.value || `Ranking-Ordner ${D.fs.length + 1}`, c: Date.now(), u: Date.now(), ni: 1, it: [], r: null };
+  const f = { i: D.fq++, uid: '', n: r.value || `Ranking-Ordner ${D.fs.length + 1}`, c: Date.now(), u: Date.now(), ni: 1, it: [], r: null };
+  f.uid = newUid('f', f.i);
   D.fs.push(f);
   bump(); save();
   openFolder(f);
@@ -14468,7 +15450,8 @@ $('rkImp').addEventListener('change', async e => {
   if (!nd) { toast('Das ist keine Ranking-Sicherung.', 3200); return; }
   const r = await dialog({
     title: 'Sicherung laden?',
-    text: `Sie enthält ${plural(nd.fs.length, 'Ordner', 'Ordner')} und ${plural(nd.tags.length, 'Tag', 'Tags')} und ersetzt, was gerade hier gespeichert ist.`,
+    text: `Sie enthält ${plural(nd.fs.length, 'Ordner', 'Ordner')} und ${plural(nd.tags.length, 'Tag', 'Tags')} und ersetzt, was gerade hier gespeichert ist`
+      + `${SYNC && SYNC.on() ? ', danach auch auf deinen anderen Geräten' : ''}.`,
     buttons: [{ label: 'Laden und ersetzen', kind: 'primary', act: 'ok' }, { label: 'Abbrechen', act: null }],
   });
   if (r.act !== 'ok') return;
@@ -14562,6 +15545,7 @@ function renderStatus() {
       parts.push(mk('p', '', `${plural(s.order.length, 'Medium hat', 'Medien haben')} einen festen Platz${first ? `. Platz 1: ${first.n}` : ''}.`));
       if (rk && D.ui.sort !== 'best' && D.ui.sort !== 'worst') { const b = btn('pill', 'Beste zuerst zeigen', 'i-trophy'); b.dataset.act = 'best'; parts.push(b); }
     }
+    if (guessReady(f)) { const b = btn('pill', 'Rang-Raten: Welches steht höher?', 'i-star'); b.dataset.act = 'guess'; parts.push(b); }
     loadLine();
   }
   box.replaceChildren(...parts);
@@ -14575,6 +15559,7 @@ $('rkStatus').addEventListener('click', e => {
   else if (act === 'start') { startRanking(f); openDuel(f); }
   else if (act === 'go') openDuel(f);
   else if (act === 'best') { D.ui.sort = 'best'; save(); renderFolder(); renderList(); }
+  else if (act === 'guess') openGuess(f);
 });
 $('rkLoad').addEventListener('click', () => loadMenu(FV.f));
 $('rkLoadDir').addEventListener('click', () => pick(true));
@@ -14601,7 +15586,7 @@ $('rkFMore').addEventListener('click', async () => {
     const a = await dialog({ title: 'Ordner umbenennen', input: { value: f.n, max: 60, label: 'Name' }, enter: 'ok', buttons: [{ label: 'Speichern', kind: 'primary', act: 'ok' }, { label: 'Abbrechen', act: null }] });
     if (a.act === 'ok' && a.value) { f.n = a.value.slice(0, 60); bump(); save(); renderFolder(); }
   } else if (r.act === 'reset') {
-    f.r = null; rt(f).eng = null; bump(); save(); renderFolder(); renderList();
+    f.r = null; f.u = Date.now(); rt(f).eng = null; bump(); save(); renderFolder(); renderList();
     toast('Ranking zurückgesetzt. Die Tags sind geblieben.');
   } else if (r.act === 'del') {
     D.fs = D.fs.filter(x => x !== f);
@@ -15640,7 +16625,14 @@ window.addEventListener('keydown', e => {
   if (typing || e.ctrlKey || e.metaKey || e.altKey || layer) return;
   if ((e.key === 'f' || e.key === 'F') && FS_OK) { e.preventDefault(); toggleFs(); return; }
   let ok = true;
-  if (v === 'duel' && DU.d) {
+  if (v === 'guess') {
+    if (GS.done || !GS.pair) return;
+    switch (e.key) {
+      case 'ArrowLeft': case 'ArrowUp': case '1': guessChoose(0); break;
+      case 'ArrowRight': case 'ArrowDown': case '2': guessChoose(1); break;
+      default: ok = false;
+    }
+  } else if (v === 'duel' && DU.d) {
     switch (e.key) {
       case 'ArrowLeft': case 'ArrowUp': case '1': choose(0); break;
       case 'ArrowRight': case 'ArrowDown': case '2': choose(1); break;
@@ -15687,10 +16679,410 @@ window.addEventListener('drop', async e => {
 });
 
 /* ═══════════ Nach außen ═══════════ */
+/* ═══════════ Seltenheit für Album und Spiel ═══════════
+   Aus jedem fertigen Ranking mit mindestens 10 Medien: Platz in Prozent. Top 5 % legendär, Top 20 % episch,
+   Top 50 % selten, sonst normal (1–4). Steht ein Medium in mehreren Rankings, zählt die beste Platzierung. */
+const RAR = ['?', 'Normal', 'Selten', 'Episch', 'Legendär'];
+const RAR_VAL = [1, 1, 2, 4, 8];             // Münzen je doppelter Karte beim Eintauschen
+const RAR_MIN = 10, PAGE_COINS = 50;
+const GAME = () => window.ShuffleGame || null;
+let rarC = null, rarV = -1;
+function rarities() {
+  if (rarC && rarV === VER) return rarC;
+  const m = new Map();
+  for (const f of D.fs) {
+    const s = eng(f);
+    if (!s || !s.order || s.order.length < RAR_MIN) continue;
+    const rk = ranksOf(f), n = s.order.length;
+    for (const id of s.order) {
+      const it = itemOf(f, id);
+      if (!it) continue;
+      const pl = rk.get(id) || n, pct = (pl - 1) / n;
+      const r = pct < 0.05 ? 4 : pct < 0.2 ? 3 : pct < 0.5 ? 2 : 1;
+      const o = m.get(it.k);
+      if (!o || r > o.r || (r === o.r && pct < o.pct)) m.set(it.k, { r, pct, f: f.n, pl, of: n });
+    }
+  }
+  rarC = m; rarV = VER;
+  return m;
+}
+const rarityOf = k => { const o = rarities().get(k); return o ? o.r : 0; };
+const keyName = k => { const i = k.lastIndexOf('|'); return i > 0 ? k.slice(0, i) : k; };
+const dayDE = d => (d ? `${d.slice(8, 10)}.${d.slice(5, 7)}.${d.slice(0, 4)}` : '');
+function fileForKey(k) {
+  for (const f of D.fs) {
+    const r = RT.get(f.i);
+    if (!r) continue;
+    const it = r.byKey.get(k);
+    if (it && r.files.has(it.i)) return { file: r.files.get(it.i), video: !!it.v };
+  }
+  const g = GAME(), o = g && g.fileOf ? g.fileOf(k) : null;
+  return o ? { file: o.file, video: o.video } : null;
+}
+/** Vorschaubild zu einem Medium (gespeichert oder aus einer gerade geladenen Datei gemacht). */
+function thumbKey(k) {
+  let p = TH.get(k);
+  if (p) return p;
+  if (FAIL.has(k)) return Promise.resolve(null);
+  p = (async () => {
+    let blob = await thGet(k);
+    if (!blob) {
+      const src = fileForKey(k);
+      if (!src) return null;
+      blob = await job(() => makeThumb(src.file, src.video));
+      if (!blob) { FAIL.add(k); return null; }
+      thPut(k, blob);
+    }
+    return URL.createObjectURL(blob);
+  })().catch(() => null);
+  TH.set(k, p);
+  p.then(u => { if (u) THU.set(k, u); else TH.delete(k); });
+  return p;
+}
+
+/* ═══════════ Sammelalbum ═══════════
+   Seiten: jeder Ranking-Ordner (alle seine Medien, fehlende abgedunkelt), dazu „Ohne Ranking“ für Karten, die in
+   keinem Ordner stehen. „Alle“ zeigt jede Karte einmal. Volle Seiten ab 10 Medien geben einmal Münzen. */
+const AL = { page: 'all', io: null };
+const albumX = () => (SYNC ? SYNC.xGet() : { al: {}, alr: [], sv: {}, rg: {} });
+function albumPages(x) {
+  const inFolder = new Set(), pages = [];
+  for (const f of [...D.fs].sort((a, b) => (b.u || b.c) - (a.u || a.c))) {
+    if (!f.it.length) continue;
+    let got = 0;
+    for (const it of f.it) { inFolder.add(it.k); if (x.al[it.k]) got++; }
+    pages.push({ id: `f:${f.uid}`, f, total: f.it.length, got });
+  }
+  return { pages, loose: Object.keys(x.al).filter(k => !inFolder.has(k)) };
+}
+function alCard(k, c, name, vid) {
+  const b = mk('button', `al-card r${c ? c[0] : 0}${c ? '' : ' off'}`);
+  b.type = 'button';
+  b.dataset.k = k;
+  const th = mk('span', 'al-th');
+  th.append(ico(vid ? 'i-video' : 'i-photo'));
+  const u = c ? THU.get(k) : null;
+  if (u) { const img = mk('img', 'ok'); img.alt = ''; img.draggable = false; img.src = u; th.append(img); }
+  else if (c) th.dataset.lazy = '1';
+  if (c && !c[0]) th.append(mk('b', 'al-q', '?'));
+  b.append(th);
+  const cap = mk('span', 'al-cap');
+  cap.append(mk('span', 'al-r', c ? RAR[c[0]] : 'Fehlt noch'), mk('span', 'al-n', name));
+  b.append(cap);
+  if (c && c[2] > 1) b.append(mk('span', 'al-x', `×${c[2]}`));
+  return b;
+}
+function alLazy(grid) {
+  if (AL.io) AL.io.disconnect();
+  const load = th => {
+    th.removeAttribute('data-lazy');
+    const k = th.parentElement.dataset.k;
+    thumbKey(k).then(u => {
+      if (!u || !th.isConnected) return;
+      const img = mk('img'); img.alt = ''; img.draggable = false; img.src = u;
+      th.append(img);
+      requestAnimationFrame(() => img.classList.add('ok'));
+    });
+  };
+  const list = grid.querySelectorAll('[data-lazy]');
+  if (typeof IntersectionObserver !== 'function') { list.forEach(load); return; }
+  AL.io = new IntersectionObserver(es => { for (const e of es) if (e.isIntersecting) { AL.io.unobserve(e.target); load(e.target); } }, { root: $('rkAScroll'), rootMargin: '300px' });
+  list.forEach(th => AL.io.observe(th));
+}
+/** Karten aufdecken oder aufwerten, wenn Rankings inzwischen fertig sind. */
+function albumReveal(x) {
+  let rev = 0, up = 0;
+  for (const [k, c] of Object.entries(x.al)) { const r = rarityOf(k); if (r > c[0]) { if (c[0]) up++; else rev++; c[0] = r; } }
+  return { rev, up };
+}
+function renderAlbum() {
+  const x = albumX();
+  const { rev, up } = albumReveal(x);
+  if ((rev || up) && SYNC) {
+    SYNC.xSet(x);
+    toast([rev ? `${plural(rev, 'Karte', 'Karten')} aufgedeckt` : '', up ? `${plural(up, 'Karte', 'Karten')} aufgewertet` : ''].filter(Boolean).join(', ') + '.', 3200);
+  }
+  const keys = Object.keys(x.al), n = keys.length;
+  $('rkASub').textContent = n ? plural(n, 'Karte', 'Karten') : 'Noch leer';
+  const cnt = [0, 0, 0, 0, 0];
+  for (const k of keys) cnt[x.al[k][0]]++;
+  const chips = [];
+  for (const r of [4, 3, 2, 1, 0]) {
+    if (!cnt[r] && r !== 4) continue;
+    const c = mk('span', 'al-chip');
+    const dot = mk('i'); dot.style.setProperty('--c', r ? `var(--r${r})` : 'rgba(255,255,255,.3)');
+    c.append(dot, mk('b', '', fmt(cnt[r])), ` ${RAR[r]}`);
+    chips.push(c);
+  }
+  $('rkASum').replaceChildren(...(n ? chips : []));
+  const { pages, loose } = albumPages(x);
+  const valid = new Set(['all', 'none', ...pages.map(p => p.id)]);
+  if (!valid.has(AL.page) || (AL.page === 'none' && !loose.length)) AL.page = 'all';
+  // Doppelte eintauschen, volle Seite abholen
+  const acts = [];
+  let dup = 0, val = 0;
+  for (const k of keys) { const c = x.al[k], d = Math.max(0, c[2] - 1 - c[3]); dup += d; val += d * RAR_VAL[c[0]]; }
+  if (val > 0) { const b = btn('pill', `${plural(dup, 'doppelte Karte', 'doppelte Karten')} eintauschen: +${fmt(val)} Münzen`, 'i-star'); b.dataset.act = 'trade'; acts.push(b); }
+  const pg = pages.find(p => p.id === AL.page);
+  if (pg && pg.total >= RAR_MIN && pg.got === pg.total && !x.alr.includes(pg.id)) {
+    const b = btn('pill primary', `Seite voll! ${PAGE_COINS} Münzen abholen`, 'i-trophy'); b.dataset.act = 'claim'; b.dataset.p = pg.id; acts.push(b);
+  }
+  $('rkAActs').replaceChildren(...acts);
+  // Seiten
+  const tab = (id, label, small) => {
+    const b = mk('button', 'al-tab'); b.type = 'button'; b.dataset.p = id; b.setAttribute('role', 'tab');
+    b.setAttribute('aria-selected', String(AL.page === id));
+    b.append(label); if (small) b.append(mk('small', '', small));
+    return b;
+  };
+  const tabs = [tab('all', 'Alle', fmt(n))];
+  for (const p of pages) tabs.push(tab(p.id, p.f.n, `${fmt(p.got)}/${fmt(p.total)}`));
+  if (loose.length) tabs.push(tab('none', 'Ohne Ranking', fmt(loose.length)));
+  $('rkATabs').replaceChildren(...tabs);
+  $('rkATabs').hidden = n === 0 && !pages.length;
+  // Karten
+  const cards = [];
+  let line = '';
+  const byRar = (a, b) => (x.al[b][0] - x.al[a][0]) || keyName(a).localeCompare(keyName(b), 'de', { numeric: true });
+  if (AL.page === 'all') {
+    for (const k of keys.sort(byRar)) cards.push(alCard(k, x.al[k], keyName(k), VID_EXT.test(keyName(k))));
+    if (!n) cards.push(mk('p', 'al-empty', 'Noch keine Karten. Lass im Spiel oder im Überleben ein Medium ganz durchlaufen, dann landet es hier.'));
+  } else if (AL.page === 'none') {
+    for (const k of loose.sort(byRar)) cards.push(alCard(k, x.al[k], keyName(k), VID_EXT.test(keyName(k))));
+    line = 'Karten, die in keinem Ranking-Ordner stehen. Ihre Seltenheit zeigt sich, sobald du sie rankst.';
+  } else if (pg) {
+    const s = eng(pg.f), rk = s && s.order ? ranksOf(pg.f) : null;
+    const list = [...pg.f.it].sort((a, b) => (rk ? (rk.get(a.i) || 1e9) - (rk.get(b.i) || 1e9) : 0) || az(a, b));
+    for (const it of list) cards.push(alCard(it.k, x.al[it.k] || null, it.n, !!it.v));
+    line = `${fmt(pg.got)} von ${fmt(pg.total)} gesammelt${pg.total >= RAR_MIN ? (x.alr.includes(pg.id) ? ' · Belohnung abgeholt' : ` · volle Seite: ${PAGE_COINS} Münzen`) : ''}`
+      + (s && s.order && s.order.length >= RAR_MIN ? '' : ` · Seltenheit gibt es, wenn das Ranking fertig ist${pg.total < RAR_MIN ? ' und mindestens 10 Medien hat' : ''}`);
+  }
+  $('rkAPage').textContent = line;
+  const grid = $('rkAGrid');
+  grid.replaceChildren(...cards);
+  alLazy(grid);
+}
+$('rkAlbumBtn').addEventListener('click', () => pushView('album'));
+$('rkATabs').addEventListener('click', e => {
+  const b = e.target.closest('[data-p]');
+  if (!b || b.dataset.p === AL.page) return;
+  AL.page = b.dataset.p;
+  $('rkAScroll').scrollTop = 0;
+  renderAlbum();
+});
+$('rkAActs').addEventListener('click', async e => {
+  const b = e.target.closest('[data-act]');
+  if (!b || !SYNC) return;
+  const g = GAME();
+  if (b.dataset.act === 'trade') {
+    let x = albumX(), dup = 0, val = 0;
+    for (const c of Object.values(x.al)) { const d = Math.max(0, c[2] - 1 - c[3]); dup += d; val += d * RAR_VAL[c[0]]; }
+    if (!val) return;
+    const a = await dialog({
+      title: 'Doppelte eintauschen?',
+      text: `${plural(dup, 'doppelte Karte', 'doppelte Karten')} gegen ${fmt(val)} Münzen: normal 1, selten 2, episch 4, legendär 8 je Karte. Die Karten selbst bleiben in deinem Album.`,
+      buttons: [{ label: `+${fmt(val)} Münzen`, kind: 'primary', act: 'ok' }, { label: 'Abbrechen', act: null }],
+    });
+    if (a.act !== 'ok') return;
+    x = albumX(); val = 0;
+    for (const c of Object.values(x.al)) { const d = Math.max(0, c[2] - 1 - c[3]); val += d * RAR_VAL[c[0]]; c[3] += d; }
+    SYNC.xSet(x);
+    const got = g && val ? g.addCoins(val) : 0;
+    toast(got ? `+${fmt(got)} Münzen` : 'Eingetauscht.', 2600);
+    renderAlbum();
+  } else if (b.dataset.act === 'claim') {
+    const x = albumX(), id = b.dataset.p;
+    if (x.alr.includes(id)) return;
+    x.alr.push(id);
+    SYNC.xSet(x);
+    const got = g ? g.addCoins(PAGE_COINS) : 0;
+    toast(`🏆 Seite voll: +${fmt(got || PAGE_COINS)} Münzen`, 3000);
+    renderAlbum();
+  }
+});
+$('rkAGrid').addEventListener('click', e => {
+  const b = e.target.closest('.al-card');
+  if (!b) return;
+  const k = b.dataset.k, c = albumX().al[k], ro = rarities().get(k), lines = [];
+  if (c) {
+    lines.push(`Seltenheit: ${RAR[c[0]]}.`);
+    const d = Math.max(0, c[2] - 1 - c[3]);
+    lines.push(`${c[2] === 1 ? 'Einmal' : `${fmt(c[2])}-mal`} ganz gesehen${d ? `, davon ${plural(d, 'doppelte', 'doppelte')} zum Eintauschen` : ''}.`);
+    if (c[1]) lines.push(`Gesammelt am ${dayDE(c[1])}.`);
+  } else lines.push('Noch nicht gesammelt. Lass es im Spiel oder im Überleben einmal ganz durchlaufen.');
+  if (ro) lines.push(`Bestes Ranking: „${ro.f}“, Platz ${fmt(ro.pl)} von ${fmt(ro.of)}.`);
+  else if (c && !c[0]) lines.push('Es steht noch in keinem fertigen Ranking mit mindestens 10 Medien. Danach wird die Karte aufgedeckt.');
+  dialog({ title: keyName(k), text: lines.join(' '), buttons: [{ label: 'OK', kind: 'primary', act: null }] });
+});
+if (SYNC && SYNC.xOn) SYNC.xOn(() => { if (isOpen && topView() === 'album') renderAlbum(); });
+
+/* ═══════════ Rang-Raten ═══════════
+   Zwei geladene Medien aus einem fertigen Ranking: Welches steht weiter oben? 10 Runden, anfangs weit
+   auseinander, am Ende knapp. Münzen (1 je Treffer, 5 extra für 10 von 10) nur für die ersten 3 Spiele am Tag. */
+const GS_ROUNDS = 10, GS_FREE = 3, GS_MIN = 4, GS_PERFECT = 5;
+const GS = { f: null, round: 0, right: 0, streak: 0, top: 0, pair: null, res: null, done: false, busy: false, used: new Set(), end: null, tok: 0 };
+const GC = [0, 1].map(i => {
+  const el = $(`rkG${i}`), media = el.querySelector('.rk-media');
+  return { el, media, img: media.querySelector('img'), vid: media.querySelector('video'), lab: media.querySelector('.gs-rank') };
+});
+function guessPool(f) { const s = f ? eng(f) : null; return s && s.order ? s.order.filter(id => isLoaded(f, id)) : []; }
+function guessReady(f) {
+  const pool = guessPool(f);
+  if (pool.length < GS_MIN) return false;
+  const rk = ranksOf(f);
+  return new Set(pool.map(id => rk.get(id))).size >= 2;
+}
+function guessReset() { Object.assign(GS, { round: 0, right: 0, streak: 0, top: 0, pair: null, res: null, done: false, busy: false, end: null }); GS.used = new Set(); GS.tok++; }
+function openGuess(f) { GS.f = f; guessReset(); pushView('guess'); }
+function renderGuess() {
+  if (!GS.f || !D.fs.includes(GS.f)) { back(); return; }
+  if (GS.done) { showGuessEnd(); return; }
+  if (!GS.pair) guessNext(); else drawGuess();
+}
+function guessPick() {
+  const f = GS.f, pool = guessPool(f), s = eng(f), rk = ranksOf(f), n = s && s.order ? s.order.length : 1;
+  const target = Math.max(0.03, 0.5 - (0.47 * GS.round) / (GS_ROUNDS - 1));   // Abstand der Plätze: anfangs groß, am Ende klein
+  let best = null, bd = Infinity;
+  for (let t = 0; t < 120; t++) {
+    const a = pool[Math.floor(Math.random() * pool.length)], b = pool[Math.floor(Math.random() * pool.length)];
+    if (a === b) continue;
+    const ra = rk.get(a), rb = rk.get(b);
+    if (ra == null || rb == null || ra === rb) continue;
+    const d = Math.abs(Math.abs(ra - rb) / n - target) + (GS.used.has(a) ? 0.25 : 0) + (GS.used.has(b) ? 0.25 : 0);
+    if (d < bd) { bd = d; best = [a, b]; }
+  }
+  return best;
+}
+function guessNext() {
+  const p = guessPick();
+  if (!p) { toast('Dafür sind gerade zu wenige verschiedene Plätze geladen.', 3200); back(); return; }
+  GS.pair = p; GS.res = null; GS.busy = false;
+  for (const id of p) GS.used.add(id);
+  drawGuess();
+}
+function guessSub() {
+  $('rkGSub').textContent = `Runde ${Math.min(GS.round + (GS.res ? 0 : 1), GS_ROUNDS)} von ${GS_ROUNDS} · ${GS.right} richtig${GS.streak > 1 ? ` · 🔥 ${GS.streak} in Folge` : ''}`;
+  $('rkGBar').style.setProperty('--p', (GS.round / GS_ROUNDS).toFixed(3));
+}
+function drawGuess() {
+  const f = GS.f;
+  $('rkGArena').hidden = false; $('rkGEnd').hidden = true; $('rkGHint').hidden = false; $('rkGKeys').hidden = false;
+  guessSub();
+  GS.pair.forEach((id, i) => {
+    const c = GC[i], it = itemOf(f, id), url = urlOf(f, id);
+    c.el.classList.remove('win', 'bad', 'in'); void c.el.offsetWidth; c.el.classList.add('in');
+    c.lab.hidden = true;
+    if (!it || !url) return;
+    if (it.v) {
+      c.img.hidden = true; c.img.removeAttribute('src');
+      c.vid.hidden = false;
+      if (c.vid.getAttribute('src') !== url) c.vid.src = url;
+      c.vid.muted = true;
+      c.vid.play().catch(() => {});
+    } else {
+      stopVid(c.vid); c.vid.hidden = true;
+      c.img.hidden = false; c.img.src = url;
+    }
+  });
+  if (GS.res) revealGuess();
+}
+function revealGuess() {
+  const rk = ranksOf(GS.f), { i, win } = GS.res;
+  GS.pair.forEach((id, j) => {
+    const c = GC[j];
+    c.lab.textContent = `Platz ${fmt(rk.get(id))}`;
+    c.lab.hidden = false;
+    c.el.classList.toggle('win', j === win);
+    c.el.classList.toggle('bad', j === i && i !== win);
+  });
+  guessSub();
+}
+function guessChoose(i) {
+  if (GS.busy || GS.done || !GS.pair || GS.res) return;
+  GS.busy = true;
+  const rk = ranksOf(GS.f), [a, b] = GS.pair;
+  const win = rk.get(a) < rk.get(b) ? 0 : 1, ok = i === win;
+  GS.res = { i, win, ok };
+  if (ok) { GS.right++; GS.streak++; GS.top = Math.max(GS.top, GS.streak); vibe(14); }
+  else { GS.streak = 0; vibe([30, 40, 30]); }
+  GS.round++;
+  revealGuess();
+  const tok = GS.tok;
+  setTimeout(() => {
+    if (tok !== GS.tok || topView() !== 'guess') return;
+    if (GS.round >= GS_ROUNDS) finishGuess(); else guessNext();
+  }, ok ? 950 : 1600);
+}
+function finishGuess() {
+  GS.done = true;
+  const g = GAME(), today = g ? g.dayKey() : '';
+  let idx = 1, rec = false, best = GS.right;
+  if (SYNC) {
+    const x = albumX();
+    idx = (x.rg.day === today ? x.rg.plays : 0) + 1;
+    rec = GS.right > x.rg.best;
+    x.rg.day = today; x.rg.plays = idx;
+    if (rec) x.rg.best = GS.right;
+    best = x.rg.best;
+    SYNC.xSet(x);
+  }
+  const want = GS.right + (GS.right === GS_ROUNDS ? GS_PERFECT : 0);
+  const coins = idx <= GS_FREE && want > 0 && g ? g.addCoins(want) : 0;
+  GS.end = { idx, rec, best, coins };
+  showGuessEnd();
+}
+function showGuessEnd() {
+  for (const c of GC) stopVid(c.vid);
+  $('rkGArena').hidden = true; $('rkGHint').hidden = true; $('rkGKeys').hidden = true;
+  $('rkGSub').textContent = `${GS.right} von ${GS_ROUNDS} richtig`;
+  $('rkGBar').style.setProperty('--p', '1');
+  const e = GS.end || { idx: 1, rec: false, best: GS.right, coins: 0 };
+  const box = $('rkGEnd');
+  const again = btn('pill primary', 'Nochmal', 'i-play'), out = btn('pill', 'Zurück zum Ordner');
+  again.addEventListener('click', () => { guessReset(); guessNext(); });
+  out.addEventListener('click', () => back());
+  const row = mk('div', 'gs-btns');
+  row.append(again, out);
+  box.replaceChildren(
+    mk('div', 'gs-score', `${GS.right} / ${GS_ROUNDS}`),
+    mk('p', 'gs-line', GS.right === GS_ROUNDS ? 'Perfekt! Du kennst dein Ranking.' : GS.right >= 7 ? 'Stark!' : GS.right >= 4 ? 'Nicht schlecht.' : 'Da ist noch Luft nach oben.'),
+    mk('p', `gs-line${e.rec ? ' gold' : ''}`, e.rec ? '🏆 Neuer Rekord!' : `Rekord: ${e.best} von ${GS_ROUNDS}`),
+    ...(GS.top > 2 ? [mk('p', 'gs-line', `Längste Serie: ${GS.top} in Folge`)] : []),
+    mk('p', 'gs-line', e.coins ? `+${fmt(e.coins)} Münzen` : e.idx > GS_FREE ? `Heute keine Münzen mehr (${GS_FREE} Spiele gespielt).` : 'Diesmal keine Münzen.'),
+    row,
+  );
+  box.hidden = false;
+  setTimeout(() => { if (topView() === 'guess') try { again.focus({ preventScroll: true }); } catch (_) {} }, 60);
+}
+GC.forEach((c, i) => c.media.addEventListener('click', () => guessChoose(i)));
+
+/* ═══════════ Abgleich mit anderen Geräten ═══════════
+   Neue Rankings aus der Cloud kommen nur, solange das Ranking zu ist (sonst nach dem Neuladen). Schon geladene Medien
+   bleiben geladen (über Dateiname + Größe). */
+function reloadFromSync() {
+  clearTimeout(saveT); dirty = false;
+  let nd;
+  try { nd = clean(JSON.parse(localStorage.getItem(KEY) || 'null')); } catch (_) { nd = blank(); }
+  const old = new Map(RT);
+  D = nd; RT.clear();
+  for (const f of D.fs) {
+    const o = old.get(f.i);
+    if (!o) continue;
+    const r = rt(f);
+    for (const [id, file] of o.files) { const it = o.map.get(id), y = it && r.byKey.get(it.k); if (y) r.files.set(y.i, file); }
+  }
+  for (const o of old.values()) for (const u of o.urls.values()) URL.revokeObjectURL(u);
+  retag(); bump();
+  if (isOpen) refresh();
+}
+if (SYNC && SYNC.rankBind) SYNC.rankBind({ flush, reload: reloadFromSync, idle: () => !isOpen });
+
 window.ShuffleRank = {
   open,
+  ask: dialog,
+  rarityOf,
   isOpen: () => isOpen,
-  _t: { D: () => D, eng, folderById, itemOf, ranksOf, eEstimate, estimateN, duelNow, VER: () => VER, flush, thumbUrl },
+  _t: { D: () => D, eng, folderById, itemOf, ranksOf, eEstimate, estimateN, duelNow, VER: () => VER, flush, thumbUrl, GS: () => GS, rarities },
 };
 })();
 </script>
