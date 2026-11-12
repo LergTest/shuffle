@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="shuffle-version" content="42">
+<meta name="shuffle-version" content="43">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <meta name="color-scheme" content="dark">
@@ -744,6 +744,7 @@ input[type="range"]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 3px rgba
 }
 .ps-card.on { background: rgba(255, 255, 255, .11); border-color: rgba(255, 255, 255, .34); }
 .ps-card.locked .ps-main { opacity: .45; }
+.ps-card.unknown .ps-main { opacity: .6; }
 .ps-main {
   flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; padding: 9px 4px 9px 12px;
   border: 0; background: none; color: var(--fg); text-align: left; cursor: pointer; font: inherit;
@@ -2637,7 +2638,7 @@ body.rk-open #app { visibility: hidden; }
       </div>
       <p class="lead">Wähle Bilder und Videos aus. Sie laufen in zufälliger Reihenfolge, jedes für eine zufällige Dauer. Kurze Videos laufen fast ganz, längere ab einer zufälligen Stelle.</p>
       <div class="presets" id="presetBox" hidden>
-        <div class="ps-head"><p class="resume-title">Deine Presets</p><button type="button" class="link" id="psNew">＋ Neues Preset</button></div>
+        <div class="ps-head"><p class="resume-title" id="psTitle">Deine Presets</p><button type="button" class="link" id="psNew">＋ Neues Preset</button></div>
         <div class="ps-list" id="psList"></div>
         <p class="ps-lock" id="psLock" hidden></p>
       </div>
@@ -3270,6 +3271,8 @@ body.rk-open #app { visibility: hidden; }
      gewinnt; Zähler, Münzen und Vorräte bekommen den Zuwachs des anderen Geräts dazu).
    • Album, Rekorde aus Überleben und Rang-Raten liegen extra (x): Das wächst nur und wird immer
      zusammengeführt (Karten von beiden, jeweils das Höhere), auch ohne Neuladen.
+   • Preset-Listen (pl): Jeder PC schreibt, welche Dateien in seinen Presets stecken, damit ein Handy dieselben
+     Presets hat. Sie liegen als zweite Datei im Gist und werden nur hochgeladen, wenn sie sich ändern.
    • Läuft die App schon, wird ein neuer Stand erst nach dem Neuladen übernommen.
    • Vor jedem Start muss ein Abgleich höchstens eine Minute alt sein, sonst fragt die App nach. */
 const ShuffleSync = (() => {
@@ -3286,6 +3289,8 @@ const SET_FIELDS = ['min', 'max', 'mode', 'difficulty', 'peak', 'weight', 'theme
 const RANK = 'shuffle-rank/v1', RDEV = 'shuffle-rank/dev';   // Rankings (eigener Speicher) und die Kennung dieses Geräts dafür
 const RK0 = '{"t":[],"f":[]}';                                // keine Rankings
 const XKEY = 'shuffle-player/x-v1';                          // Album, Überleben, Rang-Raten
+const PLKEY = 'shuffle-player/pl-v1';                        // Preset-Listen der PCs (fürs Handy)
+const FILE2 = 'shuffle-presets.txt';                         // eigene Datei im Gist: nur bei Änderungen hochladen
 const LS = (() => { try { return window.localStorage; } catch (_) { return null; } })();
 const get = k => { try { return LS ? LS.getItem(k) : null; } catch (_) { return null; } };
 const put = (k, v) => { try { if (LS) LS.setItem(k, v); return true; } catch (_) { return false; } };
@@ -3330,7 +3335,7 @@ if (LS) {
   const raw = Storage.prototype.setItem;
   Storage.prototype.setItem = function (k, v) {
     raw.call(this, k, v);
-    if (this === LS && !applying && (k === SET_KEY || k === RANK || k === XKEY || STORES.includes(k))) changed();
+    if (this === LS && !applying && (k === SET_KEY || k === RANK || k === XKEY || k === PLKEY || STORES.includes(k))) changed();
   };
 }
 
@@ -3597,8 +3602,53 @@ function xNext(lx, r) {
   return { x, push: x !== rx };
 }
 const xJoin = (lx, rx) => (typeof rx !== 'string' ? lx : xMerge(lx, rx));
+/* ── Preset-Listen (pl) ──
+   Ein PC merkt sich Ordner, ein Handy kann das nicht. Damit das Handy trotzdem dieselben Presets hat, schreibt jeder PC,
+   welche Dateien in seinen Presets stecken (als kurze Prüfsummen von Name + Größe, h). Je Gerät gilt sein neuester Stand.
+   Die Listen liegen als eigene Datei im Gist: Sie werden nur hochgeladen, wenn sie sich ändern, und ältere App-Versionen
+   lassen sie in Ruhe. h = null: Preset ist am PC noch nicht geladen worden, seine Dateien sind noch unbekannt. */
+let plMemo = null;
+const plHooks = [];
+const plStr = (v, n) => (typeof v === 'string' ? v.replace(/\s+/g, ' ').trim().slice(0, n) : '');
+function plObj(raw) {
+  const o = raw && typeof raw === 'object' && raw.d && typeof raw.d === 'object' ? raw.d : {};
+  const d = {};
+  for (const dev of Object.keys(o).sort()) {
+    const e = o[dev];
+    if (!/^[0-9a-z]{4,24}$/.test(dev) || !e || typeof e !== 'object') continue;
+    const ps = [];
+    for (const x of rkArr(e.ps)) {
+      const id = xInt(x && x.id);
+      if (!(id > 0) || ps.some(y => y.id === id)) continue;
+      const hh = x && typeof x.h === 'string' && /^[A-Za-z0-9+/=]*$/.test(x.h) ? x.h : null;
+      ps.push({ id, n: plStr(x.n, 40) || `Preset ${id}`, c: hh === null ? 0 : Math.max(0, xInt(x.c)), h: hh });
+    }
+    d[dev] = { at: Math.max(0, xInt(e.at)), dn: plStr(e.dn, 24) || 'PC', ps };
+  }
+  return { v: 1, d };
+}
+const PL0 = rkJ(plObj(null));
+function readPl() {
+  const raw = get(PLKEY) || '';
+  if (!plMemo || raw !== plMemo[0]) plMemo = [raw, raw ? rkJ(plObj(P(raw))) : PL0];
+  return plMemo[1];
+}
+/** Zusammenführen: je Gerät der neuere Stand. Fehlt die Cloud-Seite (undefined), bleibt die hiesige. */
+function plMerge(at, bt) {
+  if (typeof bt !== 'string') return at;
+  const a = plObj(P(at)), b = plObj(P(bt));
+  const d = { ...a.d };
+  for (const [k, e] of Object.entries(b.d)) if (!d[k] || e.at > d[k].at) d[k] = e;
+  return rkJ(plObj({ d }));
+}
+function writePl(ct) {
+  if (typeof ct !== 'string' || ct === readPl()) return;
+  applying = true;
+  try { put(PLKEY, ct); } finally { applying = false; }
+  for (const f of plHooks) { try { f(); } catch (e) { console.error(e); } }
+}
 /** Gibt es hier etwas, das noch nicht in der Cloud ist? */
-const unsynced = () => !base || !same(readLocal(), base.s) || readRank() !== base.rk || readX() !== base.x;
+const unsynced = () => !base || !same(readLocal(), base.s) || readRank() !== base.rk || readX() !== base.x || readPl() !== base.pl;
 function same(a, b) {
   if (!a || !b) return false;
   for (const k of new Set([...Object.keys(a), ...Object.keys(b)])) if ((a[k] ?? null) !== (b[k] ?? null)) return false;
@@ -3723,6 +3773,22 @@ async function unpack(txt) {
   if (!p || p.app !== 'shuffle' || !p.s || typeof p.s !== 'object' || !Number.isFinite(p.rev)) throw E('bad');
   return p;
 }
+async function packPl(ct) {
+  if (typeof CompressionStream !== 'function') return `SHUFP0:${ct}`;
+  const buf = await new Response(new Blob([ct]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer();
+  return `SHUFP1:${b64(new Uint8Array(buf))}`;
+}
+/** Preset-Listen aus der Cloud (immer in geprüfter Form; Unlesbares zählt wie leer). */
+async function unpackPl(txt) {
+  try {
+    if (typeof txt === 'string' && txt.startsWith('SHUFP0:')) return rkJ(plObj(JSON.parse(txt.slice(7))));
+    if (typeof txt === 'string' && txt.startsWith('SHUFP1:')) {
+      const bytes = unb64(txt.slice(7).trim());
+      return rkJ(plObj(JSON.parse(await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))).text())));
+    }
+  } catch (_) { /* dann eben leer */ }
+  return PL0;
+}
 
 /* ── GitHub ── */
 async function api(method, path, body, opt = {}) {
@@ -3747,7 +3813,7 @@ async function api(method, path, body, opt = {}) {
   return { status: res.status, res, json, etag: res.headers.get('ETag') || '' };
 }
 const idOf = p => `${p.dev}:${p.rev}`;
-const baseOf = r => ({ id: idOf(r.p), rev: r.p.rev, at: r.p.at, dn: r.p.dn, etag: r.etag || '', s: r.p.s, rk: r.p.rk, x: r.p.x });
+const baseOf = r => ({ id: idOf(r.p), rev: r.p.rev, at: r.p.at, dn: r.p.dn, etag: r.etag || '', s: r.p.s, rk: r.p.rk, x: r.p.x, pl: r.pl });
 /** Stand aus der Cloud; null = unverändert seit dem letzten Mal. */
 async function getRemote(useEtag, c = cfg) {
   const r = await api('GET', `/gists/${c.gist}`, null, { token: c.token, etag: useEtag && base && base.etag ? base.etag : '' });
@@ -3758,7 +3824,17 @@ async function getRemote(useEtag, c = cfg) {
   if (f.truncated || typeof txt !== 'string') {
     try { txt = await (await fetch(f.raw_url, { cache: 'no-store' })).text(); } catch (_) { throw E('net'); }
   }
-  return { p: await unpack(txt), etag: r.etag };
+  const p = await unpack(txt);
+  const f2 = r.json.files[FILE2];
+  let pl = PL0;
+  if (f2) {
+    let t2 = f2.content;
+    if (f2.truncated || typeof t2 !== 'string') {
+      try { t2 = await (await fetch(f2.raw_url, { cache: 'no-store' })).text(); } catch (_) { throw E('net'); }
+    }
+    pl = await unpackPl(t2);
+  }
+  return { p, etag: r.etag, pl };
 }
 function remoteState(r) {
   if (!r) return 'same';
@@ -3780,6 +3856,7 @@ function fail(e) {
 /** Neuer Stand von einem anderen Gerät: übernehmen oder zusammenführen. */
 function reconcile(r) {
   if (r.p.dev === cfg.dev) {                     // eigener Stand, nur die Antwort kam nicht mehr an
+    writePl(plMerge(readPl(), r.pl));
     base = baseOf(r); saveBase(); ok(); status();
     if (unsynced()) schedule(0);
     return { ok: true };
@@ -3788,8 +3865,10 @@ function reconcile(r) {
   const mine = base ? fp(local) !== fp(base.s) : hasPlay(local);
   const next = mine ? merge(local, r.p.s, base && base.s) : r.p.s;
   const R = rkNext(lrk, r), X = xNext(lx, r);
-  const push = mine || R.mine || R.push || X.push;
+  const lpl = readPl(), PL = plMerge(lpl, r.pl);
+  const push = mine || R.mine || R.push || X.push || PL !== r.pl;
   if (X.x !== lx) writeX(X.x);                   // Album & Co.: gleich übernehmen
+  if (PL !== lpl) writePl(PL);                   // Preset-Listen ebenso
   const nb = baseOf(r);
   ok();
   const gameSame = same(next, local);
@@ -3839,19 +3918,28 @@ async function pushInner() {
   if (!cfg || blocked) return { ok: false };
   const force = get(K.force) === '1';
   const local = readLocal(), lrk = readRank(), lx = readX();
-  if (!force && base && same(local, base.s) && lrk === base.rk && lx === base.x) return { ok: true, idle: true };
+  if (!force && base && same(local, base.s) && lrk === base.rk && lx === base.x && readPl() === base.pl) return { ok: true, idle: true };
   let r = null;
-  try { r = await getRemote(!force); } catch (e) { fail(e); return { ok: false, err: lastErr }; }
+  try { r = await getRemote(!force && !!base && typeof base.pl === 'string'); } catch (e) { fail(e); return { ok: false, err: lastErr }; }
   if (!force) {
     const st = remoteState(r);
     if (st === 'new') return reconcile(r);
-    if (r && st === 'same' && base) base.etag = r.etag;
+    if (r && st === 'same' && base) { base.etag = r.etag; base.pl = r.pl; }
+  }
+  const rpl = r ? r.pl : base ? base.pl : undefined;          // Preset-Listen in der Cloud
+  const npl = plMerge(readPl(), rpl);                          // fremde Einträge nie überschreiben
+  if (npl !== readPl()) writePl(npl);
+  if (!force && base && same(local, base.s) && lrk === base.rk && lx === base.x && npl === base.pl) {   // nur die Listen nachgelesen
+    saveBase(); ok(); status();
+    return { ok: true, idle: true };
   }
   const rev = Math.max(base ? n0(base.rev) : 0, r ? n0(r.p.rev) : 0) + 1;
   const p = { app: 'shuffle', v: 1, rev, at: Date.now(), dev: cfg.dev, dn: DEV_NAME, s: local, rk: lrk, x: lx };
   try {
-    const w = await api('PATCH', `/gists/${cfg.gist}`, { files: { [FILE]: { content: await pack(p) } } });
-    base = { id: idOf(p), rev, at: p.at, dn: p.dn, etag: w.etag || '', s: local, rk: lrk, x: lx };
+    const files = { [FILE]: { content: await pack(p) } };
+    if (npl !== rpl) files[FILE2] = { content: await packPl(npl) };
+    const w = await api('PATCH', `/gists/${cfg.gist}`, { files });
+    base = { id: idOf(p), rev, at: p.at, dn: p.dn, etag: w.etag || '', s: local, rk: lrk, x: lx, pl: npl };
     saveBase();
     if (force) del(K.force);
     ok();
@@ -3916,19 +4004,22 @@ async function connect(text) {
   c.login = (u.json && typeof u.json.login === 'string' && u.json.login) || '';
   const gid = inp.gist || await findGist(c.token);
   if (!gid) {
-    const local = readLocal(), lrk = readRank(), lx = readX();
+    const local = readLocal(), lrk = readRank(), lx = readX(), lpl = readPl();
     const p = { app: 'shuffle', v: 1, rev: 1, at: Date.now(), dev: c.dev, dn: DEV_NAME, s: local, rk: lrk, x: lx };
+    const files = { [FILE]: { content: await pack(p) } };
+    if (lpl !== PL0) files[FILE2] = { content: await packPl(lpl) };
     let res;
-    try { res = await api('POST', '/gists', { description: DESC, public: false, files: { [FILE]: { content: await pack(p) } } }, { token: c.token }); }
+    try { res = await api('POST', '/gists', { description: DESC, public: false, files }, { token: c.token }); }
     catch (e) { throw e.code === 'gone' ? E('scope') : e; }
     c.gist = res.json && res.json.id;
     if (!c.gist) throw E('http');
-    linkUp(c, { id: idOf(p), rev: 1, at: p.at, dn: p.dn, etag: '', s: local, rk: lrk, x: lx });
+    linkUp(c, { id: idOf(p), rev: 1, at: p.at, dn: p.dn, etag: '', s: local, rk: lrk, x: lx, pl: lpl });
     return { state: 'created' };
   }
   c.gist = gid;
   const r = await getRemote(false, c);
   writeX(xJoin(readX(), r.p.x));                  // Album & Co. kommen immer von beiden
+  writePl(plMerge(readPl(), r.pl));               // Preset-Listen ebenso
   const local = readLocal();
   if (same(local, r.p.s)) {
     const lrk = readRank(), rk = rkJoin(lrk, r.p.rk);
@@ -4052,9 +4143,24 @@ return {
   xGet: () => JSON.parse(readX()),
   xSet(o) { put(XKEY, rkJ(xObj(o))); },
   xOn(f) { xHooks.push(f); },
+  /** Preset-Listen: alle (immer frisch), Änderung von außen melden, eigenen Eintrag setzen. */
+  plGet: () => JSON.parse(readPl()),
+  plOn(f) { plHooks.push(f); },
+  plDev: () => rankDev(),
+  /** Eigene Presets eintragen ({ ps: [{ id, n, c, h }] }). Nur bei echter Änderung; dann wird hochgeladen. */
+  plOwn(e) {
+    const dev = rankDev(), cur = plObj(P(readPl()));
+    const old = cur.d[dev] || null;
+    const nx = plObj({ d: { [dev]: { at: 1, dn: DEV_NAME, ps: e && Array.isArray(e.ps) ? e.ps : [] } } }).d[dev];
+    if (old ? rkJ({ ...old, at: 0 }) === rkJ({ ...nx, at: 0 }) : !nx.ps.length) return false;
+    cur.d[dev] = { ...nx, at: Math.max(Date.now(), old ? old.at + 1 : 0) };
+    put(PLKEY, rkJ(plObj(cur)));
+    for (const f of plHooks) { try { f(); } catch (err) { console.error(err); } }
+    return true;
+  },
   rankBind(h) { rkHooks = h; },
   rankUid: rkUid,
-  _t: { readRank, mergeRank, rkLocal, rkCanon, RK0, readX, xMerge, X0 },
+  _t: { readRank, mergeRank, rkLocal, rkCanon, RK0, readX, xMerge, X0, readPl, plMerge, PL0, packPl, unpackPl },
 };
 })();
 
@@ -4441,7 +4547,7 @@ const libCount = $('libCount'), setAdd = $('setAdd'), setAddDir = $('setAddDir')
 const intro = $('intro'), deck = $('deck'), btnPick = $('btnPick'), pickLabel = $('pickLabel'), btnPickDir = $('btnPickDir');
 const introLib = $('introLib'), introCount = $('introCount'), introClear = $('introClear');
 const introProg = $('introProg'), startLabel = $('startLabel'), progReset = $('progReset');
-const presetBox = $('presetBox'), psList = $('psList'), psLock = $('psLock'), psNew = $('psNew'), resumeTitle = $('resumeTitle');
+const presetBox = $('presetBox'), psList = $('psList'), psLock = $('psLock'), psNew = $('psNew'), psTitle = $('psTitle'), resumeTitle = $('resumeTitle');
 const presetDlg = $('presetDlg'), psDlgTitle = $('psDlgTitle'), psName = $('psName'), psSrcs = $('psSrcs'), psAddDir = $('psAddDir'),
   psAddFiles = $('psAddFiles'), psNote = $('psNote'), psSave = $('psSave'), psDel = $('psDel');
 const resumeBox = $('resumeBox'), resumeInfo = $('resumeInfo'), btnResume = $('btnResume'), resumeLabel = $('resumeLabel'), resumeForget = $('resumeForget');
@@ -4770,6 +4876,17 @@ function unloadLibrary() {
 
 function clearLibrary() {
   if (lockBlock()) return;
+  if (phoneMode() && filterOn()) {
+    unloadLibrary();
+    pool.length = 0; poolH.length = 0; poolKeys.clear();
+    saveProgress(true);
+    updateLibraryUI();
+    resetDeck();
+    renderPresets();
+    toast('Liste geleert. Deine Runde bleibt gespeichert.');
+    return;
+  }
+  pool.length = 0; poolH.length = 0; poolKeys.clear();
   unloadLibrary();
   resetProgress();
   saveProgress(true);
@@ -5268,6 +5385,262 @@ function unstashProgress(p) {
   renderProgress();
 }
 
+/* ── Preset-Listen fürs Handy ──
+   PC: Nach jedem Lesen eines gemerkten Ordners (oder einer Datei) merkt sich die App, welche Dateien darin waren
+   (32-Bit-Prüfsumme von Name + Größe, nur auf diesem Gerät). Daraus entsteht je Preset eine Liste, die über den
+   Abgleich ans Handy geht. Fehlt ein Ordner gerade, gilt seine letzte bekannte Liste weiter.
+   Handy (kann sich keine Ordner merken): Du wählst alles aus, die App nimmt für das gewählte Preset nur dessen
+   Dateien. Jedes Preset hat auch hier seinen eigenen Rundenfortschritt; das erste Preset des Tages bleibt bis zum
+   Tagesziel (je Gerät). */
+const fh32 = s => { let x = 0x811c9dc5; for (let i = 0; i < s.length; i++) { x ^= s.charCodeAt(i); x = Math.imul(x, 0x01000193); } return x >>> 0; };
+const fhOf = f => fh32(`${f.name}|${f.size}`);
+/** Menge von Prüfsummen → kurzer Text (sortiert, Abstände als 7-Bit-Gruppen, Base64). */
+function hEnc(set) {
+  const a = [...set].sort((p, q) => p - q), out = [];
+  let prev = 0;
+  for (const v of a) {
+    let d = v - prev;
+    prev = v;
+    while (d >= 128) { out.push((d % 128) | 128); d = Math.floor(d / 128); }
+    out.push(d);
+  }
+  let s = '';
+  for (let i = 0; i < out.length; i += 0x8000) s += String.fromCharCode.apply(null, out.slice(i, i + 0x8000));
+  return btoa(s);
+}
+function hDec(t) {
+  const set = new Set();
+  let s = '';
+  try { s = atob(t || ''); } catch (_) { return set; }
+  let prev = 0, d = 0, mul = 1;
+  for (let i = 0; i < s.length; i++) {
+    const b = s.charCodeAt(i);
+    d += (b & 127) * mul;
+    if (b & 128) { mul *= 128; continue; }
+    prev += d;
+    set.add(prev >>> 0);
+    d = 0; mul = 1;
+  }
+  return set;
+}
+const SRCH_KEY = 'shuffle-player/srch-v1';
+let srcH = {};
+try { const o = JSON.parse(localStorage.getItem(SRCH_KEY) || 'null'); if (o && typeof o === 'object') srcH = o; } catch (_) { /* neu */ }
+let memReady = false, publishTimer = 0;
+function saveSrcH() {
+  if (wiping) return;
+  try { localStorage.setItem(SRCH_KEY, JSON.stringify(srcH)); } catch (_) { /* dann beim nächsten Laden */ }
+}
+/** Gemerkter Eintrag wurde gelesen: seine Dateien notieren. */
+function noteSrcFiles(id, list) {
+  if (!id || !canRemember()) return;
+  const t = hEnc(new Set(list.filter(f => f && f.name && !f.name.startsWith('.') && isMediaName(f.name)).map(fhOf)));
+  if (srcH[id] === t) return;
+  srcH[id] = t;
+  saveSrcH();
+  publishSoon();
+}
+function publishSoon() {
+  if (!canRemember()) return;
+  clearTimeout(publishTimer);
+  publishTimer = setTimeout(publishPresets, 400);
+}
+/** Eigene Presets mit ihren Listen in den Abgleich schreiben (nur bei Änderung). */
+function publishPresets() {
+  if (!canRemember() || !memReady || typeof ShuffleSync === 'undefined' || !ShuffleSync.plOwn) return;
+  const live = new Set(allSrc.map(r => String(r.id)));
+  let gone = false;
+  for (const k of Object.keys(srcH)) if (!live.has(k)) { delete srcH[k]; gone = true; }
+  if (gone) saveSrcH();
+  const ps = P.list.filter(p => allSrc.some(r => r.p === p.id)).map(p => {    // leere Presets braucht das Handy nicht
+    const known = allSrc.filter(r => r.p === p.id && typeof srcH[r.id] === 'string');
+    if (!known.length) return { id: p.id, n: p.n, c: 0, h: null };
+    const set = new Set();
+    for (const r of known) for (const x of hDec(srcH[r.id])) set.add(x);
+    return { id: p.id, n: p.n, c: set.size, h: hEnc(set) };
+  });
+  ShuffleSync.plOwn({ ps });
+}
+/** Einmal nach dem Öffnen: Listen für Presets nachtragen, die noch nie gelesen wurden (nur mit Erlaubnis). */
+async function fillPresetLists() {
+  if (!canRemember()) return;
+  for (const r of allSrc.slice()) {
+    if (typeof srcH[r.id] === 'string' || !allSrc.includes(r)) continue;
+    if (state.started) return;                       // nicht mitten ins Spiel lesen
+    let p = 'prompt';
+    try { p = await r.handle.queryPermission({ mode: 'read' }); } catch (_) {}
+    if (p !== 'granted') continue;
+    try { noteSrcFiles(r.id, r.type === 'dir' ? await collectFromDir(r.handle) : [await r.handle.getFile()]); }
+    catch (_) { /* fehlt gerade */ }
+  }
+}
+
+/* Handy: Auswahl und Filter */
+const FSEL_KEY = 'shuffle-player/fsel-v1', FPROG_KEY = 'shuffle-player/fprog-v1', FLOCK_KEY = 'shuffle-player/flock';
+const pool = [], poolH = [], poolKeys = new Set();   // alles gerade Ausgewählte (File) und seine Prüfsummen
+const fDecoded = new Map();                           // Preset-Schlüssel → { h, set }
+const lsGet = k => { try { return localStorage.getItem(k); } catch (_) { return null; } };
+const lsSet = (k, v) => { if (wiping) return; try { localStorage.setItem(k, v); } catch (_) { /* egal */ } };
+let fcur = (() => { const v = lsGet(FSEL_KEY); return typeof v === 'string' && v ? v : '*'; })();   // Preset, zu dem Liste und Runde gerade gehören
+const phoneMode = () => !canRemember();
+/** Presets der PCs (aus dem Abgleich). */
+function fList() {
+  if (!phoneMode() || typeof ShuffleSync === 'undefined' || !ShuffleSync.plGet) return [];
+  let d = {};
+  try { d = ShuffleSync.plGet().d || {}; } catch (_) { d = {}; }
+  const devs = Object.keys(d).filter(k => d[k] && Array.isArray(d[k].ps) && d[k].ps.length);
+  const out = [];
+  for (const dev of devs) {
+    for (const p of d[dev].ps) {
+      const k = `${dev}:${p.id}`;
+      let dc = fDecoded.get(k);
+      if (!dc || dc.h !== p.h) { dc = { h: p.h, set: p.h === null ? null : hDec(p.h) }; fDecoded.set(k, dc); }
+      out.push({ k, n: p.n, c: p.c, set: dc.set, dn: devs.length > 1 ? d[dev].dn : '' });
+    }
+  }
+  return out;
+}
+const fFind = k => fList().find(x => x.k === k) || null;
+const filterOn = () => fList().length > 0;
+function fHave(fp) {
+  if (!fp || !fp.set) return 0;
+  let n = 0;
+  for (const x of poolH) if (fp.set.has(x)) n++;
+  return n;
+}
+function filterLock() {
+  if (!phoneMode()) return null;
+  const d = todayRec(false);
+  if (!d || !d.gl || d.hit) return null;
+  try {
+    const o = JSON.parse(lsGet(FLOCK_KEY) || 'null');
+    return o && o.day === dayKey() && typeof o.k === 'string' ? o : null;
+  } catch (_) { return null; }
+}
+/** Erster Start an diesem Gerät heute: Preset festhalten (nur wenn es Presets vom PC gibt). */
+function setFilterLock() {
+  if (!phoneMode() || !filterOn() || filterLock()) return;
+  const fp = fcur === '*' ? null : fFind(fcur);
+  lsSet(FLOCK_KEY, JSON.stringify({ day: dayKey(), k: fp ? fcur : '*', n: fp ? fp.n : 'Alle' }));
+}
+const fLockText = lk => `Heute bleibt es an diesem Gerät bei „${lk.n}“, bis dein Tagesziel geschafft ist. Danach kannst du wechseln.`;
+/** Welches Preset gilt gerade: Preset des Tages, sonst das zuletzt gewählte (gibt es das nicht mehr: alle). */
+function chosenKey() {
+  const lk = filterLock();
+  const k = lk ? lk.k : lsGet(FSEL_KEY) || '*';
+  if (k === '*') return '*';
+  const fp = fFind(k);
+  return fp && fp.set ? k : '*';
+}
+function fProgAll() {
+  try { const o = JSON.parse(lsGet(FPROG_KEY) || 'null'); return o && typeof o === 'object' ? o : {}; } catch (_) { return {}; }
+}
+function fStash(k) {
+  const all = fProgAll(), snap = progressSnapshot();
+  all[k] = Object.fromEntries(PROG_FIELDS.map(f => [f, snap[f]]));
+  lsSet(FPROG_KEY, JSON.stringify(all));
+}
+/** Neu ausgewählte Dateien (Handy): merken und nach dem gültigen Preset filtern. */
+function takeFiles(files, opts = {}) {
+  if (!phoneMode()) { addFiles(files, opts); return; }
+  let added = 0;
+  for (const f of Array.from(files || [])) {
+    const name = String((f && f.name) || '');
+    if (!name) continue;
+    const key = `${name}|${f.size}`;
+    if (poolKeys.has(key)) continue;
+    poolKeys.add(key);
+    pool.push(f);
+    poolH.push(fhOf(f));
+    added++;
+  }
+  applyFilter(chosenKey(), { picked: true, added, files: Array.from(files || []).length });
+}
+/** Liste auf ein Preset (oder alle) einstellen. */
+function applyFilter(k, info = {}) {
+  const fp = k === '*' ? null : fFind(k);
+  if (k !== '*' && (!fp || !fp.set)) k = '*';
+  const want = fp ? pool.filter((f, i) => fp.set.has(poolH[i])) : pool.slice();
+  if (k !== fcur) {                                   // anderes Preset: Runde des bisherigen aufheben, die des neuen holen
+    if (!state.started) {
+      fStash(fcur);
+      unloadLibrary();
+      unstashProgress({ prog: fProgAll()[k] || null });
+      resetDeck();
+    }
+    fcur = k;
+  }
+  lsSet(FSEL_KEY, k);
+  if (!state.started && library.length) {             // Liste des Presets hat sich geändert: Überzähliges raus
+    const keep = new Set(want.map(f => `${f.name}|${f.size}`));
+    if (library.some(i => !keep.has(i.key))) { unloadLibrary(); resetDeck(); }
+  }
+  const res = addFiles(want, { quiet: true });
+  updateLibraryUI();
+  renderPresets();
+  if (info.quiet) return;
+  if (!fp) {
+    if (info.picked) {
+      if (res.added || !filterOn()) reportAdded(res);
+      else if (info.files) toast('Diese Dateien sind schon in der Liste.', 3000);
+    } else toast(pool.length ? `Alle ${library.length} ausgewählten Medien sind dabei.` : 'Wähle jetzt deine Medien aus.', 3200);
+    return;
+  }
+  const have = want.length, miss = Math.max(0, fp.c - have), other = pool.length - have;
+  if (!pool.length) { toast(`„${fp.n}“ gewählt. Wähle jetzt deine Medien aus, am besten gleich alle.`, 3600); return; }
+  if (!have) { toast(`Von „${fp.n}“ ist in deiner Auswahl nichts dabei. Wähle die passenden Dateien aus oder nimm „Alle“.`, 6000); return; }
+  const parts = [have >= fp.c ? `„${fp.n}“: alle ${have.toLocaleString('de-DE')} Medien da.`
+    : `„${fp.n}“: ${have.toLocaleString('de-DE')} von ${fp.c.toLocaleString('de-DE')} Medien da.`];
+  if (miss) parts.push(`${miss.toLocaleString('de-DE')} ${miss === 1 ? 'fehlt' : 'fehlen'} auf diesem Gerät.`);
+  if (other && info.picked) parts.push(`${other.toLocaleString('de-DE')} ${other === 1 ? 'andere Datei bleibt' : 'andere bleiben'} draußen.`);
+  toast(parts.join(' '), miss ? 5200 : 3600);
+}
+/** Preset-Karte am Handy angetippt. */
+function useFilter(k) {
+  if (state.started || restoring) return;
+  const lk = filterLock();
+  if (lk && lk.k !== k) { toast(`🔒 ${fLockText(lk)}`, 5200); return; }
+  const fp = k === '*' ? null : fFind(k);
+  if (fp && !fp.set) { toast(`Welche Dateien in „${fp.n}“ stecken, weiß dieses Gerät noch nicht. Lade das Preset einmal am PC, dann kommt die Liste hierher.`, 6500); return; }
+  const wasEmpty = !pool.length;
+  applyFilter(k, { quiet: wasEmpty });
+  if (wasEmpty) fileInput.click();                  // erst Preset, dann auswählen
+}
+/** Preset-Karten am Handy. */
+function renderFilters() {
+  const list = fList(), lk = filterLock(), loaded = library.some(usable);
+  presetBox.hidden = false;
+  psTitle.textContent = 'Deine Presets vom PC';
+  psNew.hidden = true;
+  const cards = [...list, { k: '*', n: 'Alle', c: pool.length, set: true, dn: '' }];
+  psList.replaceChildren(...cards.map(fp => {
+    const act = fp.k === fcur, locked = !!lk && fp.k !== lk.k;
+    const card = document.createElement('div');
+    card.className = `ps-card${act ? ' on' : ''}${locked ? ' locked' : ''}${fp.set ? '' : ' unknown'}`;
+    const main = document.createElement('button');
+    main.type = 'button'; main.className = 'ps-main'; main.dataset.fuse = fp.k;
+    main.setAttribute('aria-label', `${fp.n}${act ? ', aktiv' : ''}${locked ? ', heute gesperrt' : ''}`);
+    const dot = document.createElement('span'); dot.className = 'ps-dot';
+    const txt = document.createElement('span'); txt.className = 'ps-txt';
+    const b = document.createElement('b'); b.textContent = fp.dn ? `${fp.n} · ${fp.dn}` : fp.n;
+    const sm = document.createElement('small');
+    const nf = x => x.toLocaleString('de-DE');
+    if (fp.k === '*') sm.textContent = pool.length ? `alle ${nf(pool.length)} ausgewählten Dateien` : 'alles, was du auswählst';
+    else if (!fp.set) sm.textContent = 'noch nicht vom PC übertragen';
+    else if (pool.length) {
+      const hv = fHave(fp);
+      sm.textContent = hv >= fp.c ? `alle ${nf(fp.c)} Medien da` : `${nf(hv)} von ${nf(fp.c)} Medien da`;
+    } else sm.textContent = `${nf(fp.c)} ${fp.c === 1 ? 'Medium' : 'Medien'}`;
+    txt.append(b, sm);
+    main.append(dot, txt);
+    if (act) { const t = document.createElement('span'); t.className = 'ps-tag'; t.textContent = lk ? 'heute' : loaded ? 'geladen' : 'aktiv'; main.append(t); }
+    card.append(main);
+    return card;
+  }));
+  psLock.hidden = !lk;
+  if (lk) psLock.textContent = `🔒 ${fLockText(lk)}`;
+}
+
 function srcCount(list) {
   const dirs = list.filter(s => s.type === 'dir').length, files = list.length - dirs;
   const parts = [];
@@ -5337,7 +5710,7 @@ async function addHandles(handles) {
       try { list = h.kind === 'directory' ? await collectFromDir(h) : [await h.getFile()]; }
       catch (_) { continue; }
       const src = await rememberHandle(h);
-      if (src) { remembered++; src.count = list.length; }
+      if (src) { remembered++; src.count = list.length; noteSrcFiles(src.id, list); }
       files.push(...list);
     }
   } finally { clearTimeout(slow); }
@@ -5390,6 +5763,9 @@ async function initMemory() {
     for (const r of loose) { r.p = pr.id; try { await idbPut(r); } catch (_) { /* bleibt trotzdem im Preset */ } }
   }
   allSrc.push(...recs);
+  memReady = true;
+  publishSoon();
+  setTimeout(() => { fillPresetLists(); }, 2500);
   const lk = presetLock();
   if (lk && presetById(lk.pr) && P.active !== lk.pr) { P.active = lk.pr; savePresets(); }   // heute gilt das Preset des Tages
   for (const r of recs) if (r.p === P.active) sources.push({ ...r, state: 'stored', count: 0 });
@@ -5432,6 +5808,7 @@ async function restoreSources(byClick) {
         const list = s.type === 'dir' ? await collectFromDir(s.handle) : [await s.handle.getFile()];
         s.state = 'loaded';
         s.count = list.length;
+        noteSrcFiles(s.id, list);
         files.push(...list);
       } catch (err) {
         s.state = err && err.name === 'NotAllowedError' ? 'denied' : 'missing';
@@ -5481,7 +5858,9 @@ function updateMemoryUI() {
   btnPick.classList.toggle('primary', !waiting.length && !library.some(usable));
   const missing = sources.filter(s => s.state === 'missing');
   if (!canRemember()) {
-    memoNote.textContent = 'Dieser Browser kann sich deine Dateien nicht merken. Wähle sie beim nächsten Öffnen einfach wieder aus, dein Fortschritt läuft dann weiter.';
+    memoNote.textContent = filterOn()
+      ? 'Dieser Browser kann sich deine Dateien nicht merken. Wähle beim Öffnen einfach alle aus, Shuffle nimmt dann nur die Medien deines Presets vom PC. Dein Fortschritt läuft weiter.'
+      : 'Dieser Browser kann sich deine Dateien nicht merken. Wähle sie beim nächsten Öffnen einfach wieder aus, dein Fortschritt läuft dann weiter.';
   } else if (!sources.length) {
     memoNote.textContent = 'Was du über „Hinzufügen“ oder „Ordner“ auswählst, merkt sich der Player. Beim nächsten Öffnen tippst du auf „Weitermachen“.';
   } else {
@@ -8866,6 +9245,7 @@ function start(opts = {}) {
   playDay = dayKey();
   lockGoal();                     // Tagesziel für heute festlegen, falls noch nicht geschehen
   setLocalPrLock();               // Preset des Tages an diesem Gerät
+  setFilterLock();                // … am Handy das gewählte Preset vom PC
   renderGoalUI();
   app.classList.remove('is-intro');
   setPlaying(true);
@@ -12354,7 +12734,7 @@ function placeFrames(g) {
       const fx = SIDE_COLS[row] + (f._jx || 0) * 0.08;
       const x = outer + (inner - outer) * fx;
       const y = H * (SIDE_ROWS[right ? 1 : 0][row] + (f._jy || 0) * 0.03);
-      const rot = f._rot * 0.75, th = (Math.abs(rot) * Math.PI) / 180;
+      const rot = (f._rot || 0) * 0.75, th = (Math.abs(rot) * Math.PI) / 180;
       const hx = ((w * Math.cos(th) + h * Math.sin(th)) * fit) / 2, hy = ((w * Math.sin(th) + h * Math.cos(th)) * fit) / 2;
       const xs = right ? Math.min(x, W - 16 - hx) : Math.max(x, 16 + hx);     // ganz auf dem Bildschirm
       const ys = Math.min(Math.max(y, 16 + hy), H - 16 - hy);
@@ -12364,11 +12744,11 @@ function placeFrames(g) {
       f.style.setProperty('--r', `${rot.toFixed(1)}deg`);
       return;
     }
-    const th = (f._angle * Math.PI) / 180;
+    const th = ((f._angle || 0) * Math.PI) / 180;
     f.style.setProperty('--fit', '1');
     f.style.setProperty('--x', `${(g.cx + Math.cos(th) * (g.hw + w * 0.2)).toFixed(1)}px`);
     f.style.setProperty('--y', `${(g.cy + Math.sin(th) * (g.hh + h * 0.2)).toFixed(1)}px`);
-    f.style.setProperty('--r', `${f._rot.toFixed(1)}deg`);
+    f.style.setProperty('--r', `${(f._rot || 0).toFixed(1)}deg`);
   });
 }
 /** Karten so um die Glaskarte legen, dass sie deren Ränder etwas überlappen. */
@@ -12602,8 +12982,8 @@ btnPick.addEventListener('click', () => pickFiles(false));
 btnPickDir.addEventListener('click', () => pickFiles(true));
 setAdd.addEventListener('click', () => pickFiles(false));
 setAddDir.addEventListener('click', () => pickFiles(true));
-fileInput.addEventListener('change', () => { const f = Array.from(fileInput.files || []); fileInput.value = ''; addFiles(f, { notRemembered: canRemember() }); });
-dirInput.addEventListener('change', () => { const f = Array.from(dirInput.files || []); dirInput.value = ''; addFiles(f, { notRemembered: canRemember() }); });
+fileInput.addEventListener('change', () => { const f = Array.from(fileInput.files || []); fileInput.value = ''; takeFiles(f, { notRemembered: canRemember() }); });
+dirInput.addEventListener('change', () => { const f = Array.from(dirInput.files || []); dirInput.value = ''; takeFiles(f, { notRemembered: canRemember() }); });
 btnResume.addEventListener('click', () => restoreSources(true));
 
 /* ── Presets: Übersicht auf dem Startbildschirm ── */
@@ -12618,6 +12998,14 @@ function presetInfo(p) {
   return `${what} · ${when}`;
 }
 function renderPresets() {
+  publishSoon();
+  if (phoneMode()) {
+    if (filterOn()) { renderFilters(); return; }
+    presetBox.hidden = true;
+    return;
+  }
+  psTitle.textContent = 'Deine Presets';
+  psNew.hidden = false;
   const on = canRemember() && P.list.length > 0;
   presetBox.hidden = !on;
   if (!on) return;
@@ -12675,6 +13063,8 @@ async function usePreset(id) {
   await restoreSources(true);
 }
 psList.addEventListener('click', e => {
+  const fu = e.target.closest('[data-fuse]');
+  if (fu) { useFilter(fu.dataset.fuse); return; }
   const ed = e.target.closest('[data-edit]');
   if (ed) { openPresetDlg(+ed.dataset.edit); return; }
   const u = e.target.closest('[data-use]');
@@ -12728,7 +13118,13 @@ async function psAdd(dir) {
   } catch (_) { return; }                                // abgebrochen
   if (!PD.id) PD.id = newPreset(psName.value || nextPresetName()).id;   // angelegt, sobald etwas drin ist
   if (PD.id === P.active && !lock) await addHandles(handles);          // aktives Preset: gleich in die Liste
-  else for (const h of handles) await rememberHandle(h, PD.id);
+  else {
+    for (const h of handles) {
+      const rec = await rememberHandle(h, PD.id);
+      if (!rec) continue;
+      try { noteSrcFiles(rec.id, h.kind === 'directory' ? await collectFromDir(h) : [await h.getFile()]); } catch (_) { /* später */ }
+    }
+  }
   PD.added = true;
   renderPresetDlg();
   renderPresets();
@@ -13464,9 +13860,9 @@ window.addEventListener('drop', async e => {
     if (handles.length && handles.length === items.length) { await addHandles(handles); return; }
   }
   const opts = { notRemembered: canRemember() };
-  if (!entries.length) { addFiles(fallback, opts); return; }
-  try { addFiles(await readEntries(entries), opts); }
-  catch (_) { addFiles(fallback, opts); }
+  if (!entries.length) { takeFiles(fallback, opts); return; }
+  try { takeFiles(await readEntries(entries), opts); }
+  catch (_) { takeFiles(fallback, opts); }
 });
 
 async function readEntries(entries) {
@@ -13773,6 +14169,18 @@ function albumGot(item) {
   return { msg, r, neu: !c };
 }
 /* Für den Ranking-Teil (Album, Rang-Raten): Münzen, Spieltag, geladene Dateien. */
+if (ShuffleSync.plOn) ShuffleSync.plOn(() => {    // neue Listen vom PC: Auswahl gleich anpassen
+  if (!phoneMode()) return;
+  if (!state.started && pool.length) applyFilter(chosenKey(), { quiet: true });
+  renderPresets();
+  updateMemoryUI();
+});
+if (TEST.expose) window.__shuf = {
+  lib: () => library.map(i => i.key).sort(), pool: () => pool.length, fcur: () => fcur,
+  prog: () => ({ round: progress.round, done: [...progress.done].sort(), shown: progress.shown }),
+  srcH: () => ({ ...srcH }), publish: () => publishPresets(), fill: () => fillPresetLists(),
+  enc: a => hEnc(new Set(a)), dec: t => [...hDec(t)].sort((p, q) => p - q), h32: s => fh32(s),
+};
 window.ShuffleGame = {
   addCoins: n => addCoins(n, { quiet: true }),
   dayKey: () => dayKey(),
