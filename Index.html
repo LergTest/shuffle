@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="shuffle-version" content="43">
+<meta name="shuffle-version" content="44">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <meta name="color-scheme" content="dark">
@@ -5283,7 +5283,7 @@ let restoring = false;
    Jeder gemerkte Eintrag gehört zu einem Preset (Feld p). Geladen ist immer nur das aktive Preset;
    `sources` sind dessen Einträge, `allSrc` alle. Jedes Preset hat seinen eigenen Rundenfortschritt.
    Das Preset des Tages gilt je Gerät: festgelegt beim ersten Start an diesem Gerät (PRLOCK_KEY, wird nicht
-   abgeglichen) und erst nach dem Tagesziel wechselbar. Ohne diesen Eintrag gilt wie früher d.pr des Tages. */
+   abgeglichen) und erst nach dem Tagesziel wechselbar. Ein anderes Gerät ist davon nicht betroffen. */
 const PRESET_KEY = 'shuffle-player/presets-v1';
 const P = { list: [], active: 0, seq: 1 };
 const allSrc = [];
@@ -5343,9 +5343,8 @@ function presetLock() {
   if (!canRemember()) return null;
   const d = todayRec(false);
   if (!d || !d.gl || d.hit) return null;
-  const l = localPrLock();
-  if (l) return { pr: Number(l.pr), prn: String(l.prn || '') };
-  return d.pr ? { pr: d.pr, prn: d.prn } : null;
+  const l = localPrLock();                 // nur wo heute gestartet wurde (d.pr kommt evtl. vom anderen Gerät)
+  return l ? { pr: Number(l.pr), prn: String(l.prn || '') } : null;
 }
 function lockText(d) {
   const p = presetById(d.pr);
