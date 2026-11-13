@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="shuffle-version" content="51">
+<meta name="shuffle-version" content="52">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <meta name="color-scheme" content="dark">
@@ -1878,7 +1878,13 @@ body.fd-open { overflow: hidden; }
 .fd-list { position: absolute; inset: 0; overflow-y: scroll; scroll-snap-type: y mandatory; overscroll-behavior: contain; scrollbar-width: none; }
 .fd-list::-webkit-scrollbar { display: none; }
 .fd-slide { position: relative; height: 100%; scroll-snap-align: start; scroll-snap-stop: always; overflow: hidden; background: #000; }
-.fd-media { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+.fd-media { position: absolute; inset: 0; z-index: 1; display: flex; align-items: center; justify-content: center; }
+/* Ränder: die Farben des Mediums, stark weichgezeichnet (statt schwarzer Balken bei Querformat) */
+.fd-amb { position: absolute; left: -10%; top: -10%; width: 120%; height: 120%; z-index: 0; filter: blur(32px) saturate(1.25) brightness(.5); opacity: 0; transition: opacity .5s ease; pointer-events: none; }
+.fd-amb.on { opacity: 1; }
+/* Unten etwas abdunkeln, damit Name, Tags und Knöpfe lesbar bleiben */
+.fd-slide::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 34%; z-index: 1; pointer-events: none;
+  background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, .38) 55%, rgba(0, 0, 0, .62)); }
 .fd-media video, .fd-img { width: 100%; height: 100%; object-fit: contain; display: block; }
 .fd-car { position: absolute; inset: 0; display: flex; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; }
 .fd-car::-webkit-scrollbar { display: none; }
@@ -1887,15 +1893,26 @@ body.fd-open { overflow: hidden; }
 .fd-top > * { pointer-events: auto; }
 .fd-title { font-size: 16px; text-shadow: 0 1px 3px rgba(0, 0, 0, .7); }
 .fd-ib { width: 42px; height: 42px; border-radius: 50%; border: 0; background: rgba(0, 0, 0, .35); color: #fff; display: grid; place-items: center; cursor: pointer; }
-.fd-side { position: absolute; right: 10px; bottom: calc(var(--sab) + 96px); z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.fd-side { position: absolute; right: 8px; bottom: calc(var(--sab) + 40px); z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 16px; }
 .fd-side button { display: flex; flex-direction: column; align-items: center; gap: 3px; border: 0; background: none; color: #fff; font: inherit; font-size: 11.5px; cursor: pointer; text-shadow: 0 1px 3px rgba(0, 0, 0, .8); }
-.fd-side button .i { width: 50px; height: 50px; padding: 13px; border-radius: 50%; background: rgba(0, 0, 0, .35); box-sizing: border-box; }
+.fd-side button .i { width: 48px; height: 48px; padding: 12px; border-radius: 50%; background: rgba(0, 0, 0, .32); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); box-sizing: border-box; }
 .fd-side .fd-like.on .i { color: #ff4d6d; }
-.fd-info { position: absolute; left: 14px; right: 82px; bottom: calc(var(--sab) + 26px); z-index: 2; text-shadow: 0 1px 3px rgba(0, 0, 0, .85); pointer-events: none; }
-.fd-info b { display: block; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.fd-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 7px; }
-.fd-tags i { font-style: normal; font-size: 12.5px; padding: 3px 9px; border-radius: 999px; background: rgba(var(--c), .3); border: 1px solid rgba(var(--c), .75); text-shadow: none; }
-.fd-seek { position: absolute; left: 0; right: 0; bottom: var(--sab); height: 24px; z-index: 3; display: flex; align-items: flex-end; touch-action: none; cursor: pointer; }
+.fd-info { position: absolute; left: 14px; right: 76px; bottom: calc(var(--sab) + 34px); z-index: 2; text-shadow: 0 1px 3px rgba(0, 0, 0, .7); pointer-events: none; }
+.fd-info b { display: block; font-size: 15.5px; font-weight: 650; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fd-info b small { margin-left: 6px; font-size: 13px; font-weight: 500; opacity: .75; font-variant-numeric: tabular-nums; }
+.fd-tags { display: flex; flex-wrap: nowrap; gap: 6px; margin-top: 8px; overflow: hidden; }
+.fd-tags.more { pointer-events: auto; cursor: pointer; }
+.fd-tags.open { flex-wrap: wrap; max-height: 34vh; overflow-y: auto; overscroll-behavior: contain; }
+.fd-tags i {
+  flex: 0 1 auto; display: inline-block; min-width: 0; max-width: 100%; font-style: normal; font-size: 12.5px; font-weight: 550; line-height: 1.3;
+  padding: 4px 10px 4px 8px; border-radius: 999px; background: rgba(255, 255, 255, .15); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  text-shadow: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.fd-tags.open i { max-width: 100%; }
+.fd-tags i::before { content: ""; display: inline-block; width: 7px; height: 7px; margin-right: 6px; border-radius: 50%; background: rgb(var(--c)); vertical-align: 1px; }
+.fd-tags i.n { flex: none; background: rgba(255, 255, 255, .26); }
+.fd-tags i.n::before { display: none; }
+.fd-seek { position: absolute; left: 0; right: 0; bottom: var(--sab); height: 26px; z-index: 3; display: flex; align-items: flex-end; touch-action: none; cursor: pointer; }
 .fd-prog { position: relative; flex: 1; height: 3px; background: rgba(255, 255, 255, .18); pointer-events: none; transition: height .12s; }
 .fd-seek:hover .fd-prog, .fd-seek.drag .fd-prog { height: 7px; }
 .fd-prog i { display: block; height: 100%; width: 0; background: #fff; }
@@ -14864,10 +14881,32 @@ function fdChip(u) {
   i.style.setProperty('--c', t.c);
   return i;
 }
+const fdName = n => String(n || '').replace(/\.[a-z0-9]{2,5}$/i, '');
+/** Wie viele Tags passen ganz in eine Zeile (geschätzt, ohne zu messen); der Rest steckt hinter „+N“. */
+function fdTagFit(us) {
+  const avail = Math.max(150, (fdList.clientWidth || innerWidth) - 96);
+  let used = 0, k = 0;
+  for (; k < us.length; k++) {
+    const w = String(FD.tagInfo.get(us[k]).n).length * 7.3 + 36, rest = us.length - k - 1;
+    if (k && used + w + (rest ? 48 : 0) > avail) break;
+    used += w + 6;
+  }
+  return Math.max(1, k);
+}
 function fdInfo(s) {
   const it = s.e.items[s.idx], info = s.el.querySelector('.fd-info');
   const tags = mk('span', 'fd-tags');
-  for (const u of it.tags) { const c = fdChip(u); if (c) tags.append(c); }
+  const us = it.tags.filter(u => FD.tagInfo.has(u)).sort((a, b) => fdW(b) - fdW(a));    // wichtigste zuerst
+  const open = !!s.tagsOpen, fit = fdTagFit(us), show = open ? us : us.slice(0, fit);
+  for (const u of show) tags.append(fdChip(u));
+  if (us.length > fit) {
+    tags.classList.add('more');
+    if (open) tags.classList.add('open');
+    else tags.append(mk('i', 'n', `+${us.length - fit}`));
+    tags.title = open ? 'Weniger Tags zeigen' : 'Alle Tags zeigen';
+    tags.addEventListener('click', ev => { ev.stopPropagation(); s.tagsOpen = !s.tagsOpen; fdInfo(s); });
+  }
+  tags.hidden = !us.length;
   const head = [];
   if (s.segs) {
     const row = mk('span', 'fd-part');
@@ -14882,7 +14921,9 @@ function fdInfo(s) {
     }
     head.push(row);
   }
-  info.replaceChildren(...head, mk('b', '', s.e.items.length > 1 ? `${it.f.name} · ${s.idx + 1}/${s.e.items.length}` : it.f.name), tags);
+  const name = mk('b', '', fdName(it.f.name));
+  if (s.e.items.length > 1) name.append(mk('small', '', `${s.idx + 1} von ${s.e.items.length}`));
+  info.replaceChildren(...head, name, tags);
   const lk = s.el.querySelector('.fd-like');
   lk.classList.toggle('on', FD.like[it.k] === 1);
   lk.setAttribute('aria-pressed', String(FD.like[it.k] === 1));
@@ -14895,13 +14936,16 @@ function fdMake(e) {
   el.dataset.n = n;
   const media = mk('div', 'fd-media');
   const s = { n, el, e, idx: 0, urls: [], loaded: false, v: null, imgs: [], t0: 0, watch: 0, playAt: 0, carT: 0, less: false,
-              segs: null, seg: e.seg != null ? e.seg : -1, segSeen: -1, hot: false, drag: false };
+              segs: null, seg: e.seg != null ? e.seg : -1, segSeen: -1, hot: false, drag: false, tagsOpen: false, amb: null };
+  if (settings.ambient) { const amb = document.createElement('canvas'); amb.className = 'fd-amb'; amb.width = 18; amb.height = 32; el.append(amb); s.amb = amb; }
   if (e.kind === 'v') {
     const v = document.createElement('video');
     v.playsInline = true; v.setAttribute('playsinline', ''); v.loop = true; v.preload = 'metadata'; v.muted = FD.muted;
     v.addEventListener('playing', () => { if (FD.active === n && !s.playAt) s.playAt = performance.now(); fdPausedMark(s, false); });
     v.addEventListener('pause', () => { if (s.playAt) { s.watch += performance.now() - s.playAt; s.playAt = 0; } });
     v.addEventListener('loadedmetadata', () => fdSegReady(s));
+    v.addEventListener('loadeddata', () => fdAmb(s));
+    v.addEventListener('seeked', () => { if (FD.active !== s.n) fdAmb(s); });
     v.addEventListener('timeupdate', () => fdTime(s));
     media.append(v);
     s.v = v;
@@ -14915,10 +14959,14 @@ function fdMake(e) {
     el.append(media, sk);
   } else {
     const car = mk('div', 'fd-car');
-    for (let i = 0; i < e.items.length; i++) { const im = document.createElement('img'); im.className = 'fd-img'; im.alt = ''; im.draggable = false; im.decoding = 'async'; car.append(im); s.imgs.push(im); }
+    for (let i = 0; i < e.items.length; i++) {
+      const im = document.createElement('img'); im.className = 'fd-img'; im.alt = ''; im.draggable = false; im.decoding = 'async';
+      im.addEventListener('load', () => { if (i === s.idx) fdAmb(s); });
+      car.append(im); s.imgs.push(im);
+    }
     car.addEventListener('scroll', () => {
       const w = car.clientWidth || 1, i = Math.round(car.scrollLeft / w);
-      if (i !== s.idx && i >= 0 && i < e.items.length) { s.idx = i; fdInfo(s); fdCarArm(s); }
+      if (i !== s.idx && i >= 0 && i < e.items.length) { s.idx = i; fdInfo(s); fdCarArm(s); fdAmb(s); }
     }, { passive: true });
     s.car = car;
     media.append(car);
@@ -15047,6 +15095,17 @@ function fdCont(s) {
   fdPlay(s);
   fdSaveSoon();
 }
+/** Ränder einfärben: das Medium winzig verkleinert, per CSS stark weichgezeichnet. Beim laufenden Video jede Sekunde. */
+function fdAmb(s) {
+  if (!s || !s.amb) return;
+  const src = s.v || s.imgs[s.idx];
+  if (!src || (s.v ? s.v.readyState < 2 : !(src.complete && src.naturalWidth))) return;
+  try {
+    s.amb.getContext('2d').drawImage(src, 0, 0, s.amb.width, s.amb.height);
+    s.amb.classList.add('on');
+  } catch (_) { /* dann eben schwarz */ }
+}
+setInterval(() => { if (FD.open && !document.hidden) { const s = FD.slides.get(FD.active); if (s && s.v && !s.v.paused) fdAmb(s); } }, 1000);
 function fdFill(k) {
   for (let i = 0; i < k; i++) { const e = fdNextEntry(); if (!e) break; fdMake(e); }
 }
@@ -15229,7 +15288,7 @@ $('fdMute').addEventListener('click', () => {
 $('fdClose').addEventListener('click', () => fdClose());
 // Tippen: einmal Pause/Weiter (Bilder: nächstes), doppelt ❤, lange drücken: weniger davon
 fdList.addEventListener('pointerdown', e => {
-  if (e.target.closest('button, .fd-seek')) return;
+  if (e.target.closest('button, .fd-seek, .fd-tags.more')) return;
   FD.tap = { x: e.clientX, y: e.clientY, t: performance.now() };
   FD.pressed = false;
   clearTimeout(FD.press);
@@ -15343,7 +15402,7 @@ function fdClose(fromPop) {
 }
 window.addEventListener('pagehide', () => { if (FD.open) fdSave(); });
 if (TEST.expose) window.__fdt = { next: () => fdNextEntry(), score: it => fdScore(it, Date.now()), main: fdMain, build: fdBuildPool, profile: fdProfile, save: fdSave,
-  segs: fdSegs, choose: fdChooseSeg, sig: fdSig, cont: () => fdCont(FD.slides.get(FD.active)) };
+  segs: fdSegs, choose: fdChooseSeg, sig: fdSig, cont: () => fdCont(FD.slides.get(FD.active)), name: fdName };
 $('btnFeed').addEventListener('click', fdOpen);
 
 $('introTags').addEventListener('click', () => {
