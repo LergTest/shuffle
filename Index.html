@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="shuffle-version" content="44">
+<meta name="shuffle-version" content="47">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <meta name="color-scheme" content="dark">
@@ -1764,6 +1764,44 @@ svg.i.coin { width: 16px; height: 16px; display: inline-block; vertical-align: -
 .sv-entry svg { color: #ff5c7a; }
 .mode-row .rk-short, .mode-row.two .rk-long { display: none; }
 .mode-row.two .rk-short { display: inline; }
+.mode-row.three .rk-short { display: inline; }
+.mode-row.three .rk-long { display: none; }
+.mode-row.three .pill { font-size: 14px; padding-left: 8px; padding-right: 8px; gap: 6px; }
+@media (max-width: 370px) { .mode-row.three { flex-wrap: wrap; } .mode-row.three .fd-entry { flex-basis: 100%; } }
+#fd { position: fixed; inset: 0; z-index: 60; background: #000; color: #fff; overflow: hidden; font: 15px/1.4 var(--font); -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+body.fd-open { overflow: hidden; }
+.fd-list { position: absolute; inset: 0; overflow-y: scroll; scroll-snap-type: y mandatory; overscroll-behavior: contain; scrollbar-width: none; }
+.fd-list::-webkit-scrollbar { display: none; }
+.fd-slide { position: relative; height: 100%; scroll-snap-align: start; scroll-snap-stop: always; overflow: hidden; background: #000; }
+.fd-media { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+.fd-media video, .fd-img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.fd-car { position: absolute; inset: 0; display: flex; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; }
+.fd-car::-webkit-scrollbar { display: none; }
+.fd-car .fd-img { flex: 0 0 100%; scroll-snap-align: center; }
+.fd-top { position: absolute; top: 0; left: 0; right: 0; z-index: 3; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: calc(var(--sat) + 10px) 12px 18px; background: linear-gradient(rgba(0, 0, 0, .5), transparent); pointer-events: none; }
+.fd-top > * { pointer-events: auto; }
+.fd-title { font-size: 16px; text-shadow: 0 1px 3px rgba(0, 0, 0, .7); }
+.fd-ib { width: 42px; height: 42px; border-radius: 50%; border: 0; background: rgba(0, 0, 0, .35); color: #fff; display: grid; place-items: center; cursor: pointer; }
+.fd-side { position: absolute; right: 10px; bottom: calc(var(--sab) + 96px); z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.fd-side button { display: flex; flex-direction: column; align-items: center; gap: 3px; border: 0; background: none; color: #fff; font: inherit; font-size: 11.5px; cursor: pointer; text-shadow: 0 1px 3px rgba(0, 0, 0, .8); }
+.fd-side button .i { width: 50px; height: 50px; padding: 13px; border-radius: 50%; background: rgba(0, 0, 0, .35); box-sizing: border-box; }
+.fd-side .fd-like.on .i { color: #ff4d6d; }
+.fd-info { position: absolute; left: 14px; right: 82px; bottom: calc(var(--sab) + 26px); z-index: 2; text-shadow: 0 1px 3px rgba(0, 0, 0, .85); pointer-events: none; }
+.fd-info b { display: block; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fd-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 7px; }
+.fd-tags i { font-style: normal; font-size: 12.5px; padding: 3px 9px; border-radius: 999px; background: rgba(var(--c), .3); border: 1px solid rgba(var(--c), .75); text-shadow: none; }
+.fd-prog { position: absolute; left: 0; right: 0; bottom: var(--sab); height: 3px; z-index: 2; background: rgba(255, 255, 255, .18); pointer-events: none; }
+.fd-prog i { display: block; height: 100%; width: 0; background: #fff; }
+.fd-dots { position: absolute; left: 0; right: 0; bottom: calc(var(--sab) + 10px); z-index: 2; display: flex; justify-content: center; gap: 6px; pointer-events: none; }
+.fd-dots i { width: 6px; height: 6px; border-radius: 50%; background: rgba(255, 255, 255, .4); }
+.fd-dots i.on { background: #fff; }
+.fd-paused { position: absolute; left: 50%; top: 50%; width: 76px; height: 76px; margin: -38px 0 0 -38px; border-radius: 50%; background: rgba(0, 0, 0, .4); display: grid; place-items: center; z-index: 2; pointer-events: none; }
+.fd-paused .i { width: 34px; height: 34px; }
+#fd .fd-heart { position: absolute; z-index: 4; width: 96px; height: 96px; margin: -48px 0 0 -48px; color: #ff4d6d; pointer-events: none; animation: fdHeart .8s ease-out forwards; }
+@keyframes fdHeart { 0% { transform: scale(.4); opacity: 0; } 25% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(1.25) translateY(-40px); opacity: 0; } }
+.fd-hint { position: absolute; left: 50%; top: calc(var(--sat) + 68px); transform: translateX(-50%); z-index: 3; margin: 0; width: max-content; max-width: calc(100% - 40px); padding: 9px 14px; border-radius: 14px; background: rgba(0, 0, 0, .6); font-size: 13.5px; text-align: center; pointer-events: none; }
+.fd-empty { position: absolute; inset: 0; display: grid; place-items: center; padding: 30px; text-align: center; color: rgba(255, 255, 255, .8); }
+@media (prefers-reduced-motion: reduce) { .fd-heart { animation-duration: .01s; } }
 body.rk-open #app { visibility: hidden; }
 #rk {
   --rk-bg: #0b0b0f; --rk-s1: #15151c; --rk-s2: #1e1e27; --rk-s3: #2a2a35;
@@ -1919,6 +1957,17 @@ body.rk-open #app { visibility: hidden; }
 .rk-filter .pill { flex: none; height: 40px; padding: 0 12px; font-size: 13px; gap: 6px; }
 .rk-filter .pill.ic { width: 40px; padding: 0; }
 .rk-fchips { display: flex; gap: 6px; margin: 10px -16px 0; padding: 0 16px 2px; overflow-x: auto; scrollbar-width: none; }
+.rk-libf { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
+.rk-libf select { flex: 1 1 160px; min-width: 0; max-width: 100%; height: 38px; padding: 0 34px 0 14px; border: 1px solid var(--rk-line); border-radius: 999px; background: var(--rk-s2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23aaa' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 14px center; color: var(--fg); font: inherit; font-size: 14px; appearance: none; -webkit-appearance: none; cursor: pointer; }
+.rk-seg { display: inline-flex; flex: none; padding: 3px; gap: 2px; border-radius: 999px; background: var(--rk-s2); border: 1px solid var(--rk-line); }
+.rk-seg button { height: 30px; padding: 0 13px; border: 0; border-radius: 999px; background: transparent; color: var(--fg); font: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer; opacity: .75; }
+.rk-seg button[aria-pressed="true"] { background: #fff; color: #000; opacity: 1; }
+.rk-strip.rk-progstrip { gap: 10px; min-height: 46px; }
+.rk-strip.rk-progstrip.none { visibility: hidden; }
+.rk-ptrack { position: relative; flex: 1; min-width: 60px; height: 22px; cursor: pointer; touch-action: none; }
+.rk-ptrack::before { content: ''; position: absolute; left: 0; right: 0; top: 8px; height: 6px; border-radius: 3px; background: rgba(255, 255, 255, .16); }
+.rk-pfill { position: absolute; left: 0; top: 8px; height: 6px; width: 0; border-radius: 3px; background: var(--rk-acc, #fff); }
+.rk-ptime { flex: none; min-width: 78px; text-align: right; font-size: 12.5px; font-variant-numeric: tabular-nums; opacity: .8; }
 .rk-fchips::-webkit-scrollbar { display: none; }
 .rk-count { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 30px; margin: 8px 2px 6px; font-size: 13px; color: var(--fg-3); font-variant-numeric: tabular-nums; }
 .rk-count .link { padding: 4px 0; font-size: 13px; }
@@ -2664,14 +2713,16 @@ body.rk-open #app { visibility: hidden; }
       <button type="button" class="pill primary start" id="btnStart" hidden><svg class="i"><use href="#i-play"/></svg><span id="startLabel">Wiedergabe starten</span></button>
       <button type="button" class="pill fav-start" id="btnFavStart" hidden><svg class="i"><use href="#i-heart-fill"/></svg><span id="favStartLabel">Nur Favoriten abspielen</span></button>
       <div class="mode-row" id="modeRow">
+        <button type="button" class="pill fd-entry" id="btnFeed" hidden title="Videos zum Hochwischen, der Feed lernt aus deinen Tags"><svg class="i"><use href="#i-swipe-u"/></svg><span>Für dich</span></button>
         <button type="button" class="pill sv-entry" id="btnSurvive" hidden title="Eigenes Spiel nebenher: 3 Leben, jede Stufe dauert länger"><svg class="i"><use href="#i-heart-fill"/></svg>Überleben</button>
-        <button type="button" class="pill rank-entry" id="btnRank" title="Eigene Medien im 1v1 ranken und taggen"><svg class="i"><use href="#i-trophy"/></svg><span class="rk-long">Ranking: vergleichen und taggen</span><span class="rk-short">Ranking</span></button>
+        <button type="button" class="pill rank-entry" id="btnRank" title="Eigene Medien im 1v1 ranken"><svg class="i"><use href="#i-trophy"/></svg><span class="rk-long">Ranking: im Duell vergleichen</span><span class="rk-short">Ranking</span></button>
       </div>
       <div class="foot">
         <span id="introDur"></span>
         <span class="foot-links">
           <button type="button" class="link" id="introVerlauf" aria-controls="today">Heute &amp; Verlauf</button>
           <button type="button" class="link" id="introFavs" aria-controls="favs">Favoriten</button>
+          <button type="button" class="link" id="introTags">Tags</button>
           <button type="button" class="link" id="introAlbum">Album</button>
           <button type="button" class="link" id="introShop" aria-controls="shop">Shop</button>
           <button type="button" class="link" id="introSet" aria-controls="settings">Einstellungen</button>
@@ -3056,17 +3107,27 @@ body.rk-open #app { visibility: hidden; }
   <div class="sv-msg" id="svMsg" role="status" aria-live="polite"></div>
   <div class="sv-panel" id="svPanel" hidden></div>
 </div>
+<div id="fd" hidden>
+  <div class="fd-list" id="fdList"></div>
+  <div class="fd-top">
+    <button type="button" class="fd-ib" id="fdClose" aria-label="Schließen" title="Schließen (Esc)"><svg class="i"><use href="#i-close"/></svg></button>
+    <b class="fd-title">Für dich</b>
+    <button type="button" class="fd-ib" id="fdMute" aria-label="Ton aus" title="Ton (M)"><svg class="i"><use id="fdMuteUse" href="#i-vol"/></svg></button>
+  </div>
+  <p class="fd-hint" id="fdHint" hidden></p>
+  <div class="fd-empty" id="fdEmpty" hidden></div>
+</div>
 <div id="rk" hidden>
   <section class="rk-view" id="rkHome" aria-labelledby="rkHomeTitle">
     <header class="rk-head">
       <button type="button" class="ib sm" data-back aria-label="Zurück zu Shuffle" title="Zurück (Esc)"><svg class="i"><use href="#i-back"/></svg></button>
       <h2 class="rk-title" id="rkHomeTitle">Ranking</h2>
       <button type="button" class="ib sm" data-fs aria-label="Vollbild" title="Vollbild (F)" hidden><svg class="i"><use href="#i-expand"/></svg></button>
-      <button type="button" class="ib sm" id="rkHomeTags" aria-label="Tags bearbeiten" title="Tags bearbeiten"><svg class="i"><use href="#i-tag"/></svg></button>
+      <button type="button" class="ib sm" id="rkHomeTags" aria-label="Tags vergeben" title="Tags vergeben"><svg class="i"><use href="#i-tag"/></svg></button>
       <button type="button" class="ib sm" id="rkHomeMore" aria-label="Mehr" title="Sicherung"><svg class="i"><use href="#i-more"/></svg></button>
     </header>
     <div class="rk-scroll">
-      <p class="rk-lead" id="rkHomeLead">Lege einen Ranking-Ordner an und lade Bilder oder Videos hinein. Dann trittst du sie im 1v1 gegeneinander an, Runde für Runde, bis jedes seinen festen Platz hat. Nebenbei kannst du alles taggen und später nach Tags suchen.</p>
+      <p class="rk-lead" id="rkHomeLead">Lege einen Ranking-Ordner an und lade Bilder oder Videos hinein. Dann trittst du sie im 1v1 gegeneinander an, Runde für Runde, bis jedes seinen festen Platz hat. Getaggt wird im eigenen Bereich „Tags“ (oben rechts).</p>
       <div class="rk-folders" id="rkFolders"></div>
       <button type="button" class="pill rk-new" id="rkNew"><svg class="i"><use href="#i-plus"/></svg>Neuer Ranking-Ordner</button>
       <button type="button" class="pill rk-new al-entry" id="rkAlbumBtn"><svg class="i"><use href="#i-star-fill"/></svg>Sammelalbum</button>
@@ -3099,6 +3160,14 @@ body.rk-open #app { visibility: hidden; }
         <button type="button" class="pill" id="rkSort" title="Sortieren"><svg class="i"><use href="#i-sort"/></svg><span id="rkSortLabel">Beste</span></button>
         <button type="button" class="pill ic" id="rkMode" aria-label="Als Raster zeigen" title="Liste oder Raster"><svg class="i"><use id="rkModeUse" href="#i-grid"/></svg></button>
       </div>
+      <div class="rk-libf" id="rkLibF" hidden>
+        <select id="rkLibPre" aria-label="Preset"></select>
+        <div class="rk-seg" role="group" aria-label="Bilder oder Videos">
+          <button type="button" data-kind="" aria-pressed="true">Alle</button>
+          <button type="button" data-kind="v" aria-pressed="false">Videos</button>
+          <button type="button" data-kind="i" aria-pressed="false">Bilder</button>
+        </div>
+      </div>
       <div class="rk-fchips" id="rkFChips"></div>
       <div class="rk-count" id="rkCount"></div>
       <div class="rk-items" id="rkItems"></div>
@@ -3130,7 +3199,7 @@ body.rk-open #app { visibility: hidden; }
       <button type="button" class="pill" id="rkUndo"><svg class="i"><use href="#i-undo"/></svg>Rückgängig</button>
       <button type="button" class="pill" id="rkTie"><svg class="i"><use href="#i-equal"/></svg>Gleich gut</button>
     </footer>
-    <p class="rk-keys only-mouse" id="rkDKeys">← oder ↑ erstes · → oder ↓ zweites · Leertaste gleich gut · Z rückgängig · Q / W Tags</p>
+    <p class="rk-keys only-mouse" id="rkDKeys">← oder ↑ erstes · → oder ↓ zweites · Leertaste gleich gut · Z rückgängig</p>
   </section>
 
   <section class="rk-view rk-viewer" id="rkView" aria-labelledby="rkVTitle">
@@ -3187,7 +3256,7 @@ body.rk-open #app { visibility: hidden; }
         <select class="rk-num" id="rkTNum" aria-label="Nummer für neue Tags" title="Nummer fürs Profi-Taggen"></select>
         <button type="button" class="pill primary" id="rkTAdd"><svg class="i"><use href="#i-plus"/></svg>Anlegen</button>
       </div>
-      <p class="rk-fine">Nummern ordnen deine Tags fürs Profi-Taggen: Erst kommen alle Tags mit Nummer 1 (zum Beispiel der Ort), dann die mit Nummer 2 (zum Beispiel Personen) und so weiter. Mit ★ wird ein Tag zum Schnell-Tag, er steht dann direkt unter jedem Medium. Antippen zum Umbenennen, Umnummerieren, Umfärben oder Löschen.</p>
+      <p class="rk-fine">Nummern ordnen deine Tags fürs Profi-Taggen: Erst kommen alle Tags mit Nummer 1 (zum Beispiel der Ort), dann die mit Nummer 2 (zum Beispiel Personen) und so weiter. Mit ★ wird ein Tag zum Schnell-Tag, er steht beim Taggen dann ganz vorne. Antippen zum Umbenennen, Umnummerieren, Umfärben oder Löschen.</p>
       <div id="rkTList"></div>
     </div>
   </section>
@@ -3367,7 +3436,9 @@ function writeLocal(s) {
    Form ohne die Nummern des Geräts. Ansicht, zuletzt benutzte Tags und der zuletzt offene Ordner bleiben je Gerät.
    Zusammenführen: Ordner und Tags von beiden Seiten; gelöscht wird nur, was die andere Seite nicht verändert hat.
    Hat derselbe Ordner auf beiden Geräten Neues, gilt das Ranking mit mehr Entscheidungen (sonst das neuere), neue
-   Medien und Tags von der anderen Seite kommen dazu. Rankings gehen beim Verbinden nie verloren. */
+   Medien und Tags von der anderen Seite kommen dazu. Rankings gehen beim Verbinden nie verloren.
+   Tags je Datei (ft: Schlüssel → Tags): je Datei gilt, was eine Seite dazu getan oder weggenommen hat. Kennt die
+   andere Seite ft noch nicht (ältere App), bleiben die hiesigen. */
 let rkHooks = null;                        // { flush, reload, idle } vom Ranking-Teil
 let rkMemo = ['', RK0];
 function rankDev() {
@@ -3398,7 +3469,13 @@ function rkCanon(txt) {
       r: x.r && typeof x.r === 'object' ? { seed: x.r.seed, log: x.r.log, st: x.r.st } : null,
     });
   }
-  return rkJ({ t, f });
+  if (!d.ft || typeof d.ft !== 'object' || (!t.length && !f.length)) return rkJ({ t, f });
+  const ft = {};
+  for (const k of Object.keys(d.ft).sort()) {
+    const u = [...new Set(rkArr(d.ft[k]).map(id => tu.get(n0(id))).filter(Boolean))];
+    if (u.length && k.includes('|')) ft[k] = u;
+  }
+  return rkJ({ t, f, ft });
 }
 function readRank() {
   if (rkHooks && rkHooks.flush) { try { rkHooks.flush(); } catch (_) { /* egal */ } }
@@ -3430,9 +3507,17 @@ function rkLocal(ct, curTxt) {
              it: rkArr(x.it).map(y => ({ i: y.i, k: y.k, n: y.n, s: y.s, v: y.v, t: rkArr(y.t).map(u => tOf.get(u)).filter(Boolean), a: y.a })),
              r: x.r || null };
   });
+  let ft = null;
+  if (c.ft && typeof c.ft === 'object') {
+    ft = {};
+    for (const [k, a] of Object.entries(c.ft)) { const v = [...new Set(rkArr(a).map(u => tOf.get(u)).filter(Boolean))]; if (v.length) ft[k] = v; }
+  } else if (cur.ft && typeof cur.ft === 'object') {     // Cloud ohne Tags je Datei (ältere App): die hiesigen bleiben
+    ft = {};
+    for (const [k, a] of Object.entries(cur.ft)) { const v = rkArr(a).map(n0).filter(i => usedT.has(i)); if (v.length) ft[k] = v; }
+  }
   const rec = rkArr(cur.rec).filter(id => usedT.has(n0(id)));
   const last = usedF.has(n0(cur.last)) ? n0(cur.last) : 0;
-  return rkJ({ v: 1, tags, ts, rec, fs, fq, last, ui: cur.ui && typeof cur.ui === 'object' ? cur.ui : {} });
+  return rkJ({ v: 1, tags, ts, rec, fs, fq, last, ui: cur.ui && typeof cur.ui === 'object' ? cur.ui : {}, ...(ft ? { ft } : {}) });
 }
 function writeRank(ct) {
   if (typeof ct !== 'string' || ct === readRank()) return;
@@ -3524,7 +3609,14 @@ function mergeRank(lt, rt, bt) {
     names.add(rkNorm(x.n));
     return x;
   });
-  return rkJ({ t, f });
+  if (!L.ft && !R.ft) return rkJ({ t, f });
+  const fix = a => [...new Set(rkArr(a).map(u => alias.get(u) || u))].filter(u => tu.has(u));
+  const LF = L.ft || null, RF = R.ft || null, BF = B && B.ft ? B.ft : null, ft = {};
+  for (const k of [...new Set([...Object.keys(LF || {}), ...Object.keys(RF || {})])].sort()) {
+    const v = fix(!RF ? LF[k] : !LF ? RF[k] : rkSet3(rkArr(LF[k]), rkArr(RF[k]), BF ? rkArr(BF[k]) : null));
+    if (v.length) ft[k] = v;
+  }
+  return rkJ({ t, f, ft });
 }
 /** Beim Verbinden: Rankings von beiden Seiten. */
 const rkJoin = (lrk, rrk) => (typeof rrk !== 'string' ? lrk : lrk === RK0 ? rrk : rrk === RK0 ? lrk : mergeRank(lrk, rrk, null));
@@ -3539,7 +3631,7 @@ function rkNext(lrk, r) {
   return { rk, mine: true, merged: rk !== rrk && rk !== lrk, push: rk !== rrk };
 }
 /* ── Album, Überleben, Rang-Raten (Speicher x) ──
-   Alles darin wächst nur (Karten, Rekorde, Zähler für heute). Deshalb wird es immer zusammengeführt, ganz ohne
+   Alles darin wächst nur (Karten, Rekorde, Zähler für heute); beim Feed-Profil gilt je Eintrag der neuere. Deshalb wird es immer zusammengeführt, ganz ohne
    gemeinsamen Stand: Karten von beiden Seiten, jeweils das Höhere. Ältere App-Versionen kennen x nicht; fehlt es
    in der Cloud, bleibt das hiesige. Karte = [Seltenheit 0–4, erster Tag, wie oft ganz gesehen, davon eingetauscht]. */
 let xMemo = null;
@@ -3557,11 +3649,23 @@ function xObj(raw) {
     al[k] = [Math.min(4, Math.max(0, xInt(c[0]))), xDay(c[1]), n, Math.min(n - 1, Math.max(0, xInt(c[3])))];
   }
   const sv = o.sv && typeof o.sv === 'object' ? o.sv : {}, rg = o.rg && typeof o.rg === 'object' ? o.rg : {};
+  // Feed „Für dich“: Gewicht je Tag (uid) und ❤ (1) / weniger davon (−1) je Datei, jeweils mit Zeitpunkt
+  const fd0 = o.fd && typeof o.fd === 'object' ? o.fd : {}, fw = {}, fi = {};
+  const ws = fd0.w && typeof fd0.w === 'object' ? fd0.w : {}, is = fd0.it && typeof fd0.it === 'object' ? fd0.it : {};
+  for (const k of Object.keys(ws).sort()) {
+    const e = ws[k], w = Array.isArray(e) ? Number(e[0]) : NaN;
+    if (/^[\w-]{3,80}$/.test(k) && Number.isFinite(w)) fw[k] = [Math.round(Math.max(-9, Math.min(9, w)) * 1000) / 1000, xInt(e[1])];
+  }
+  for (const k of Object.keys(is).sort()) {
+    const e = is[k], s = Array.isArray(e) ? Math.round(Number(e[0])) : NaN;
+    if (k.includes('|') && k.length <= 300 && (s === -1 || s === 0 || s === 1)) fi[k] = [s, xInt(e[1])];
+  }
   return {
     v: 1, al,
     alr: [...new Set(rkArr(o.alr).filter(x => typeof x === 'string' && x))].sort(),
     sv: { best: xInt(sv.best), bestN: xInt(sv.bestN), bestS: xInt(sv.bestS), day: xDay(sv.day), runs: xInt(sv.runs) },
     rg: { best: xInt(rg.best), day: xDay(rg.day), plays: xInt(rg.plays) },
+    fd: { w: fw, it: fi },
   };
 }
 const X0 = rkJ(xObj(null));
@@ -3579,6 +3683,7 @@ function xMerge(at, bt) {
   }
   const today = (p, q, f) => (p.day === q.day ? Math.max(p[f], q[f]) : p.day > q.day ? p[f] : q[f]);
   const later = (p, q) => (p.day > q.day ? p.day : q.day);
+  const newer = (p, q) => { const out = { ...p }; for (const [k, e] of Object.entries(q)) if (!out[k] || e[1] > out[k][1]) out[k] = e; return out; };
   // Überleben: Rekord ist ein Lauf: höhere Stufe, bei gleicher Stufe die größere Summe
   const aw = a.sv.best !== b.sv.best ? a.sv.best > b.sv.best : a.sv.bestS !== b.sv.bestS ? a.sv.bestS > b.sv.bestS : a.sv.bestN >= b.sv.bestN;
   const R = aw ? a.sv : b.sv;
@@ -3586,6 +3691,7 @@ function xMerge(at, bt) {
     al, alr: [...a.alr, ...b.alr],
     sv: { best: R.best, bestN: R.bestN, bestS: R.bestS, day: later(a.sv, b.sv), runs: today(a.sv, b.sv, 'runs') },
     rg: { best: Math.max(a.rg.best, b.rg.best), day: later(a.rg, b.rg), plays: today(a.rg, b.rg, 'plays') },
+    fd: { w: newer(a.fd.w, b.fd.w), it: newer(a.fd.it, b.fd.it) },      // Feed: je Eintrag der neuere
   }));
 }
 function writeX(ct) {
@@ -4665,6 +4771,7 @@ let ambientUntil = 0;
 const IMG_EXT = /\.(jpe?g|jfif|pjpeg|png|apng|gif|webp|avif|bmp|svg|ico|heic|heif)$/i;
 const VID_EXT = /\.(mp4|m4v|webm|mov|ogv|mkv|3gp)$/i;
 const library = [];
+let fileIdx = null;                  // Schlüssel → Datei aus allem Geladenen (wird bei Bedarf neu gebaut)
 const byId = new Map();
 const seen = new Set();
 let nextId = 1;
@@ -4708,6 +4815,7 @@ function addFiles(list, opts = {}) {
     seen.add(key);
     const item = { id: nextId++, kind, name, key, file: f, url: URL.createObjectURL(f), broken: false, fails: 0 };
     library.push(item);
+    fileIdx = null;
     byId.set(item.id, item);
     if (state.started && bag.length) bag.splice(Math.floor(Math.random() * (bag.length + 1)), 0, item.id);
     res.added++;
@@ -4858,6 +4966,7 @@ function unloadLibrary() {
   img.removeAttribute('src');
   for (const it of library) URL.revokeObjectURL(it.url);
   library.length = 0;
+  fileIdx = null;
   byId.clear();
   seen.clear();
   bag = [];
@@ -4878,7 +4987,7 @@ function clearLibrary() {
   if (lockBlock()) return;
   if (phoneMode() && filterOn()) {
     unloadLibrary();
-    pool.length = 0; poolH.length = 0; poolKeys.clear();
+    pool.length = 0; poolH.length = 0; poolKeys.clear(); fileIdx = null;
     saveProgress(true);
     updateLibraryUI();
     resetDeck();
@@ -5451,6 +5560,7 @@ function publishPresets() {
   let gone = false;
   for (const k of Object.keys(srcH)) if (!live.has(k)) { delete srcH[k]; gone = true; }
   if (gone) saveSrcH();
+  for (const k of [...srcFiles.keys()]) if (!live.has(String(k))) dropSrc(k);
   const ps = P.list.filter(p => allSrc.some(r => r.p === p.id)).map(p => {    // leere Presets braucht das Handy nicht
     const known = allSrc.filter(r => r.p === p.id && typeof srcH[r.id] === 'string');
     if (!known.length) return { id: p.id, n: p.n, c: 0, h: null };
@@ -5460,19 +5570,58 @@ function publishPresets() {
   });
   ShuffleSync.plOwn({ ps });
 }
-/** Einmal nach dem Öffnen: Listen für Presets nachtragen, die noch nie gelesen wurden (nur mit Erlaubnis). */
-async function fillPresetLists() {
-  if (!canRemember()) return;
-  for (const r of allSrc.slice()) {
-    if (typeof srcH[r.id] === 'string' || !allSrc.includes(r)) continue;
-    if (state.started) return;                       // nicht mitten ins Spiel lesen
-    let p = 'prompt';
-    try { p = await r.handle.queryPermission({ mode: 'read' }); } catch (_) {}
-    if (p !== 'granted') continue;
-    try { noteSrcFiles(r.id, r.type === 'dir' ? await collectFromDir(r.handle) : [await r.handle.getFile()]); }
-    catch (_) { /* fehlt gerade */ }
+/* ── Alles einmal laden ──
+   Nach dem aktiven Preset liest die App im Hintergrund auch die Ordner aller anderen Presets (nur, wo der
+   Zugriff schon erlaubt ist) und behält die Dateien für diese Sitzung. Ein Preset zu wechseln geht dann
+   sofort, ohne neu zu lesen. Ranking, Tags und Feed nehmen ihre Medien ebenfalls aus diesem Vorrat.
+   Dabei entstehen auch die Preset-Listen fürs Handy. */
+const srcFiles = new Map();          // gemerkter Eintrag (id) → zuletzt gelesene Dateien
+let preloading = false;
+function cacheSrc(id, list) {
+  if (id == null) return;
+  srcFiles.set(id, list.filter(f => f && f.name && !f.name.startsWith('.') && kindOf(f)));
+  fileIdx = null;
+}
+function dropSrc(id) { if (srcFiles.delete(id)) fileIdx = null; }
+/** Alles Geladene: aktuelle Liste, gelesene Ordner aller Presets, Auswahl am Handy (Schlüssel → Datei). */
+function mediaIndex() {
+  if (!fileIdx) {
+    const m = new Map();
+    for (const it of library) if (!it.broken && !m.has(it.key)) m.set(it.key, it.file);
+    for (const list of srcFiles.values()) for (const f of list) { const k = `${f.name}|${f.size}`; if (!m.has(k)) m.set(k, f); }
+    for (const f of pool) { const k = `${f.name}|${f.size}`; if (!m.has(k)) m.set(k, f); }
+    fileIdx = m;
+  }
+  return fileIdx;
+}
+const presetReady = p => { const rs = allSrc.filter(r => r.p === p.id); return rs.length > 0 && rs.every(r => srcFiles.has(r.id)); };
+/** Ordner aller Presets lesen, die noch nicht im Vorrat sind. byClick: darf um Erlaubnis fragen. */
+async function preloadAll(byClick) {
+  if (!canRemember() || preloading || !memReady) return;
+  preloading = true;
+  let got = 0;
+  try {
+    for (const r of allSrc.slice()) {
+      if (srcFiles.has(r.id) || !allSrc.includes(r)) continue;
+      if (r.p === P.active && sources.some(s => s.id === r.id)) continue;   // das aktive Preset liest „Weitermachen“
+      let p = 'prompt';
+      try { p = await r.handle.queryPermission({ mode: 'read' }); } catch (_) {}
+      if (p !== 'granted' && byClick) { try { p = await r.handle.requestPermission({ mode: 'read' }); } catch (_) { p = 'denied'; } }
+      if (p !== 'granted') continue;
+      try {
+        const list = r.type === 'dir' ? await collectFromDir(r.handle, 0, [], true) : [await r.handle.getFile()];
+        if (!allSrc.includes(r)) continue;
+        cacheSrc(r.id, list);
+        noteSrcFiles(r.id, list);
+        got++;
+      } catch (_) { /* fehlt gerade: wird beim Wechsel neu versucht */ }
+    }
+  } finally {
+    preloading = false;
+    if (got) { renderPresets(); updateMemoryUI(); updateModeRow(); }
   }
 }
+const fillPresetLists = () => preloadAll(false);
 
 /* Handy: Auswahl und Filter */
 const FSEL_KEY = 'shuffle-player/fsel-v1', FPROG_KEY = 'shuffle-player/fprog-v1', FLOCK_KEY = 'shuffle-player/flock';
@@ -5551,6 +5700,7 @@ function takeFiles(files, opts = {}) {
     poolKeys.add(key);
     pool.push(f);
     poolH.push(fhOf(f));
+    fileIdx = null;
     added++;
   }
   applyFilter(chosenKey(), { picked: true, added, files: Array.from(files || []).length });
@@ -5650,14 +5800,15 @@ function srcCount(list) {
 
 const isMediaName = n => IMG_EXT.test(n) || VID_EXT.test(n);
 /** Alle Bilder und Videos in einem Ordner (mit Unterordnern) als File-Objekte. */
-async function collectFromDir(dir, depth = 0, out = []) {
+async function collectFromDir(dir, depth = 0, out = [], slow = false) {
   for await (const h of dir.values()) {
     if (!h.name || h.name.startsWith('.')) continue;
     if (h.kind === 'file') {
       if (!isMediaName(h.name)) continue;
       try { out.push(await h.getFile()); } catch (_) { /* einzelne unlesbare Datei überspringen */ }
+      if (slow && out.length % 40 === 0) await new Promise(r => setTimeout(r, 8));   // Hintergrund: Luft lassen
     } else if (h.kind === 'directory' && depth < 12) {
-      await collectFromDir(h, depth + 1, out);
+      await collectFromDir(h, depth + 1, out, slow);
     }
   }
   return out;
@@ -5709,7 +5860,7 @@ async function addHandles(handles) {
       try { list = h.kind === 'directory' ? await collectFromDir(h) : [await h.getFile()]; }
       catch (_) { continue; }
       const src = await rememberHandle(h);
-      if (src) { remembered++; src.count = list.length; noteSrcFiles(src.id, list); }
+      if (src) { remembered++; src.count = list.length; noteSrcFiles(src.id, list); cacheSrc(src.id, list); }
       files.push(...list);
     }
   } finally { clearTimeout(slow); }
@@ -5764,7 +5915,7 @@ async function initMemory() {
   allSrc.push(...recs);
   memReady = true;
   publishSoon();
-  setTimeout(() => { fillPresetLists(); }, 2500);
+  setTimeout(() => { preloadAll(false); }, 2500);
   const lk = presetLock();
   if (lk && presetById(lk.pr) && P.active !== lk.pr) { P.active = lk.pr; savePresets(); }   // heute gilt das Preset des Tages
   for (const r of recs) if (r.p === P.active) sources.push({ ...r, state: 'stored', count: 0 });
@@ -5808,6 +5959,7 @@ async function restoreSources(byClick) {
         s.state = 'loaded';
         s.count = list.length;
         noteSrcFiles(s.id, list);
+        cacheSrc(s.id, list);
         files.push(...list);
       } catch (err) {
         s.state = err && err.name === 'NotAllowedError' ? 'denied' : 'missing';
@@ -5827,6 +5979,7 @@ async function restoreSources(byClick) {
     restoring = false;
     updateMemoryUI();
     updateLibraryUI();
+    setTimeout(() => { preloadAll(false); }, 300);   // danach die anderen Presets im Hintergrund
   }
 }
 
@@ -5837,6 +5990,7 @@ async function forgetSources(onlyMissing) {             // nur im aktiven Preset
     try { await idbDelete(s.id); } catch (_) {}
     const i = allSrc.findIndex(r => r.id === s.id);
     if (i >= 0) allSrc.splice(i, 1);
+    dropSrc(s.id);
   }
   for (const s of drop) sources.splice(sources.indexOf(s), 1);
   updateMemoryUI();
@@ -5864,7 +6018,9 @@ function updateMemoryUI() {
     memoNote.textContent = 'Was du über „Hinzufügen“ oder „Ordner“ auswählst, merkt sich der Player. Beim nächsten Öffnen tippst du auf „Weitermachen“.';
   } else {
     const pn = presetById(P.active);
-    memoNote.textContent = `${pn ? `Preset „${pn.n}“, gemerkt` : 'Gemerkt'}: ${srcCount(sources)}. Ordner werden beim Öffnen neu durchsucht, neue Dateien darin kommen automatisch dazu. Weitere Presets legst du auf dem Startbildschirm an.`;
+    const withSrc = P.list.filter(p => allSrc.some(r => r.p === p.id)), ready = withSrc.filter(presetReady).length;
+    memoNote.textContent = `${pn ? `Preset „${pn.n}“, gemerkt` : 'Gemerkt'}: ${srcCount(sources)}. Ordner werden beim Öffnen neu durchsucht, neue Dateien darin kommen automatisch dazu. Weitere Presets legst du auf dem Startbildschirm an.`
+      + (withSrc.length > 1 ? ` ${ready === withSrc.length ? `Alle ${withSrc.length} Presets sind geladen` : `${ready} von ${withSrc.length} Presets sind geladen`}, zwischen geladenen wechselst du sofort.` : '');
   }
   memoMissing.hidden = !missing.length;
   memoMissing.replaceChildren(...missing.map(s => {
@@ -10077,6 +10233,16 @@ function flash(icon) {
   flashEl.classList.add('on');
 }
 
+/** Knöpfe unter dem Start: Für dich (sobald etwas geladen ist), Überleben (ab 2 Medien), Ranking. */
+function updateModeRow() {
+  const sb = document.getElementById('btnSurvive'), fb = document.getElementById('btnFeed'), row = document.getElementById('modeRow');
+  if (!sb || !fb || !row) return;
+  sb.hidden = library.filter(usable).length < 2;
+  fb.hidden = mediaIndex().size < 1;
+  const n = 1 + (sb.hidden ? 0 : 1) + (fb.hidden ? 0 : 1);
+  row.classList.toggle('two', n === 2);
+  row.classList.toggle('three', n === 3);
+}
 function updateLibraryUI() {
   const { ni, nv, text } = countText();
   const any = ni + nv > 0;
@@ -10084,10 +10250,7 @@ function updateLibraryUI() {
   libCount.textContent = library.length ? text : 'noch keine';
   introLib.hidden = library.length === 0;
   btnStart.hidden = !any;
-  {
-    const sb = document.getElementById('btnSurvive');
-    if (sb) { sb.hidden = library.filter(usable).length < 2; document.getElementById('modeRow').classList.toggle('two', !sb.hidden); }
-  }
+  updateModeRow();
   pickLabel.textContent = any ? 'Weitere hinzufügen' : 'Dateien wählen';
   btnPick.classList.toggle('primary', !any && resumeBox.hidden);
   setClear.disabled = library.length === 0 && !sources.length;
@@ -13047,18 +13210,25 @@ async function usePreset(id) {
     else toast(`„${p.n}“ ist schon geladen. Tippe auf „Wiedergabe starten“.`, 2800);
     return;
   }
+  const ready = presetReady(p);                      // alle Ordner schon im Vorrat: ohne neu zu lesen
   stashProgress();                                   // Rundenfortschritt des alten Presets aufheben
   unloadLibrary();
   P.active = id;
   sources.length = 0;
-  for (const r of allSrc) if (r.p === id) sources.push({ ...r, state: 'stored', count: 0 });
+  for (const r of allSrc) if (r.p === id) sources.push({ ...r, state: ready ? 'loaded' : 'stored', count: ready ? srcFiles.get(r.id).length : 0 });
   unstashProgress(p);
   p.u = Date.now();
   savePresets();
+  if (ready) addFiles(sources.flatMap(s => srcFiles.get(s.id) || []), { quiet: true });
   updateLibraryUI();
   resetDeck();
   updateMemoryUI();
   if (!sources.length) { toast(`„${p.n}“ ist noch leer. Füge über ⋯ einen Ordner oder Dateien hinzu.`, 3600); return; }
+  if (ready) {
+    const n = library.filter(usable).length;
+    toast(`„${p.n}“ ist geladen: ${n.toLocaleString('de-DE')} ${n === 1 ? 'Datei' : 'Dateien'}.`, 2600);
+    return;
+  }
   await restoreSources(true);
 }
 psList.addEventListener('click', e => {
@@ -13121,7 +13291,11 @@ async function psAdd(dir) {
     for (const h of handles) {
       const rec = await rememberHandle(h, PD.id);
       if (!rec) continue;
-      try { noteSrcFiles(rec.id, h.kind === 'directory' ? await collectFromDir(h) : [await h.getFile()]); } catch (_) { /* später */ }
+      try {
+        const list = h.kind === 'directory' ? await collectFromDir(h) : [await h.getFile()];
+        noteSrcFiles(rec.id, list);
+        cacheSrc(rec.id, list);
+      } catch (_) { /* später */ }
     }
   }
   PD.added = true;
@@ -13139,6 +13313,7 @@ psSrcs.addEventListener('click', async e => {
   if (lock && lock.pr === r.p) return;
   try { await idbDelete(r.id); } catch (_) {}
   allSrc.splice(allSrc.indexOf(r), 1);
+  dropSrc(r.id);
   const i = sources.findIndex(y => y.id === r.id);
   if (i >= 0) { sources.splice(i, 1); PD.removed = true; }
   renderPresetDlg();
@@ -13738,7 +13913,7 @@ stage.addEventListener('pointercancel', e => {
 app.addEventListener('pointermove', e => { if (e.pointerType === 'mouse' && state.started && !gest) pokeUI(); });
 
 window.addEventListener('keydown', e => {
-  if (rkOpen() || document.body.classList.contains('sv-open')) return;   // Ranking und Überleben haben eigene Tasten
+  if (rkOpen() || document.body.classList.contains('sv-open') || document.body.classList.contains('fd-open')) return;   // Ranking, Überleben und Feed haben eigene Tasten
   const t = e.target;
   const typing = t && t.matches && t.matches('input:not([type="range"]):not([type="checkbox"])');
   // Strg+Z / ⌘Z: Ausschließen rückgängig machen
@@ -14178,17 +14353,509 @@ if (TEST.expose) window.__shuf = {
   lib: () => library.map(i => i.key).sort(), pool: () => pool.length, fcur: () => fcur,
   prog: () => ({ round: progress.round, done: [...progress.done].sort(), shown: progress.shown }),
   srcH: () => ({ ...srcH }), publish: () => publishPresets(), fill: () => fillPresetLists(),
+  cached: () => [...srcFiles.keys()].length, preloading: () => preloading, idx: () => mediaIndex().size,
   enc: a => hEnc(new Set(a)), dec: t => [...hDec(t)].sort((p, q) => p - q), h32: s => fh32(s),
 };
 window.ShuffleGame = {
   addCoins: n => addCoins(n, { quiet: true }),
   dayKey: () => dayKey(),
-  fileOf(k) { const it = library.find(i => i.key === k && !i.broken); return it ? { file: it.file, video: it.kind === 'video', name: it.name } : null; },
+  fileOf(k) { const f = mediaIndex().get(k); return f ? { file: f, video: kindOf(f) === 'video', name: f.name } : null; },
+  /** Presets für den Filter im Tag-Bereich: [{ id, n, has(Schlüssel) }] (nur mit bekannter Dateiliste). */
+  tagPresets() {
+    if (canRemember()) {
+      return P.list.map(p => {
+        const set = new Set();
+        for (const r of allSrc) if (r.p === p.id && typeof srcH[r.id] === 'string') for (const x of hDec(srcH[r.id])) set.add(x);
+        return { id: `p${p.id}`, n: p.n, size: set.size, has: k => set.has(fh32(k)) };
+      }).filter(p => p.size > 0);
+    }
+    return fList().filter(fp => fp.set && fp.set.size).map(fp => ({ id: fp.k, n: fp.n, size: fp.set.size, has: k => fp.set.has(fh32(k)) }));
+  },
+  /** Alles Geladene (für Ranking, Tags, Feed): [{ k, file, video, name }] */
+  allMedia() { return [...mediaIndex()].map(([k, f]) => ({ k, file: f, video: kindOf(f) === 'video', name: f.name })); },
 };
 $('introAlbum').addEventListener('click', () => {
   if (state.started || !window.ShuffleRank) return;
   closePanel(); closeSheet();
   window.ShuffleRank.open('album');
+});
+/* ═══════════════════════════════════════════════════════════════════════
+   Für dich: Videos zum Hochwischen (wie TikTok)
+   ═══════════════════════════════════════════════════════════════════════
+   Ein eigener Bereich ohne Münzen, Ziel oder Strafen. Gezeigt wird alles, was Shuffle gerade geladen hat:
+   hauptsächlich Videos, dazwischen ab und zu ein Bild-Slide (mehrere Bilder mit demselben Tag zum Wischen).
+   Was als Nächstes kommt, lernt der Feed aus deinen Tags und daraus, wie du schaust:
+   • Jeder Tag hat ein Gewicht (anfangs etwas Plus für jeden benutzten Tag). Bis zum Ende geschaut oder noch
+     einmal: rauf. Schnell weitergewischt: runter. ❤ (Doppeltipp) hebt stark, „Weniger“ (Knopf oder lange
+     drücken) senkt stark, und das Medium kommt kaum noch.
+   • Punkte je Medium: Gewichte seiner Tags + was es selbst bisher bekam + etwas für noch nie Gezeigtes und für
+     gute Plätze im Ranking. Kürzlich Gezeigtes kommt so schnell nicht wieder.
+   • Mischung: meist gewichteter Zufall aus den Besten, ein Teil aus dem Mittelfeld, ab und zu ganz zufällig.
+     Mehr als zwei hintereinander mit demselben Haupt-Tag gibt es nicht.
+   Tag-Gewichte und ❤ / „Weniger“ werden zwischen den Geräten abgeglichen (x.fd), der Rest bleibt hier. */
+const FD_KEY = 'shuffle-player/feed-v1';
+const fdEl = $('fd'), fdList = $('fdList'), fdHint = $('fdHint'), fdEmpty = $('fdEmpty');
+const FD = { open: false, pool: [], vids: [], imgs: [], used: new Set(), tagInfo: new Map(), rar: {}, w: {}, like: {}, ls: {}, seen: {},
+             slides: new Map(), next: 0, active: -1, recent: [], mains: [], sinceSlide: 2, muted: false, hist: false, wake: null,
+             saveT: 0, io: null, tap: null, press: 0, pressed: false, single: 0, hints: 0 };
+const fdChanged = { w: new Map(), it: new Map() };
+if (TEST.expose) window.__fd = FD;
+function fdLoadLocal() {
+  try {
+    const o = JSON.parse(localStorage.getItem(FD_KEY) || 'null');
+    if (o && typeof o === 'object') {
+      FD.ls = o.s && typeof o.s === 'object' ? o.s : {};
+      FD.seen = o.seen && typeof o.seen === 'object' ? o.seen : {};
+      FD.muted = !!o.mute;
+      FD.hints = Math.max(0, Math.floor(Number(o.h) || 0));
+    }
+  } catch (_) { /* neu */ }
+}
+function fdSaveLocal() {
+  if (wiping) return;
+  try { localStorage.setItem(FD_KEY, JSON.stringify({ s: FD.ls, seen: FD.seen, mute: FD.muted, h: FD.hints })); } catch (_) { /* voll */ }
+}
+function fdProfile() {
+  let fd = null;
+  try { fd = ShuffleSync.xGet().fd; } catch (_) { fd = null; }
+  FD.w = {};
+  FD.like = {};
+  for (const [u, e] of Object.entries((fd && fd.w) || {})) FD.w[u] = e[0];
+  for (const [k, e] of Object.entries((fd && fd.it) || {})) if (e[0]) FD.like[k] = e[0];
+  for (const [u, w] of fdChanged.w) FD.w[u] = w;               // noch nicht gespeicherte Änderungen
+  for (const [k, s] of fdChanged.it) { if (s) FD.like[k] = s; else delete FD.like[k]; }
+}
+function fdSaveSoon() { clearTimeout(FD.saveT); FD.saveT = setTimeout(fdSave, 4000); }
+function fdSave() {
+  clearTimeout(FD.saveT);
+  fdSaveLocal();
+  if (!fdChanged.w.size && !fdChanged.it.size) return;
+  try {
+    const o = ShuffleSync.xGet(), now = Date.now();
+    if (!o.fd) o.fd = { w: {}, it: {} };
+    for (const [u, w] of fdChanged.w) o.fd.w[u] = [w, now];
+    for (const [k, s] of fdChanged.it) o.fd.it[k] = [s, now];
+    ShuffleSync.xSet(o);
+  } catch (_) { /* dann beim nächsten Mal */ }
+  fdChanged.w.clear();
+  fdChanged.it.clear();
+}
+/** Alles Geladene mit seinen Tags. */
+function fdBuildPool() {
+  let ft = {}, tags = [], rar = {};
+  try { const r = window.ShuffleRank && window.ShuffleRank.fileTags ? window.ShuffleRank.fileTags() : null; if (r) ({ ft, tags, rar } = r); } catch (_) { /* ohne Tags */ }
+  FD.tagInfo = new Map(tags.map(t => [t.uid, t]));
+  FD.rar = rar || {};
+  FD.used = new Set();
+  for (const a of Object.values(ft)) for (const u of a) FD.used.add(u);
+  FD.pool = [...mediaIndex()].map(([k, f]) => ({ k, f, v: kindOf(f) === 'video', tags: ft[k] || [] }));
+  FD.vids = FD.pool.filter(x => x.v);
+  FD.imgs = FD.pool.filter(x => !x.v);
+}
+const fdW = u => (u in FD.w ? FD.w[u] : FD.used.has(u) ? 0.4 : 0);
+function fdMain(it) {
+  let best = '', bw = -Infinity;
+  for (const u of it.tags) { const w = fdW(u); if (w > bw) { bw = w; best = u; } }
+  return best;
+}
+function fdScore(it, now) {
+  let s = 0;
+  if (it.tags.length) { let a = 0; for (const u of it.tags) a += fdW(u); s += a / Math.sqrt(it.tags.length); }
+  s += Math.max(-3, Math.min(3, FD.ls[it.k] || 0)) * 0.6;
+  const lk = FD.like[it.k];
+  if (lk === 1) s += 1.5; else if (lk === -1) s -= 5;
+  const seen = FD.seen[it.k];
+  if (!seen) s += 0.6;                                              // noch nie gezeigt
+  else s -= 1.2 * Math.exp(-(now - seen[1]) / (12 * 36e5));         // kürzlich gesehen: weniger
+  s += 0.15 * (FD.rar[it.k] || 0);                                  // gut platziert im Ranking
+  return s;
+}
+/** Nächstes aus einer Liste: meist gewichteter Zufall aus den Besten, manchmal Mittelfeld oder ganz zufällig. */
+function fdPick(list, avoid) {
+  if (!list.length) return null;
+  const now = Date.now(), rec = new Set(FD.recent);
+  let cand = list.filter(it => !rec.has(it.k) && FD.like[it.k] !== -1);
+  if (!cand.length) cand = list.filter(it => FD.like[it.k] !== -1);
+  if (!cand.length) cand = list.slice();
+  if (avoid) { const c2 = cand.filter(it => fdMain(it) !== avoid); if (c2.length) cand = c2; }
+  if (cand.length === 1) return cand[0];
+  const r = Math.random();
+  if (r < 0.1) return cand[Math.floor(Math.random() * cand.length)];
+  const sc = cand.map(it => [it, fdScore(it, now)]).sort((a, b) => b[1] - a[1]);
+  if (r < 0.3) {
+    const a = Math.floor(sc.length * 0.3), mid = sc.slice(a, Math.max(a + 1, Math.floor(sc.length * 0.8)));
+    return mid[Math.floor(Math.random() * mid.length)][0];
+  }
+  const top = sc.slice(0, 30), mx = top[0][1], ws = top.map(([, s]) => Math.exp((s - mx) / 0.6));
+  let x = Math.random() * ws.reduce((p, q) => p + q, 0);
+  for (let i = 0; i < top.length; i++) { x -= ws[i]; if (x <= 0) return top[i][0]; }
+  return top[0][0];
+}
+function fdAvoid() {
+  const m = FD.mains, a = m[m.length - 1];
+  return m.length >= 2 && a && a === m[m.length - 2] ? a : '';
+}
+/** Nächster Eintrag: ein Video oder ein Bild-Slide (Bilder mit demselben Haupt-Tag). */
+function fdNextEntry() {
+  const slide = FD.imgs.length && (!FD.vids.length || (FD.sinceSlide >= 4 && Math.random() < 0.18));
+  if (!slide) {
+    const it = fdPick(FD.vids, fdAvoid());
+    if (it) { FD.sinceSlide++; return { kind: 'v', items: [it] }; }
+  }
+  const seed = fdPick(FD.imgs, fdAvoid());
+  if (!seed) return null;
+  FD.sinceSlide = 0;
+  const m = fdMain(seed), rec = new Set(FD.recent), now = Date.now();
+  let mates = FD.imgs.filter(it => it !== seed && !rec.has(it.k) && FD.like[it.k] !== -1 && (m ? it.tags.includes(m) : !it.tags.length));
+  mates = mates.map(it => [it, fdScore(it, now) + Math.random()]).sort((a, b) => b[1] - a[1]).map(x => x[0]);
+  return { kind: 's', items: [seed, ...mates.slice(0, Math.floor(Math.random() * 4) + 1)] };
+}
+function fdChip(u) {
+  const t = FD.tagInfo.get(u);
+  if (!t) return null;
+  const i = mk('i', '', t.n);
+  i.style.setProperty('--c', t.c);
+  return i;
+}
+function fdInfo(s) {
+  const it = s.e.items[s.idx], info = s.el.querySelector('.fd-info');
+  const tags = mk('span', 'fd-tags');
+  for (const u of it.tags) { const c = fdChip(u); if (c) tags.append(c); }
+  info.replaceChildren(mk('b', '', s.e.items.length > 1 ? `${it.f.name} · ${s.idx + 1}/${s.e.items.length}` : it.f.name), tags);
+  const lk = s.el.querySelector('.fd-like');
+  lk.classList.toggle('on', FD.like[it.k] === 1);
+  lk.setAttribute('aria-pressed', String(FD.like[it.k] === 1));
+  const dots = s.el.querySelectorAll('.fd-dots i');
+  dots.forEach((d, i) => d.classList.toggle('on', i === s.idx));
+}
+const fdIcon = (id, cls) => { const sv = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); sv.setAttribute('class', `i${cls ? ` ${cls}` : ''}`); const u = document.createElementNS('http://www.w3.org/2000/svg', 'use'); u.setAttribute('href', `#${id}`); sv.append(u); return sv; };
+function fdMake(e) {
+  const n = FD.next++;
+  const el = mk('section', `fd-slide ${e.kind === 'v' ? 'is-vid' : 'is-img'}`);
+  el.dataset.n = n;
+  const media = mk('div', 'fd-media');
+  const s = { n, el, e, idx: 0, urls: [], loaded: false, v: null, imgs: [], t0: 0, watch: 0, playAt: 0, carT: 0, less: false };
+  if (e.kind === 'v') {
+    const v = document.createElement('video');
+    v.playsInline = true; v.setAttribute('playsinline', ''); v.loop = true; v.preload = 'metadata'; v.muted = FD.muted;
+    v.addEventListener('playing', () => { if (FD.active === n && !s.playAt) s.playAt = performance.now(); fdPausedMark(s, false); });
+    v.addEventListener('pause', () => { if (s.playAt) { s.watch += performance.now() - s.playAt; s.playAt = 0; } });
+    v.addEventListener('timeupdate', () => { const d = v.duration; s.bar.style.width = d > 0 && Number.isFinite(d) ? `${Math.min(100, (v.currentTime / d) * 100)}%` : '0%'; });
+    media.append(v);
+    s.v = v;
+    const pr = mk('div', 'fd-prog'), bi = mk('i');
+    pr.append(bi);
+    s.bar = bi;
+    el.append(media, pr);
+  } else {
+    const car = mk('div', 'fd-car');
+    for (let i = 0; i < e.items.length; i++) { const im = document.createElement('img'); im.className = 'fd-img'; im.alt = ''; im.draggable = false; im.decoding = 'async'; car.append(im); s.imgs.push(im); }
+    car.addEventListener('scroll', () => {
+      const w = car.clientWidth || 1, i = Math.round(car.scrollLeft / w);
+      if (i !== s.idx && i >= 0 && i < e.items.length) { s.idx = i; fdInfo(s); fdCarArm(s); }
+    }, { passive: true });
+    s.car = car;
+    media.append(car);
+    el.append(media);
+    if (e.items.length > 1) { const dots = mk('div', 'fd-dots'); for (let i = 0; i < e.items.length; i++) dots.append(mk('i')); el.append(dots); }
+  }
+  const side = mk('div', 'fd-side');
+  const like = mk('button', 'fd-like'); like.type = 'button';
+  like.append(fdIcon('i-heart-fill'), mk('span', '', 'Gefällt mir'));
+  like.addEventListener('click', ev => { ev.stopPropagation(); fdLike(s); });
+  const less = mk('button', 'fd-less'); less.type = 'button';
+  less.append(fdIcon('i-eye-off'), mk('span', '', 'Weniger'));
+  less.addEventListener('click', ev => { ev.stopPropagation(); fdLess(s); });
+  side.append(like, less);
+  el.append(side, mk('div', 'fd-info'));
+  fdList.append(el);
+  FD.slides.set(n, s);
+  fdInfo(s);
+  if (FD.io) FD.io.observe(el);
+  for (const it of e.items) FD.recent.push(it.k);
+  const keep = Math.max(3, Math.min(60, Math.floor(FD.pool.length * 0.6)));
+  if (FD.recent.length > keep) FD.recent.splice(0, FD.recent.length - keep);
+  FD.mains.push(fdMain(e.items[0]));
+  if (FD.mains.length > 6) FD.mains.shift();
+  return s;
+}
+function fdFill(k) {
+  for (let i = 0; i < k; i++) { const e = fdNextEntry(); if (!e) break; fdMake(e); }
+}
+function fdLoad(s) {
+  if (s.loaded) return;
+  s.loaded = true;
+  if (s.v) { const u = URL.createObjectURL(s.e.items[0].f); s.urls.push(u); s.v.src = u; }
+  else s.imgs.forEach((im, i) => { const u = URL.createObjectURL(s.e.items[i].f); s.urls.push(u); im.src = u; });
+}
+function fdUnload(s) {
+  if (!s.loaded) return;
+  s.loaded = false;
+  if (s.v) { try { s.v.pause(); } catch (_) {} s.v.removeAttribute('src'); try { s.v.load(); } catch (_) {} }
+  for (const im of s.imgs) im.removeAttribute('src');
+  for (const u of s.urls) URL.revokeObjectURL(u);
+  s.urls = [];
+}
+function fdPausedMark(s, on) {
+  let p = s.el.querySelector('.fd-paused');
+  if (on && !p) { p = mk('div', 'fd-paused'); p.append(fdIcon('i-play')); s.el.append(p); }
+  else if (!on && p) p.remove();
+}
+function fdPlay(s) {
+  if (!s.v || !FD.open || document.hidden) return;
+  s.v.muted = FD.muted;
+  const p = s.v.play();
+  if (p && p.catch) p.catch(err => {
+    if (err && err.name === 'NotAllowedError' && !s.v.muted) { FD.muted = true; fdMuteSync(); s.v.muted = true; s.v.play().catch(() => {}); }
+  });
+}
+function fdCarArm(s) {
+  clearTimeout(s.carT);
+  if (FD.active !== s.n || !s.car || s.idx >= s.e.items.length - 1) return;
+  s.carT = setTimeout(() => {
+    if (FD.active !== s.n) return;
+    const w = s.car.clientWidth;
+    s.car.scrollTo({ left: (s.idx + 1) * w, behavior: 'smooth' });
+  }, 3200);
+}
+/** Lernen, wenn ein Eintrag verlassen wird. */
+function fdLeave(s) {
+  clearTimeout(s.carT);
+  if (s.v) { if (s.playAt) { s.watch += performance.now() - s.playAt; s.playAt = 0; } try { s.v.pause(); } catch (_) {} }
+  if (s.less || !s.t0) return;
+  const sec = (s.v ? s.watch : performance.now() - s.t0) / 1000;
+  let sig;
+  if (s.v) {
+    const d = s.v.duration, f = d > 0 && Number.isFinite(d) ? sec / d : sec / 15;
+    sig = sec < 1.5 && f < 0.15 ? -0.6 : f < 0.4 ? -0.2 : f < 0.9 ? 0.3 : f < 1.6 ? 0.8 : 1.2;
+  } else {
+    const per = sec / s.e.items.length;
+    sig = sec < 1.2 ? -0.5 : per < 2.5 ? -0.1 : per < 6 ? 0.3 : 0.6;
+  }
+  s.t0 = 0;
+  fdLearn(s.e.items, sig);
+}
+function fdLearn(items, sig) {
+  const tags = new Set();
+  for (const it of items) {
+    FD.ls[it.k] = Math.round(Math.max(-5, Math.min(5, (FD.ls[it.k] || 0) * 0.9 + sig)) * 1000) / 1000;
+    for (const u of it.tags) tags.add(u);
+  }
+  for (const u of tags) {
+    FD.w[u] = Math.round(Math.max(-6, Math.min(6, fdW(u) * 0.98 + 0.25 * sig)) * 1000) / 1000;
+    fdChanged.w.set(u, FD.w[u]);
+  }
+  fdSaveSoon();
+}
+function fdActivate(n) {
+  if (n === FD.active || !FD.open) return;
+  const prev = FD.slides.get(FD.active);
+  if (prev) fdLeave(prev);
+  FD.active = n;
+  for (const [m, s] of FD.slides) { if (Math.abs(m - n) <= 1) fdLoad(s); else fdUnload(s); }
+  const s = FD.slides.get(n);
+  if (!s) return;
+  s.t0 = performance.now(); s.watch = 0; s.playAt = 0;
+  const now = Date.now();
+  for (const it of s.e.items) { const z = FD.seen[it.k]; FD.seen[it.k] = [(z ? z[0] : 0) + 1, now]; }
+  if (s.v) { try { s.v.currentTime = 0; } catch (_) {} fdPausedMark(s, false); fdPlay(s); }
+  else fdCarArm(s);
+  if (n >= FD.next - 3) fdFill(5);
+  fdTrim();
+  fdSaveSoon();
+}
+/** Weit oben Liegendes entfernen (der Feed ist endlos). */
+function fdTrim() {
+  if (FD.slides.size <= 60) return;
+  const hgt = fdList.clientHeight;
+  let cut = 0;
+  for (const [m, s] of [...FD.slides]) {
+    if (m >= FD.active - 15) break;
+    fdUnload(s);
+    if (FD.io) FD.io.unobserve(s.el);
+    s.el.remove();
+    FD.slides.delete(m);
+    cut++;
+  }
+  if (cut) fdList.scrollTop -= cut * hgt;
+}
+function fdGo(d) {
+  const ns = [...FD.slides.keys()].sort((a, b) => a - b), i = ns.indexOf(FD.active);
+  const s = i >= 0 ? FD.slides.get(ns[i + d]) : null;
+  if (s) s.el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+/** Schon vorbereitete, noch nicht gezeigte Einträge mit diesem Medium wieder herausnehmen. */
+function fdDropQueued(k) {
+  for (const [m, s] of [...FD.slides]) {
+    if (m <= FD.active || !s.e.items.some(it => it.k === k)) continue;
+    fdUnload(s);
+    if (FD.io) FD.io.unobserve(s.el);
+    s.el.remove();
+    FD.slides.delete(m);
+  }
+  if ([...FD.slides.keys()].filter(m => m > FD.active).length < 3) fdFill(4);
+}
+function fdCurItem(s) { return s.e.items[s.idx]; }
+function fdLike(s, force) {
+  const it = fdCurItem(s), was = FD.like[it.k] === 1, on = force != null ? force : !was;
+  if (on === was) return;
+  if (on) FD.like[it.k] = 1; else delete FD.like[it.k];
+  fdChanged.it.set(it.k, on ? 1 : 0);
+  fdLearn([it], on ? 1.5 : -1.5);
+  fdInfo(s);
+}
+function fdLess(s) {
+  const it = fdCurItem(s);
+  FD.like[it.k] = -1;
+  fdChanged.it.set(it.k, -1);
+  fdLearn(s.e.items, -2);
+  s.less = true;
+  fdDropQueued(it.k);
+  toast('Verstanden: davon kommt jetzt weniger.', 2400);
+  fdGo(1);
+}
+function fdHeart(x, y) {
+  const r = fdEl.getBoundingClientRect(), hh = fdIcon('i-heart-fill', 'fd-heart');
+  hh.style.left = `${x - r.left}px`; hh.style.top = `${y - r.top}px`;
+  fdEl.append(hh);
+  setTimeout(() => hh.remove(), 900);
+}
+function fdTogglePlay(s) {
+  if (!s || !s.v) return;
+  if (s.v.paused) { fdPlay(s); fdPausedMark(s, false); } else { s.v.pause(); fdPausedMark(s, true); }
+}
+function fdMuteSync() {
+  $('fdMuteUse').setAttribute('href', FD.muted ? '#i-mute' : '#i-vol');
+  $('fdMute').setAttribute('aria-label', FD.muted ? 'Ton an' : 'Ton aus');
+}
+$('fdMute').addEventListener('click', () => {
+  FD.muted = !FD.muted;
+  fdMuteSync();
+  const s = FD.slides.get(FD.active);
+  if (s && s.v) { s.v.muted = FD.muted; if (!FD.muted && s.v.paused) fdPlay(s); }
+  fdSaveLocal();
+});
+$('fdClose').addEventListener('click', () => fdClose());
+// Tippen: einmal Pause/Weiter (Bilder: nächstes), doppelt ❤, lange drücken: weniger davon
+fdList.addEventListener('pointerdown', e => {
+  if (e.target.closest('button')) return;
+  FD.tap = { x: e.clientX, y: e.clientY, t: performance.now() };
+  FD.pressed = false;
+  clearTimeout(FD.press);
+  FD.press = setTimeout(() => { const s = FD.slides.get(FD.active); if (s && FD.tap) { FD.pressed = true; fdLess(s); } }, 650);
+});
+fdList.addEventListener('pointermove', e => { if (FD.tap && Math.hypot(e.clientX - FD.tap.x, e.clientY - FD.tap.y) > 12) { clearTimeout(FD.press); FD.tap = null; } });
+fdList.addEventListener('pointercancel', () => { clearTimeout(FD.press); FD.tap = null; });
+let fdLastTap = 0;
+fdList.addEventListener('pointerup', e => {
+  clearTimeout(FD.press);
+  const t = FD.tap;
+  FD.tap = null;
+  if (!t || FD.pressed || performance.now() - t.t > 500) return;
+  const s = FD.slides.get(FD.active);
+  if (!s) return;
+  const now = performance.now();
+  if (now - fdLastTap < 320) {                         // Doppeltipp
+    clearTimeout(FD.single);
+    fdLastTap = 0;
+    fdLike(s, true);
+    fdHeart(e.clientX, e.clientY);
+    return;
+  }
+  fdLastTap = now;
+  clearTimeout(FD.single);
+  FD.single = setTimeout(() => {
+    if (s.v) fdTogglePlay(s);
+    else if (s.car && s.idx < s.e.items.length - 1) s.car.scrollTo({ left: (s.idx + 1) * s.car.clientWidth, behavior: 'smooth' });
+  }, 330);
+});
+window.addEventListener('keydown', e => {
+  if (!FD.open || e.ctrlKey || e.metaKey || e.altKey) return;
+  const s = FD.slides.get(FD.active), k = e.key;
+  if (k === 'Escape') fdClose();
+  else if (k === 'ArrowDown' || k === 'PageDown' || k === 'j' || k === 'J') fdGo(1);
+  else if (k === 'ArrowUp' || k === 'PageUp' || k === 'k' || k === 'K') fdGo(-1);
+  else if (k === ' ') { if (s && s.v) fdTogglePlay(s); else if (s && s.car && s.idx < s.e.items.length - 1) s.car.scrollTo({ left: (s.idx + 1) * s.car.clientWidth, behavior: 'smooth' }); }
+  else if (k === 'ArrowRight' && s && s.car) s.car.scrollTo({ left: Math.min(s.e.items.length - 1, s.idx + 1) * s.car.clientWidth, behavior: 'smooth' });
+  else if (k === 'ArrowLeft' && s && s.car) s.car.scrollTo({ left: Math.max(0, s.idx - 1) * s.car.clientWidth, behavior: 'smooth' });
+  else if (k === 'm' || k === 'M') $('fdMute').click();
+  else if ((k === 'l' || k === 'L') && s) fdLike(s);
+  else return;
+  e.preventDefault();
+  e.stopPropagation();
+}, true);
+document.addEventListener('visibilitychange', () => {
+  if (!FD.open) return;
+  const s = FD.slides.get(FD.active);
+  if (document.hidden) { if (s && s.v) s.v.pause(); fdSave(); }
+  else { fdWake(true); if (s && s.v && !s.el.querySelector('.fd-paused')) fdPlay(s); }
+});
+window.addEventListener('popstate', () => { if (FD.open) { FD.hist = false; fdClose(true); } });
+async function fdWake(on) {
+  try {
+    if (on && navigator.wakeLock && !FD.wake) { FD.wake = await navigator.wakeLock.request('screen'); FD.wake.addEventListener('release', () => { FD.wake = null; }); }
+    else if (!on && FD.wake) { const w = FD.wake; FD.wake = null; await w.release(); }
+  } catch (_) { /* egal */ }
+}
+function fdOpen() {
+  if (state.started || FD.open) return;
+  if (ShuffleSync.on() && ShuffleSync.isBlocked()) { ShuffleSync.reopen(); return; }
+  fdBuildPool();
+  if (!FD.pool.length) { toast('Für „Für dich“ lade erst Videos oder Bilder.', 3200); return; }
+  closePanel(); closeSheet();
+  fdLoadLocal();
+  fdProfile();
+  Object.assign(FD, { open: true, active: -1, next: 0, recent: [], mains: [], sinceSlide: 2 });
+  FD.slides.clear();
+  fdList.replaceChildren();
+  if (!FD.io) FD.io = new IntersectionObserver(ents => {
+    for (const en of ents) if (en.isIntersecting && en.intersectionRatio >= 0.6) fdActivate(+en.target.dataset.n);
+  }, { root: fdList, threshold: [0.6] });
+  fdEl.hidden = false;
+  document.body.classList.add('fd-open');
+  fdMuteSync();
+  fdEmpty.hidden = true;
+  fdFill(4);
+  if (FD.hints < 3) {
+    FD.hints++;
+    fdHint.textContent = COARSE ? 'Hochwischen für das Nächste · zweimal tippen: ❤ · lange drücken: weniger davon'
+      : 'Mausrad oder ↓ für das Nächste · Doppelklick: ❤ · M: Ton';
+    fdHint.hidden = false;
+    setTimeout(() => { fdHint.hidden = true; }, 4500);
+  } else fdHint.hidden = true;
+  try { history.pushState({ fd: 1 }, ''); FD.hist = true; } catch (_) { FD.hist = false; }
+  fdWake(true);
+  fdList.scrollTop = 0;
+  requestAnimationFrame(() => { if (FD.open && FD.active < 0) fdActivate(0); });
+}
+function fdClose(fromPop) {
+  if (!FD.open) return;
+  const s = FD.slides.get(FD.active);
+  if (s) fdLeave(s);
+  for (const x of FD.slides.values()) { clearTimeout(x.carT); fdUnload(x); }
+  if (FD.io) FD.io.disconnect();
+  FD.io = null;
+  FD.slides.clear();
+  fdList.replaceChildren();
+  FD.open = false;
+  FD.active = -1;
+  fdEl.hidden = true;
+  fdHint.hidden = true;
+  document.body.classList.remove('fd-open');
+  fdWake(false);
+  fdSave();
+  if (FD.hist && !fromPop) { FD.hist = false; try { history.back(); } catch (_) { /* egal */ } }
+  FD.hist = false;
+  if (ShuffleSync.on() && ShuffleSync.isBlocked()) ShuffleSync.reopen();   // kam inzwischen ein neuer Stand?
+}
+window.addEventListener('pagehide', () => { if (FD.open) fdSave(); });
+if (TEST.expose) window.__fdt = { next: () => fdNextEntry(), score: it => fdScore(it, Date.now()), main: fdMain, build: fdBuildPool, profile: fdProfile, save: fdSave };
+$('btnFeed').addEventListener('click', fdOpen);
+
+$('introTags').addEventListener('click', () => {
+  if (state.started || !window.ShuffleRank) return;
+  closePanel(); closeSheet();
+  window.ShuffleRank.open('lib');
 });
 
 const SV_LIVES = 3, SV_STEP = 5, SV_MAXDUR = 120, SV_FREE = 3, SV_LVL_COINS = 5, SV_REC_COINS = 25, SV_SAVE = 5;
@@ -14653,7 +15320,7 @@ ShuffleSync.bind({
     else if (n.kind === 'adopt') toast(`☁ Stand ${fromName(n.from)} übernommen${n.at ? ` (${syncWhen(n.at)})` : ''}.`, 5000);
   },
   reload: info => {
-    if (document.body.classList.contains('sv-open')) return;   // Überleben läuft: danach (svClose fragt nach)
+    if (document.body.classList.contains('sv-open') || document.body.classList.contains('fd-open')) return;   // Überleben/Feed offen: danach (beim Schließen)
     if (!state.started && !library.length && !modalOpen && !rankOpen()) { location.reload(); return; }
     if (rankOpen() && window.ShuffleRank.ask) {        // das Ranking liegt über allem: dort fragen
       const t = reloadText(info);
@@ -14815,7 +15482,9 @@ ShuffleSync.boot(__shuffleMain);
    • Gespeichert wird nur die Startreihenfolge und das Protokoll der Entscheidungen. Der Stand wird
      daraus jederzeit nachgespielt; „Rückgängig“ nimmt einfach die letzte Entscheidung heraus.
    • Neue Medien kommen nach dem Ranking mit binärer Suche dazu (etwa log2(n) Duelle je Medium).
-   • Tags gelten für alle Ordner. Schnell-Tags (★) stehen direkt unter jedem Medium. */
+   • Tags hängen an der Datei und gelten überall. Getaggt wird im eigenen Bereich „Tags“: Er zeigt alles, was
+     Shuffle gerade geladen hat, als Ordner, der nicht gespeichert wird (VF). Im Ranking selbst gibt es keine Tags
+     mehr; unter jedem Video steht stattdessen, wie weit es gelaufen ist. */
 (() => {
 'use strict';
 const root = document.getElementById('rk');
@@ -14871,7 +15540,7 @@ function blank() { return { v: 1, tags: [], ts: 1, rec: [], fs: [], fq: 1, last:
 const SYNC = typeof ShuffleSync !== 'undefined' ? ShuffleSync : null;   // Abgleich (eigenes Skript weiter oben)
 const UID = (kind, i) => (SYNC && SYNC.rankUid ? SYNC.rankUid(kind, i) : `x-${kind}${i}`);
 const UID_OK = /^[\w-]{3,80}$/;
-let uidFixed = false;
+let uidFixed = false, ftFolded = false;
 function uidPick(u, kind, i, used) {
   let v = typeof u === 'string' && UID_OK.test(u) && !used.has(u) ? u : UID(kind, i);
   for (let k = 2; used.has(v); k++) v = `${UID(kind, i)}-${k}`;
@@ -14922,6 +15591,21 @@ function clean(raw) {
     });
   }
   b.fq = Math.max(1, int(raw.fq), ...b.fs.map(f => f.i + 1));
+  // Tags je Datei. Tags an Medien eines Ranking-Ordners (frühere Versionen) wandern hierher.
+  b.ft = {};
+  if (raw.ft && typeof raw.ft === 'object') {
+    for (const [k, arr] of Object.entries(raw.ft)) {
+      if (typeof k !== 'string' || !k.includes('|')) continue;
+      const t = [...new Set((Array.isArray(arr) ? arr : []).map(int))].filter(x => tids.has(x));
+      if (t.length) b.ft[k] = t;
+    }
+  }
+  for (const f of b.fs) for (const it of f.it) {
+    if (!it.t.length) continue;
+    b.ft[it.k] = [...new Set([...(b.ft[it.k] || []), ...it.t])];
+    it.t = [];
+    ftFolded = true;
+  }
   b.last = int(raw.last);
   const ui = raw.ui && typeof raw.ui === 'object' ? raw.ui : {};
   b.ui = { mode: ui.mode === 'grid' ? 'grid' : 'list', sort: SORTS.includes(ui.sort) ? ui.sort : 'best', hint: int(ui.hint), fh: int(ui.fh), tnum: Math.min(99, Math.max(0, int(ui.tnum))), lk: !!ui.lk };
@@ -14929,7 +15613,7 @@ function clean(raw) {
 }
 let D = (() => { try { return clean(JSON.parse(localStorage.getItem(KEY) || 'null')); } catch (_) { return blank(); } })();
 let saveT = 0, dirty = false, quotaWarned = false;
-if (uidFixed && localStorage.getItem(KEY)) { dirty = true; setTimeout(flush, 0); }   // Kennungen gleich mit speichern
+if ((uidFixed || ftFolded) && localStorage.getItem(KEY)) { dirty = true; setTimeout(flush, 0); }   // Kennungen und umgezogene Tags gleich speichern
 function save(now) { dirty = true; clearTimeout(saveT); if (now) flush(); else saveT = setTimeout(flush, 250); }
 function flush() {
   clearTimeout(saveT);
@@ -14942,7 +15626,44 @@ window.addEventListener('pagehide', flush);
 document.addEventListener('visibilitychange', () => { if (document.hidden) flush(); });
 let VER = 0;                       // zählt jede Änderung (für neu zeichnen)
 const bump = () => { VER++; };
-const folderById = id => D.fs.find(f => f.i === id) || null;
+const folderById = id => (id === VF_ID ? VF : D.fs.find(f => f.i === id) || null);
+
+/* ═══════════ Tag-Bereich: alles Geladene als eigener Ordner ═══════════ */
+const NOTAGS = Object.freeze([]);
+class LibItem {
+  constructor(i, k, n, s, v, a) { this.i = i; this.k = k; this.n = n; this.s = s; this.v = v; this.a = a; }
+  get t() { return (D.ft && D.ft[this.k]) || NOTAGS; }
+  set t(x) { if (!D.ft) D.ft = {}; if (x && x.length) D.ft[this.k] = [...x]; else delete D.ft[this.k]; }
+}
+const VF_ID = -1;
+const VF = { i: VF_ID, uid: '', n: 'Tags', c: 0, u: 0, ni: 1, it: [], r: null, vf: true };
+const vfIds = new Map();
+let vfNext = 1;
+const LIB = { pre: '', kind: '', presets: [], pc: new Map() };
+/** VF an das anpassen, was das Spiel gerade geladen hat (Kennungen bleiben in der Sitzung gleich). */
+function libSync() {
+  const g = GAME();
+  const media = g && g.allMedia ? g.allMedia() : [];
+  LIB.presets = g && g.tagPresets ? g.tagPresets() : [];
+  if (LIB.pre && !LIB.presets.some(p => p.id === LIB.pre)) LIB.pre = '';
+  const same = media.length === VF.it.length && media.every((m, x) => VF.it[x].k === m.k);
+  if (!same) {
+    VF.it = media.map(m => {
+      let id = vfIds.get(m.k);
+      if (!id) { id = vfNext++; vfIds.set(m.k, id); }
+      return new LibItem(id, m.k, m.name, m.file.size, m.video ? 1 : 0, m.file.lastModified || 0);
+    });
+    const old = RT.get(VF_ID);
+    if (old) for (const u of old.urls.values()) URL.revokeObjectURL(u);
+    RT.delete(VF_ID);
+    const r = rt(VF);
+    media.forEach((m, x) => r.files.set(VF.it[x].i, m.file));
+    bump();
+  }
+  LIB.pc = new Map(LIB.presets.map(p => [p.id, VF.it.filter(it => p.has(it.k)).length]));
+  return !same;
+}
+function openLib() { libSync(); openFolder(VF); }
 
 /* ═══════════ Sortieren in Runden ═══════════ */
 const pk = (a, b) => (a < b ? `${a},${b}` : `${b},${a}`);
@@ -15404,6 +16125,8 @@ function thumbsGc() {
   setTimeout(async () => {
     const used = new Set();
     for (const f of D.fs) for (const it of f.it) used.add(it.k);
+    for (const k of Object.keys(D.ft)) used.add(k);                 // getaggte Dateien
+    for (const it of VF.it) used.add(it.k);                         // gerade im Tag-Bereich
     try { if (SYNC) for (const k of Object.keys(SYNC.xGet().al)) used.add(k); } catch (_) { /* egal */ }   // Albumkarten behalten ihr Bild
     try {
       const keys = await thTx('readonly', st => st.getAllKeys());
@@ -15586,6 +16309,21 @@ async function resume(f, byClick) {
     return files.length > 0;
   } finally { resuming = false; refresh(); }
 }
+/** Medien, die das Spiel schon geladen hat, gleich übernehmen (kein neues Lesen). */
+function fromGame(f) {
+  if (!f || loadedCount(f) >= f.it.length) return 0;
+  const g = GAME();
+  if (!g || !g.fileOf) return 0;
+  const r = rt(f);
+  let n = 0;
+  for (const it of f.it) {
+    if (r.files.has(it.i)) continue;
+    const o = g.fileOf(it.k);
+    if (o && o.file) { setFile(f, it.i, o.file); n++; }
+  }
+  if (n) NEG.clear();
+  return n;
+}
 /** Beim Öffnen eines Ordners: gemerkte Medien still laden, wenn Chrome den Zugriff noch erlaubt. */
 async function autoResume(f) {
   const r = rt(f);
@@ -15620,13 +16358,15 @@ function createTag(name, g = 0) {
 function deleteTag(tid) {
   D.tags = D.tags.filter(t => t.i !== tid);
   for (const f of D.fs) for (const it of f.it) if (it.t.includes(tid)) it.t = it.t.filter(x => x !== tid);
+  for (const k of Object.keys(D.ft)) { const a = D.ft[k].filter(x => x !== tid); if (a.length) D.ft[k] = a; else delete D.ft[k]; }
   D.rec = D.rec.filter(x => x !== tid);
   FV.inc.delete(tid); FV.exc.delete(tid);
   retag(); bump(); save();
 }
 function tagCounts(f) {
   const m = new Map();
-  for (const ff of f ? [f] : D.fs) for (const it of ff.it) for (const t of it.t) m.set(t, (m.get(t) || 0) + 1);
+  if (!f) { for (const a of Object.values(D.ft)) for (const t of a) m.set(t, (m.get(t) || 0) + 1); return m; }
+  for (const it of f.it) for (const t of it.t) m.set(t, (m.get(t) || 0) + 1);
   return m;
 }
 /** Schnell-Tags: die mit ★, sonst die zuletzt benutzten (alphabetisch, damit sie still stehen). */
@@ -15639,7 +16379,7 @@ const LT = { cur: null, prev: null };            // zuletzt getaggte Medien (fü
 function setTag(f, it, tid, on) {
   const has = it.t.includes(tid);
   if (has === !!on) return false;
-  if (on) { it.t.push(tid); D.rec = [tid, ...D.rec.filter(x => x !== tid)].slice(0, 12); }
+  if (on) { it.t = [...it.t, tid]; D.rec = [tid, ...D.rec.filter(x => x !== tid)].slice(0, 12); }
   else it.t = it.t.filter(x => x !== tid);
   const key = `${f.i}:${it.i}`;
   if (!LT.cur || LT.cur.key !== key) { LT.prev = LT.cur; LT.cur = { key, f: f.i, i: it.i }; }
@@ -15723,6 +16463,7 @@ function open(v) {
   stack.length = 0;
   root.hidden = false;
   document.body.classList.add('rk-open');
+  if (v === 'lib') { openLib(); return; }
   pushView(v === 'album' ? 'album' : 'home');
 }
 function finishClose() {
@@ -15897,7 +16638,7 @@ $('rkNew').addEventListener('click', async () => {
   rt(f).tried = true;
   if (mem) pickRemember(f, r.act === 'dir'); else pick(false);
 });
-$('rkHomeTags').addEventListener('click', () => pushView('tags'));
+$('rkHomeTags').addEventListener('click', () => openLib());
 $('rkHomeMore').addEventListener('click', async () => {
   const r = await menu('Sicherung', [
     { label: 'Sicherung speichern', icon: 'i-check', act: 'exp' },
@@ -15941,26 +16682,61 @@ function openFolder(f) {
   if (!f) return;
   if (FV.f !== f) { FV.q = ''; FV.inc.clear(); FV.exc.clear(); FV.none = false; FV.sel = null; $('rkQ').value = ''; $('rkQClear').hidden = true; FV.scroll = 0; $('rkFScroll').scrollTop = 0; }
   FV.f = f; FV.drawn = -1;
-  D.last = f.i;
+  if (!f.vf) D.last = f.i;
   pushView('folder');
 }
 function renderFolder() {
   const f = FV.f;
-  if (!f || !D.fs.includes(f)) { if (topView() === 'folder') back(); return; }
+  if (!f || (!f.vf && !D.fs.includes(f))) { if (topView() === 'folder') back(); return; }
+  if (f.vf && libSync()) FV.drawn = -1;
   $('rkFTitle').textContent = f.n;
-  const tagged = f.it.filter(it => it.t.length).length;
-  $('rkFSub').textContent = f.it.length ? `${plural(f.it.length, 'Medium', 'Medien')} · ${fmt(tagged)} getaggt` : 'Noch leer';
-  $('rkLoadDir').hidden = !DIR_OK || canRemember();   // mit Merken steckt „Ordner“ im Lade-Menü
+  const tagged = f.vf ? f.it.filter(it => it.t.length).length : 0;
+  $('rkFSub').textContent = !f.it.length ? (f.vf ? 'Noch nichts geladen' : 'Noch leer')
+    : f.vf ? `${plural(f.it.length, 'Medium', 'Medien')} · ${fmt(tagged)} getaggt` : plural(f.it.length, 'Medium', 'Medien');
+  $('rkLoad').hidden = !!f.vf;
+  $('rkLoadDir').hidden = !!f.vf || !DIR_OK || canRemember();   // mit Merken steckt „Ordner“ im Lade-Menü
   $('rkModeUse').setAttribute('href', D.ui.mode === 'grid' ? '#i-list' : '#i-grid');
   $('rkMode').setAttribute('aria-label', D.ui.mode === 'grid' ? 'Als Liste zeigen' : 'Als Raster zeigen');
   const empty = !f.it.length;
   for (const id of ['rkTagMode', 'rkSelect', 'rkMode']) $(id).hidden = empty;
+  if (!f.vf) $('rkTagMode').hidden = true;             // getaggt wird im Tag-Bereich
   root.querySelector('#rkFolder .rk-filter').hidden = empty;
-  renderStatus();
+  $('rkLibF').hidden = !f.vf || empty;
+  if (f.vf) { renderLibF(); renderLibStatus(); }
+  else {
+    if (fromGame(f)) FV.drawn = -1;                    // Medien aus dem Spiel: Liste mit Vorschau neu zeichnen
+    $('rkStatus').hidden = false;
+    renderStatus();
+  }
   if (FV.drawn !== VER) renderList();
   renderSelBar();
-  autoResume(f);
+  if (!f.vf) autoResume(f);
 }
+/** Tag-Bereich: Preset- und Art-Filter. */
+function renderLibF() {
+  const sel = $('rkLibPre'), all = mk('option', '', `Alle Medien (${fmt(VF.it.length)})`);
+  all.value = '';
+  sel.replaceChildren(all, ...LIB.presets.map(p => { const o = mk('option', '', `${p.n} (${fmt(LIB.pc.get(p.id) || 0)})`); o.value = p.id; return o; }));
+  sel.value = LIB.pre;
+  sel.hidden = !LIB.presets.length;
+  for (const b of $('rkLibF').querySelectorAll('[data-kind]')) b.setAttribute('aria-pressed', String(b.dataset.kind === LIB.kind));
+}
+function renderLibStatus() {
+  const box = $('rkStatus');
+  box.className = 'rk-status';
+  if (VF.it.length && Object.keys(D.ft).length) { box.replaceChildren(); box.hidden = true; return; }
+  box.hidden = false;
+  box.replaceChildren(mk('h3', '', VF.it.length ? 'So taggst du' : 'Noch nichts geladen'),
+    mk('p', '', VF.it.length ? 'Tippe ein Medium an, um es groß zu sehen und zu taggen, oder nimm „Taggen“ für eins nach dem anderen. Mit „Auswählen“ taggst du mehrere auf einmal. Tags gehören zur Datei und gelten überall.'
+      : 'Hier erscheint alles, was Shuffle gerade geladen hat. Lade auf dem Startbildschirm ein Preset oder wähle Dateien aus.'));
+}
+$('rkLibPre').addEventListener('change', e => { LIB.pre = e.target.value; FV.drawn = -1; renderFolder(); });
+$('rkLibF').addEventListener('click', e => {
+  const b = e.target.closest('[data-kind]');
+  if (!b) return;
+  LIB.kind = b.dataset.kind;
+  FV.drawn = -1; renderFolder();
+});
 function renderList() { renderFChips(); renderItems(); FV.drawn = VER; }
 function renderStatus() {
   const f = FV.f, s = eng(f), n = f.it.length, ld = loadedCount(f), box = $('rkStatus');
@@ -16050,10 +16826,15 @@ $('rkTagMode').addEventListener('click', () => {
 $('rkSelect').addEventListener('click', () => { if (FV.sel) back(); else startSel(); });
 $('rkFMore').addEventListener('click', async () => {
   const f = FV.f, s = eng(f);
-  const items = [{ label: 'Umbenennen', act: 'ren' }, { label: 'Tags bearbeiten', act: 'tags' }];
+  if (f.vf) {
+    const a = await menu('Tags', [{ label: 'Tags verwalten', icon: 'i-tag', act: 'tags' }]);
+    if (a.act === 'tags') pushView('tags');
+    return;
+  }
+  const items = [{ label: 'Umbenennen', act: 'ren' }];
   if (srcOf(f).length) items.push({ label: `Gemerktes vergessen (${memLabel(srcOf(f))})`, act: 'forget' });
   if (s) items.push({ label: 'Ranking neu starten', act: 'reset', confirm: 'Wirklich? Die Rangliste ist dann weg, Tags bleiben' });
-  items.push({ label: 'Ordner löschen', kind: 'danger', act: 'del', confirm: 'Wirklich löschen? Ranking und Tags dieses Ordners sind weg' });
+  items.push({ label: 'Ordner löschen', kind: 'danger', act: 'del', confirm: 'Wirklich löschen? Das Ranking dieses Ordners ist dann weg (die Tags bleiben)' });
   const r = await menu(f.n, items);
   if (r.act === 'tags') pushView('tags');
   else if (r.act === 'forget') { await forgetSources(f); renderStatus(); toast('Vergessen. Beim nächsten Laden wählst du die Medien neu aus.', 3600); }
@@ -16062,7 +16843,7 @@ $('rkFMore').addEventListener('click', async () => {
     if (a.act === 'ok' && a.value) { f.n = a.value.slice(0, 60); bump(); save(); renderFolder(); }
   } else if (r.act === 'reset') {
     f.r = null; f.u = Date.now(); rt(f).eng = null; bump(); save(); renderFolder(); renderList();
-    toast('Ranking zurückgesetzt. Die Tags sind geblieben.');
+    toast('Ranking zurückgesetzt.');
   } else if (r.act === 'del') {
     D.fs = D.fs.filter(x => x !== f);
     RT.delete(f.i);
@@ -16106,7 +16887,9 @@ $('rkFChips').addEventListener('click', e => {
   renderFChips(); renderItems();
 });
 function renderFChips() {
-  const f = FV.f, host = $('rkFChips'), cnt = tagCounts(f);
+  const f = FV.f, host = $('rkFChips');
+  if (!f.vf) { host.replaceChildren(); host.hidden = true; return; }   // im Ranking keine Tags
+  const cnt = tagCounts(f);
   const used = D.tags.filter(t => cnt.has(t.i) || FV.inc.has(t.i) || FV.exc.has(t.i))
     .sort((a, b) => (cnt.get(b.i) || 0) - (cnt.get(a.i) || 0) || az(a, b));
   const untagged = f.it.filter(it => !it.t.length).length;
@@ -16126,10 +16909,16 @@ function renderFChips() {
   host.replaceChildren(...out);
   host.hidden = !out.length;
 }
-const filterOn = () => !!(norm(FV.q) || FV.none || FV.inc.size || FV.exc.size);
+const filterOn = () => !!(norm(FV.q) || FV.none || FV.inc.size || FV.exc.size || (FV.f && FV.f.vf && (LIB.pre || LIB.kind)));
 function filtered() {
   const f = FV.f, q = norm(FV.q), rk = ranksOf(f), s = eng(f);
+  const pre = f.vf && LIB.pre ? LIB.presets.find(p => p.id === LIB.pre) : null;
   let arr = f.it.filter(it => {
+    if (f.vf) {
+      if (LIB.kind === 'v' && !it.v) return false;
+      if (LIB.kind === 'i' && it.v) return false;
+      if (pre && !pre.has(it.k)) return false;
+    }
     if (q && !norm(it.n).includes(q)) return false;
     if (FV.none && it.t.length) return false;
     for (const t of FV.inc) if (!it.t.includes(t)) return false;
@@ -16207,7 +16996,7 @@ function renderItems() {
     }
     frag.append(el);
   }
-  if (!list.length) frag.append(mk('p', 'rk-empty', f.it.length ? 'Nichts gefunden. Ändere die Suche oder die Tag-Filter.' : 'Hier ist noch nichts. Lade oben Medien.'));
+  if (!list.length) frag.append(mk('p', 'rk-empty', f.it.length ? `Nichts gefunden. Ändere die Suche oder die ${f.vf ? 'Filter' : 'Suche'}.`.replace('Suche oder die Suche', 'Suche') : f.vf ? 'Hier ist noch nichts. Lade auf dem Startbildschirm Medien.' : 'Hier ist noch nichts. Lade oben Medien.'));
   host.replaceChildren(frag);
   const c = $('rkCount');
   c.replaceChildren();
@@ -16222,6 +17011,8 @@ function renderItems() {
 function clearFilter() {
   FV.q = ''; $('rkQ').value = ''; $('rkQClear').hidden = true;
   FV.inc.clear(); FV.exc.clear(); FV.none = false;
+  LIB.pre = ''; LIB.kind = '';
+  if (FV.f && FV.f.vf) renderLibF();
   renderFChips(); renderItems();
 }
 /* Antippen öffnet die Ansicht, lange drücken startet die Auswahl */
@@ -16282,6 +17073,7 @@ function renderSelBar() {
   $('rkSelN').textContent = n ? `${fmt(n)} ausgewählt` : 'Antippen zum Auswählen';
   $('rkSelAll').textContent = all ? 'Keine' : 'Alle';
   $('rkSelTags').disabled = !n;
+  $('rkSelTags').hidden = !FV.f || !FV.f.vf;            // Tags nur im Tag-Bereich
   $('rkSelMore').disabled = !n;
 }
 $('rkSelAll').addEventListener('click', () => {
@@ -16295,12 +17087,11 @@ $('rkSelTags').addEventListener('click', () => {
 });
 $('rkSelMore').addEventListener('click', async () => {
   const f = FV.f, ids = [...FV.sel], n = ids.length;
-  const r = await menu(`${fmt(n)} ausgewählt`, [
-    { label: 'Alle Tags entfernen', act: 'untag', confirm: `Wirklich? Bei ${n === 1 ? 'diesem Medium' : `diesen ${fmt(n)} Medien`}` },
-    { label: 'Aus dem Ordner entfernen', kind: 'danger', act: 'del', confirm: `Wirklich? ${n === 1 ? 'Platz und Tags sind dann weg' : `${fmt(n)} Medien mit Platz und Tags`}` },
-  ]);
+  const r = await menu(`${fmt(n)} ausgewählt`, f.vf
+    ? [{ label: 'Alle Tags entfernen', act: 'untag', confirm: `Wirklich? Bei ${n === 1 ? 'diesem Medium' : `diesen ${fmt(n)} Medien`}` }]
+    : [{ label: 'Aus dem Ordner entfernen', kind: 'danger', act: 'del', confirm: `Wirklich? ${n === 1 ? 'Sein Platz ist dann weg' : `${fmt(n)} Medien mit ihrem Platz`}` }]);
   if (r.act === 'untag') { for (const id of ids) { const it = itemOf(f, id); if (it) for (const t of [...it.t]) setTag(f, it, t, false); } toast('Tags entfernt.'); }
-  else if (r.act === 'del') { forgetItems(f, ids); toast(`${plural(n, 'Medium', 'Medien')} entfernt.`); }
+  else if (r.act === 'del' && !f.vf) { forgetItems(f, ids); toast(`${plural(n, 'Medium', 'Medien')} entfernt.`); }
   if (r.act) { await back(); renderFolder(); }
 });
 function forgetItems(f, ids) {
@@ -16365,7 +17156,39 @@ function setMedia(c, f, it, duel) {
   }
 }
 function swapIn(el) { if (el && el.animate) el.animate([{ opacity: 0, transform: 'scale(.975)' }, { opacity: 1, transform: 'none' }], { duration: 170, easing: 'cubic-bezier(.22,.8,.24,1)' }); }
+/** Im Ranking: Leiste, wie weit das Video gelaufen ist (antippen oder ziehen zum Spulen). */
+function renderProg(el, it) {
+  el.classList.toggle('none', !it || !it.v);
+  if (!it || !it.v) { el.replaceChildren(); return; }
+  if (el.querySelector('.rk-ptrack')) return;
+  const tr = mk('div', 'rk-ptrack'), fl = mk('div', 'rk-pfill');
+  tr.append(fl);
+  el.replaceChildren(tr, mk('span', 'rk-ptime', '0:00'));
+}
+function progSync(el, v) {
+  const fl = el && el.querySelector('.rk-pfill');
+  if (!fl) return;
+  const d = v.duration, ok = d > 0 && Number.isFinite(d);
+  fl.style.width = `${ok ? Math.min(100, (v.currentTime / d) * 100).toFixed(2) : 0}%`;
+  el.querySelector('.rk-ptime').textContent = ok ? `${mmss(v.currentTime)} / ${mmss(d)}` : mmss(v.currentTime);
+}
+/** Spulen über die Leiste (seek: Zeitpunkt setzen). */
+function progSeek(el, getVid, seek) {
+  el.addEventListener('pointerdown', e => {
+    const tr = e.target.closest('.rk-ptrack'), v = getVid();
+    if (!tr || !v || v.hidden || !(v.duration > 0)) return;
+    e.preventDefault(); e.stopPropagation();
+    const go = ev => { const r = tr.getBoundingClientRect(); if (r.width) seek(Math.min(1, Math.max(0, (ev.clientX - r.left) / r.width)) * v.duration); };
+    go(e);
+    try { tr.setPointerCapture(e.pointerId); } catch (_) { /* egal */ }
+    const mv = ev => go(ev), up = () => { tr.removeEventListener('pointermove', mv); tr.removeEventListener('pointerup', up); tr.removeEventListener('pointercancel', up); };
+    tr.addEventListener('pointermove', mv); tr.addEventListener('pointerup', up); tr.addEventListener('pointercancel', up);
+  });
+}
 function renderStrip(el, f, it) {
+  el.classList.toggle('rk-progstrip', !!f && !f.vf);
+  if (f && !f.vf) { renderProg(el, it); return; }
+  el.classList.remove('none');
   if (!it) { el.replaceChildren(); return; }
   el.dataset.f = f.i; el.dataset.i = it.i;
   const add = mk('button', 'rk-chip add');
@@ -16449,7 +17272,8 @@ function buildCard(el, side) {
     if (later) { e.stopPropagation(); defer(DU.f, +later.dataset.later); toast('Kommt später dran, wenn es geladen ist.'); renderDuel(); return; }
     choose(side);
   });
-  strip.addEventListener('click', e => onStrip(e, () => duelPicker(side)));
+  strip.addEventListener('click', e => { if (!strip.classList.contains('rk-progstrip')) onStrip(e, () => duelPicker(side)); });
+  progSeek(strip, () => vid, t => cardSeek(c, t));
   return c;
 }
 const mmss = t => { const x = Math.max(0, Math.floor(t || 0)); return `${Math.floor(x / 60)}:${String(x % 60).padStart(2, '0')}`; };
@@ -16461,6 +17285,7 @@ function barSync(c) {
   c.fill.style.width = `${pc.toFixed(2)}%`;
   c.knob.style.left = `${pc.toFixed(2)}%`;
   c.time.textContent = ok ? `${mmss(v.currentTime)} / ${mmss(d)}` : mmss(v.currentTime);
+  if (c.strip && c.strip.classList.contains('rk-progstrip')) progSync(c.strip, v);
   const on = !v.hidden && !v.muted;
   if (c.sndOn !== on) {
     c.sndOn = on;
@@ -16642,6 +17467,8 @@ function renderDone(f) {
 /* ═══════════ Ansicht: ein Medium groß, durchblättern und taggen ═══════════ */
 const VW = { f: null, ids: [], idx: 0, seek: null, card: null };   // seek: Startstelle; card: Duell-Karte, die die Stelle zurückbekommt
 const VC = { img: $('rkVImg'), vid: $('rkVVid'), miss: $('rkVMiss'), vtag: null, id: null };
+for (const ev of ['timeupdate', 'loadedmetadata', 'seeked']) VC.vid.addEventListener(ev, () => { const el = $('rkVStrip'); if (el.classList.contains('rk-progstrip')) progSync(el, VC.vid); });
+progSeek($('rkVStrip'), () => VC.vid, t => { try { VC.vid.currentTime = Math.min(t, Math.max(0, VC.vid.duration - 0.1)); } catch (_) { /* egal */ } });
 function openViewer(f, ids, idx, opt = {}) {
   if (!f || !ids.length) return;
   VW.f = f; VW.ids = ids; VW.idx = Math.min(Math.max(0, idx), ids.length - 1);
@@ -16658,12 +17485,13 @@ function renderViewer() {
   const id = VW.ids[VW.idx], it = itemOf(f, id), rk = ranksOf(f), s = eng(f);
   const r = rk && rk.get(id);
   let title;
-  if (r != null) title = `Platz ${fmt(r)} von ${fmt(s.order.length)}`;
+  if (f.vf) title = it.n;
+  else if (r != null) title = `Platz ${fmt(r)} von ${fmt(s.order.length)}`;
   else if (s && (s.q.includes(id) || (s.ins && s.ins.id === id))) title = 'Wartet aufs Einsortieren';
   else if (s) title = 'Noch im Ranking';
   else title = 'Noch nicht gerankt';
   $('rkVTitle').textContent = title;
-  $('rkVSub').textContent = VW.ids.length > 1 ? `${fmt(VW.idx + 1)} von ${fmt(VW.ids.length)}` : f.n;
+  $('rkVSub').textContent = VW.ids.length > 1 ? `${fmt(VW.idx + 1)} von ${fmt(VW.ids.length)}` : f.vf ? (it.v ? 'Video' : 'Bild') : f.n;
   if (VC.id !== id) {
     VC.id = id;
     setMedia(VC, f, it, false);
@@ -16714,9 +17542,10 @@ $('rkVStrip').addEventListener('click', e => onStrip(e, (f, it) => openPicker(f,
 $('rkVMore').addEventListener('click', async () => {
   const f = VW.f, id = VW.ids[VW.idx], it = itemOf(f, id), s = eng(f);
   if (!it) return;
-  const opts = [{ label: 'Profi-Taggen ab hier', icon: 'i-tag', kind: 'primary', act: 'pro' }];
+  const opts = f.vf ? [{ label: 'Profi-Taggen ab hier', icon: 'i-tag', kind: 'primary', act: 'pro' }] : [];
+  if (f.vf) { const r0 = await menu(it.n, opts); if (r0.act === 'pro') openPro(); return; }
   if (s && !s.q.includes(id)) opts.push({ label: 'Neu einsortieren', act: 'later', confirm: s.order ? 'Wirklich? Es bekommt seinen Platz in ein paar Duellen neu' : 'Wirklich? Es kommt nach dem Ranking neu dran' });
-  opts.push({ label: 'Aus dem Ordner entfernen', kind: 'danger', act: 'del', confirm: 'Wirklich? Platz und Tags sind dann weg' });
+  opts.push({ label: 'Aus dem Ordner entfernen', kind: 'danger', act: 'del', confirm: 'Wirklich? Sein Platz ist dann weg' });
   const r = await menu(it.n, opts);
   if (r.act === 'pro') openPro();
   else if (r.act === 'later') { defer(f, id); toast('Wird neu einsortiert.'); renderViewer(); }
@@ -17024,7 +17853,7 @@ function renderPickBody() {
         for (const g of gs) kids.push(mk('div', 'rk-pk-sec', `Nummer ${g}`), grid(byG.get(g)));
         if (byG.has(0)) kids.push(mk('div', 'rk-pk-sec', 'Ohne Nummer'), grid(byG.get(0)));
       } else kids.push(mk('div', 'rk-pk-sec', showRec ? 'Alle Tags' : 'Tags'), grid(all));
-      if (!all.some(t => t.p)) kids.push(mk('p', 'rk-pk-tip', 'Tipp: Unter „Tags bearbeiten“ machst du Tags mit ★ zu Schnell-Tags. Die stehen dann direkt unter jedem Medium.'));
+      if (!all.some(t => t.p)) kids.push(mk('p', 'rk-pk-tip', 'Tipp: Unter „Tags verwalten“ machst du Tags mit ★ zu Schnell-Tags. Die stehen dann ganz vorne.'));
     }
   }
   body.replaceChildren(...kids);
@@ -17113,8 +17942,6 @@ window.addEventListener('keydown', e => {
       case 'ArrowRight': case 'ArrowDown': case '2': choose(1); break;
       case ' ': case '=': case '0': tie(); break;
       case 'Backspace': case 'z': case 'Z': undoDuel(); break;
-      case 'q': case 'Q': duelPicker(0); break;
-      case 'w': case 'W': duelPicker(1); break;
       default: ok = false;
     }
   } else if (v === 'pro' && !PRO.done) {
@@ -17554,10 +18381,17 @@ if (SYNC && SYNC.rankBind) SYNC.rankBind({ flush, reload: reloadFromSync, idle: 
 
 window.ShuffleRank = {
   open,
+  /** Für den Feed: Tags (uid, Name, Farbe), Tags je Datei als uids, Seltenheit je Datei. */
+  fileTags() {
+    const byId = new Map(D.tags.map(t => [t.i, t.uid])), ft = {}, rar = {};
+    for (const [k, a] of Object.entries(D.ft)) { const u = a.map(i => byId.get(i)).filter(Boolean); if (u.length) ft[k] = u; }
+    for (const [k, o] of rarities()) rar[k] = o.r;
+    return { tags: D.tags.map(t => ({ uid: t.uid, n: t.n, c: PAL[t.c] })), ft, rar };
+  },
   ask: dialog,
   rarityOf,
   isOpen: () => isOpen,
-  _t: { D: () => D, eng, folderById, itemOf, ranksOf, eEstimate, estimateN, duelNow, VER: () => VER, flush, thumbUrl, GS: () => GS, rarities },
+  _t: { D: () => D, eng, folderById, itemOf, ranksOf, eEstimate, estimateN, duelNow, VER: () => VER, flush, thumbUrl, GS: () => GS, rarities, loadedCount, openFolder },
 };
 })();
 </script>
