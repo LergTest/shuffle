@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="shuffle-version" content="56">
+<meta name="shuffle-version" content="57">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <meta name="color-scheme" content="dark">
@@ -6557,7 +6557,7 @@ function switchRun(mode, first) {
     showNext();
     return;
   }
-  if (!first && cur && fits(cur.item)) return;
+  if (!first && cur && fits(cur.item)) { if (mode === 'fav') favRun.lastId = cur.item.id; return; }
   if (cur) finishCurrent(state.playing ? 'abort' : 'abandon');   // mitten im laufenden Medium: zählt wie Überspringen
   showNext();
 }
