@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="shuffle-version" content="47">
+<meta name="shuffle-version" content="51">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <meta name="color-scheme" content="dark">
@@ -780,6 +780,111 @@ input[type="range"]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 3px rgba
 @media (hover: hover) { .link:hover { color: var(--fg); } }
 .privacy { margin: 10px 0 0; font-size: 12.5px; color: var(--fg-3); }
 .dragging .card { box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .5), 0 16px 44px -16px rgba(0, 0, 0, .6); }
+
+/* ───────────── Startseite: Bereiche, Tagesziel, Leiste unten ───────────── */
+#intro { padding-bottom: calc(var(--sab) + 96px); }
+#intro .card {
+  width: min(460px, 100%); padding: 20px 18px 18px; border-radius: 28px;
+  background: rgba(13, 13, 17, .8); -webkit-backdrop-filter: blur(18px) saturate(130%); backdrop-filter: blur(18px) saturate(130%);
+}
+/* Ist ein Fenster offen (Heute, Shop, Favoriten, Abzeichen, Einstellungen), tritt die Startseite zurück */
+#app.is-intro.today-open #intro .card, #app.is-intro.shop-open #intro .card, #app.is-intro.favs-open #intro .card,
+#app.is-intro.badges-open #intro .card, #app.is-intro.settings-open #intro .card { opacity: 0; pointer-events: none; }
+@media (max-width: 520px) {
+  #intro { padding: calc(var(--sat) + 12px) calc(var(--sar) + 10px) calc(var(--sab) + 92px) calc(var(--sal) + 10px); }
+  #intro .card { margin: 0 auto auto; padding: 18px 14px 16px; border-radius: 24px; }   /* oben bündig: springt beim Wechseln nicht */
+}
+.hub-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+#intro .wordmark { gap: 10px; min-width: 0; }
+#intro .wordmark h1 { font-size: 28px; }
+#intro .logo { width: 40px; height: 40px; border-radius: 13px; }
+#intro .logo svg { width: 22px; height: 22px; }
+.hub-stats { display: flex; gap: 6px; flex: none; }
+.hub-chip {
+  display: inline-flex; align-items: center; gap: 5px; height: 34px; padding: 0 11px; border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, .12); background: rgba(255, 255, 255, .06); color: var(--fg);
+  font: 650 14px/1 var(--font-num); font-variant-numeric: tabular-nums; cursor: pointer; text-shadow: none;
+}
+.hub-chip svg { width: 16px; height: 16px; color: var(--gold); }
+#intro .lead { margin: 12px 2px 2px; font-size: 15px; }
+.day, .mode, .row-btn {
+  -webkit-appearance: none; appearance: none; font: inherit; color: var(--fg); text-align: left; cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, .09); background: rgba(255, 255, 255, .05); text-shadow: none;
+  transition: background-color .15s, transform .12s;
+}
+@media (hover: hover) { .day:hover, .mode:hover, .row-btn:hover, .hub-chip:hover { background: rgba(255, 255, 255, .09); } }
+.day:active, .mode:active, .row-btn:active, .hub-chip:active { transform: scale(.985); }
+.day { display: flex; align-items: center; gap: 14px; width: 100%; margin-top: 14px; padding: 12px 10px 12px 12px; border-radius: 20px; }
+.day-ring { position: relative; flex: none; width: 62px; height: 62px; display: grid; place-items: center; }
+.day-ring svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible; }
+.day-ring circle { fill: none; stroke-width: 9; }
+.day-ring .track { stroke: rgba(255, 255, 255, .12); }
+.day-ring .bar { stroke: var(--gold); stroke-linecap: round; stroke-dasharray: 263.9; stroke-dashoffset: 263.9; transition: stroke-dashoffset .8s var(--ease); }
+.day-ring b { position: relative; font: 700 14px/1 var(--font-num); font-variant-numeric: tabular-nums; }
+.day-txt { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.day-txt small { font-size: 12.5px; color: var(--fg-3); }
+.day-txt b { font: 700 21px/1.15 var(--font-num); letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+.day-txt span { font-size: 12.5px; line-height: 1.4; color: var(--fg-2); }
+.day-go { flex: none; width: 18px; height: 18px; color: var(--fg-3); }
+.day.hit { border-color: rgba(255, 207, 107, .45); background: rgba(255, 207, 107, .08); }
+.day.hit .day-ring b { color: var(--gold); font-size: 20px; }
+.media-blk { margin-top: 12px; padding: 12px; border-radius: 20px; background: rgba(255, 255, 255, .03); border: 1px solid rgba(255, 255, 255, .08); }
+.media-blk .presets { margin: 0 0 10px; }
+.media-blk .resume { margin: 0 0 10px; background: rgba(255, 255, 255, .05); }
+.media-blk .lib { margin: 0 0 8px; padding: 2px 2px 0; background: none; border: 0; border-radius: 0; color: var(--fg-2); font-size: 13.5px; }
+.media-blk .hint { margin-top: 8px; text-align: center; }
+#intro .go { margin-top: 14px; }
+#intro .pill.primary { background: var(--gold); color: #1d1400; }           /* Hauptaktion der Startseite: Gold */
+@media (hover: hover) { #intro .pill.primary:hover { background: #ffd98a; } }
+#intro .start { height: 56px; margin-top: 0; font-size: 17px; }
+#app.is-intro .panel, #app.is-intro #settings {
+  background: rgba(13, 13, 17, .86); -webkit-backdrop-filter: blur(18px) saturate(130%); backdrop-filter: blur(18px) saturate(130%);
+}
+#intro .fav-start { height: 46px; }
+#intro .go .lib-prog { text-align: center; }
+#introToday { display: none !important; }       /* steht jetzt in der Tagesziel-Karte */
+.dur { display: block; width: 100%; margin: 6px 0 0; padding: 6px 2px; border: 0; background: none; color: var(--fg-3); font: 12.5px/1.4 var(--font); text-align: center; cursor: pointer; }
+@media (hover: hover) { .dur:hover { color: var(--fg-2); } }
+#modeRow.mode-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+#modeRow.one { grid-template-columns: 1fr; }
+#modeRow[hidden] { display: none; }
+.mode { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 10px; align-items: center; min-height: 62px; padding: 10px 12px; border-radius: 18px; }
+.mode svg { grid-row: 1 / 3; width: 22px; height: 22px; }
+.mode b { font-size: 14.5px; font-weight: 650; line-height: 1.2; }
+.mode small { font-size: 12px; line-height: 1.3; color: var(--fg-3); }
+.mode.fd-entry svg { color: #79c5ff; }
+.mode.sv-entry svg { color: #ff5c7a; }
+.pg-title { margin: 2px 2px 14px; font-size: 24px; font-weight: 750; letter-spacing: -.02em; }
+.nav-list { display: grid; gap: 8px; }
+.row-btn { display: grid; grid-template-columns: 40px minmax(0, 1fr) 18px; align-items: center; gap: 12px; width: 100%; min-height: 64px; padding: 10px 12px; border-radius: 18px; }
+.row-btn .ico { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: rgba(255, 255, 255, .07); }
+.row-btn .ico svg { width: 20px; height: 20px; }
+.row-btn b { display: block; font-size: 15px; font-weight: 650; }
+.row-btn small { display: block; margin-top: 2px; font-size: 12.5px; color: var(--fg-3); }
+.row-btn .chev { width: 18px; height: 18px; color: var(--fg-3); }
+#btnRank .ico svg, #hubBadges .ico svg { color: var(--gold); }
+#introFavs .ico svg { color: var(--heart); }
+#introVerlauf .ico svg { color: #ff9b52; }
+#pgMore .privacy { margin: 16px 4px 2px; text-align: center; }
+.tabbar {
+  position: fixed; z-index: 26; left: 50%; bottom: calc(var(--sab) + 10px); transform: translateX(-50%);
+  width: min(440px, calc(100% - 20px)); display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; padding: 6px;
+  border-radius: 24px; border: 1px solid rgba(255, 255, 255, .1);
+  background: rgba(14, 14, 18, .84); -webkit-backdrop-filter: blur(14px) saturate(140%); backdrop-filter: blur(14px) saturate(140%);
+  box-shadow: 0 18px 40px -16px rgba(0, 0, 0, .85);
+}
+.tabbar button {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; height: 50px; min-width: 0;
+  border: 0; border-radius: 18px; background: none; color: var(--fg-3); font: 600 11.5px/1 var(--font); cursor: pointer;
+  transition: color .15s, background-color .15s;
+}
+.tabbar svg { width: 22px; height: 22px; }
+.tabbar button.on { color: var(--gold); background: rgba(255, 207, 107, .1); }
+@media (hover: hover) { .tabbar button:not(.on):hover { color: var(--fg); } }
+#app.is-intro .panel { max-height: calc(100% - var(--sat) - var(--sab) - 2 * var(--gap) - 76px); }
+@media (max-width: 600px) { #app.is-intro .panel { left: calc(var(--sal) + 10px); right: calc(var(--sar) + 10px); width: auto; } }
+#app.is-intro #settings { bottom: calc(var(--sab) + 82px); max-height: calc(100% - var(--sat) - var(--sab) - var(--gap) - 82px); }
+#app.is-intro #toast { bottom: calc(var(--sab) + 86px); }
 
 /* ───────────── Oben links: Favoriten und Tagesziel ───────────── */
 #chips {
@@ -1790,8 +1895,17 @@ body.fd-open { overflow: hidden; }
 .fd-info b { display: block; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .fd-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 7px; }
 .fd-tags i { font-style: normal; font-size: 12.5px; padding: 3px 9px; border-radius: 999px; background: rgba(var(--c), .3); border: 1px solid rgba(var(--c), .75); text-shadow: none; }
-.fd-prog { position: absolute; left: 0; right: 0; bottom: var(--sab); height: 3px; z-index: 2; background: rgba(255, 255, 255, .18); pointer-events: none; }
+.fd-seek { position: absolute; left: 0; right: 0; bottom: var(--sab); height: 24px; z-index: 3; display: flex; align-items: flex-end; touch-action: none; cursor: pointer; }
+.fd-prog { position: relative; flex: 1; height: 3px; background: rgba(255, 255, 255, .18); pointer-events: none; transition: height .12s; }
+.fd-seek:hover .fd-prog, .fd-seek.drag .fd-prog { height: 7px; }
 .fd-prog i { display: block; height: 100%; width: 0; background: #fff; }
+.fd-tip { position: absolute; bottom: 16px; transform: translateX(-50%); padding: 3px 9px; border-radius: 9px; background: rgba(0, 0, 0, .72); font-size: 13px; font-variant-numeric: tabular-nums; white-space: nowrap; pointer-events: none; display: none; }
+.fd-seek.drag .fd-tip { display: block; }
+.fd-part { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 9px; }
+.fd-pn { font-size: 12.5px; padding: 3px 9px; border-radius: 999px; background: rgba(0, 0, 0, .45); text-shadow: none; font-variant-numeric: tabular-nums; }
+.fd-cont { pointer-events: auto; display: inline-flex; align-items: center; gap: 2px; min-height: 30px; padding: 3px 8px 3px 12px; border: 1px solid rgba(255, 255, 255, .6); border-radius: 999px; background: rgba(0, 0, 0, .45); color: #fff; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; text-shadow: none; transition: background .2s, color .2s; }
+.fd-cont .i { width: 16px; height: 16px; }
+.fd-cont.hot { background: #fff; color: #000; border-color: #fff; }
 .fd-dots { position: absolute; left: 0; right: 0; bottom: calc(var(--sab) + 10px); z-index: 2; display: flex; justify-content: center; gap: 6px; pointer-events: none; }
 .fd-dots i { width: 6px; height: 6px; border-radius: 50%; background: rgba(255, 255, 255, .4); }
 .fd-dots i.on { background: #fff; }
@@ -2003,6 +2117,7 @@ body.rk-open #app { visibility: hidden; }
 /* Medien: Liste und Raster */
 .rk-items { display: grid; gap: 6px; }
 .rk-items.grid { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 6px; }
+.rk-more { grid-column: 1 / -1; height: 1px; }
 .rk-empty { padding: 28px 10px; text-align: center; font-size: 14px; line-height: 1.5; color: var(--fg-3); }
 .rk-row {
   display: flex; align-items: center; gap: 12px; width: 100%; min-height: 66px; padding: 7px 10px 7px 6px;
@@ -2681,55 +2796,85 @@ body.rk-open #app { visibility: hidden; }
   <section id="intro" aria-labelledby="introTitle">
     <div id="deck" class="deck" aria-hidden="true"></div>
     <div class="card glass">
-      <div class="wordmark">
-        <span class="logo"><svg class="i"><use href="#i-shuffle"/></svg></span>
-        <h1 id="introTitle">Shuffle</h1>
-      </div>
-      <p class="lead">Wähle Bilder und Videos aus. Sie laufen in zufälliger Reihenfolge, jedes für eine zufällige Dauer. Kurze Videos laufen fast ganz, längere ab einer zufälligen Stelle.</p>
-      <div class="presets" id="presetBox" hidden>
-        <div class="ps-head"><p class="resume-title" id="psTitle">Deine Presets</p><button type="button" class="link" id="psNew">＋ Neues Preset</button></div>
-        <div class="ps-list" id="psList"></div>
-        <p class="ps-lock" id="psLock" hidden></p>
-      </div>
-      <div class="resume" id="resumeBox" hidden>
-        <p class="resume-title" id="resumeTitle">Deine Dateien vom letzten Mal</p>
-        <p class="resume-info" id="resumeInfo"></p>
-        <div class="resume-row">
-          <button type="button" class="pill primary" id="btnResume"><svg class="i"><use href="#i-play"/></svg><span id="resumeLabel">Weitermachen</span></button>
-          <button type="button" class="link" id="resumeForget">Vergessen</button>
+      <div class="pg" id="pgStart">
+        <header class="hub-head">
+          <div class="wordmark">
+            <span class="logo"><svg class="i"><use href="#i-shuffle"/></svg></span>
+            <h1 id="introTitle">Shuffle</h1>
+          </div>
+          <div class="hub-stats">
+            <button type="button" class="hub-chip" id="hubStreak" hidden title="Serie: Tage in Folge geschafft"><svg class="i"><use href="#i-flame"/></svg><b id="hubStreakN">0</b></button>
+            <button type="button" class="hub-chip" id="hubCoins" title="Münzen · zum Shop"><svg class="i coin"><use href="#i-coin"/></svg><b id="hubCoinsN">0</b></button>
+          </div>
+        </header>
+        <p class="lead" id="introLead">Wähle Bilder und Videos aus. Sie laufen in zufälliger Reihenfolge, jedes für eine zufällige Dauer.</p>
+        <button type="button" class="day" id="hubDay" hidden aria-label="Heute und Verlauf öffnen">
+          <span class="day-ring"><svg viewBox="0 0 100 100" aria-hidden="true"><circle class="track" cx="50" cy="50" r="42"/><circle class="bar" id="hubRing" cx="50" cy="50" r="42"/></svg><b id="hubPct">0 %</b></span>
+          <span class="day-txt"><small id="hubDayLabel">Tagesziel heute</small><b id="hubDayVal">0</b><span id="hubDayMore" hidden></span></span>
+          <svg class="i day-go"><use href="#i-chev-r"/></svg>
+        </button>
+        <section class="media-blk" aria-label="Deine Medien">
+        <div class="presets" id="presetBox" hidden>
+          <div class="ps-head"><p class="resume-title" id="psTitle">Deine Presets</p><button type="button" class="link" id="psNew">＋ Neues Preset</button></div>
+          <div class="ps-list" id="psList"></div>
+          <p class="ps-lock" id="psLock" hidden></p>
+        </div>
+        <div class="resume" id="resumeBox" hidden>
+          <p class="resume-title" id="resumeTitle">Deine Dateien vom letzten Mal</p>
+          <p class="resume-info" id="resumeInfo"></p>
+          <div class="resume-row">
+            <button type="button" class="pill primary" id="btnResume"><svg class="i"><use href="#i-play"/></svg><span id="resumeLabel">Weitermachen</span></button>
+            <button type="button" class="link" id="resumeForget">Vergessen</button>
+          </div>
+        </div>
+        <div class="lib" id="introLib" hidden>
+          <span id="introCount"></span>
+          <button type="button" class="link" id="introClear">Liste leeren</button>
+        </div>
+        <div class="pick">
+          <button type="button" class="pill primary" id="btnPick"><svg class="i"><use href="#i-plus"/></svg><span id="pickLabel">Dateien wählen</span></button>
+          <button type="button" class="pill" id="btnPickDir"><svg class="i"><use href="#i-folder"/></svg>Ordner</button>
+        </div>
+          <p class="hint only-mouse">Du kannst Dateien und Ordner auch hierher ziehen.</p>
+        </section>
+        <div class="go">
+          <button type="button" class="pill primary start" id="btnStart" hidden><svg class="i"><use href="#i-play"/></svg><span id="startLabel">Wiedergabe starten</span></button>
+          <button type="button" class="pill fav-start" id="btnFavStart" hidden><svg class="i"><use href="#i-heart-fill"/></svg><span id="favStartLabel">Nur Favoriten abspielen</span></button>
+          <p class="lib-prog" id="introProg" hidden></p>
+          <p class="lib-prog today" id="introToday" hidden></p>
+          <button type="button" class="dur" id="introDur" title="Einstellungen öffnen"></button>
+        </div>
+        <div class="mode-row" id="modeRow">
+          <button type="button" class="mode fd-entry" id="btnFeed" hidden title="Videos zum Hochwischen, der Feed lernt aus deinen Tags"><svg class="i"><use href="#i-swipe-u"/></svg><b>Für dich</b><small>Videos zum Wischen</small></button>
+          <button type="button" class="mode sv-entry" id="btnSurvive" hidden title="Eigenes Spiel nebenher: 3 Leben, jede Stufe dauert länger"><svg class="i"><use href="#i-heart-fill"/></svg><b>Überleben</b><small>3 Leben, eigener Rekord</small></button>
         </div>
       </div>
-      <div class="pick">
-        <button type="button" class="pill primary" id="btnPick"><svg class="i"><use href="#i-plus"/></svg><span id="pickLabel">Dateien wählen</span></button>
-        <button type="button" class="pill" id="btnPickDir"><svg class="i"><use href="#i-folder"/></svg>Ordner</button>
+      <div class="pg" id="pgColl" hidden>
+        <h2 class="pg-title">Sammlung</h2>
+        <div class="nav-list">
+          <button type="button" class="row-btn" id="btnRank" title="Eigene Medien im 1v1 ranken"><span class="ico"><svg class="i"><use href="#i-trophy"/></svg></span><span class="row-txt"><b>Ranking</b><small>Deine Medien im Duell vergleichen</small></span><svg class="i chev"><use href="#i-chev-r"/></svg></button>
+          <button type="button" class="row-btn" id="introTags"><span class="ico"><svg class="i"><use href="#i-tag"/></svg></span><span class="row-txt"><b>Tags</b><small>Medien taggen und nach Tags filtern</small></span><svg class="i chev"><use href="#i-chev-r"/></svg></button>
+          <button type="button" class="row-btn" id="introAlbum"><span class="ico"><svg class="i"><use href="#i-star"/></svg></span><span class="row-txt"><b>Album</b><small>Karten, die du beim Spielen sammelst</small></span><svg class="i chev"><use href="#i-chev-r"/></svg></button>
+          <button type="button" class="row-btn" id="introFavs" aria-controls="favs"><span class="ico"><svg class="i"><use href="#i-heart-fill"/></svg></span><span class="row-txt"><b>Favoriten</b><small>Deine Lieblinge auf einen Blick</small></span><svg class="i chev"><use href="#i-chev-r"/></svg></button>
+        </div>
       </div>
-      <p class="hint only-mouse">Du kannst Dateien und Ordner auch hierher ziehen.</p>
-      <div class="lib" id="introLib" hidden>
-        <span id="introCount"></span>
-        <button type="button" class="link" id="introClear">Liste leeren</button>
+      <div class="pg" id="pgMore" hidden>
+        <h2 class="pg-title">Mehr</h2>
+        <div class="nav-list">
+          <button type="button" class="row-btn" id="introVerlauf" aria-controls="today"><span class="ico"><svg class="i"><use href="#i-flame"/></svg></span><span class="row-txt"><b>Heute &amp; Verlauf</b><small>Tagesziel, Serie und die letzten Tage</small></span><svg class="i chev"><use href="#i-chev-r"/></svg></button>
+          <button type="button" class="row-btn" id="hubBadges" aria-controls="badges"><span class="ico"><svg class="i"><use href="#i-trophy"/></svg></span><span class="row-txt"><b>Abzeichen</b><small>Was du schon geschafft hast</small></span><svg class="i chev"><use href="#i-chev-r"/></svg></button>
+          <button type="button" class="row-btn" id="introSet" aria-controls="settings"><span class="ico"><svg class="i"><use href="#i-tune"/></svg></span><span class="row-txt"><b>Einstellungen</b><small>Anzeigedauer, Schwierigkeit, Ton, Abgleich</small></span><svg class="i chev"><use href="#i-chev-r"/></svg></button>
+          <button type="button" class="row-btn" id="hubHelp"><span class="ico"><svg class="i"><use href="#i-tap"/></svg></span><span class="row-txt"><b>Hilfe</b><small>Gesten und Tasten im Spiel</small></span><svg class="i chev"><use href="#i-chev-r"/></svg></button>
+        </div>
+        <p class="privacy" id="privacy">Alles bleibt auf deinem Gerät. Es wird nichts hochgeladen.</p>
       </div>
-      <p class="lib-prog" id="introProg" hidden></p>
-      <p class="lib-prog today" id="introToday" hidden></p>
-      <button type="button" class="pill primary start" id="btnStart" hidden><svg class="i"><use href="#i-play"/></svg><span id="startLabel">Wiedergabe starten</span></button>
-      <button type="button" class="pill fav-start" id="btnFavStart" hidden><svg class="i"><use href="#i-heart-fill"/></svg><span id="favStartLabel">Nur Favoriten abspielen</span></button>
-      <div class="mode-row" id="modeRow">
-        <button type="button" class="pill fd-entry" id="btnFeed" hidden title="Videos zum Hochwischen, der Feed lernt aus deinen Tags"><svg class="i"><use href="#i-swipe-u"/></svg><span>Für dich</span></button>
-        <button type="button" class="pill sv-entry" id="btnSurvive" hidden title="Eigenes Spiel nebenher: 3 Leben, jede Stufe dauert länger"><svg class="i"><use href="#i-heart-fill"/></svg>Überleben</button>
-        <button type="button" class="pill rank-entry" id="btnRank" title="Eigene Medien im 1v1 ranken"><svg class="i"><use href="#i-trophy"/></svg><span class="rk-long">Ranking: im Duell vergleichen</span><span class="rk-short">Ranking</span></button>
-      </div>
-      <div class="foot">
-        <span id="introDur"></span>
-        <span class="foot-links">
-          <button type="button" class="link" id="introVerlauf" aria-controls="today">Heute &amp; Verlauf</button>
-          <button type="button" class="link" id="introFavs" aria-controls="favs">Favoriten</button>
-          <button type="button" class="link" id="introTags">Tags</button>
-          <button type="button" class="link" id="introAlbum">Album</button>
-          <button type="button" class="link" id="introShop" aria-controls="shop">Shop</button>
-          <button type="button" class="link" id="introSet" aria-controls="settings">Einstellungen</button>
-        </span>
-      </div>
-      <p class="privacy" id="privacy">Alles bleibt auf deinem Gerät. Es wird nichts hochgeladen.</p>
     </div>
+    <nav class="tabbar" id="tabbar" aria-label="Bereiche">
+      <button type="button" data-tab="start"><svg class="i"><use href="#i-play"/></svg><span>Start</span></button>
+      <button type="button" data-tab="coll"><svg class="i"><use href="#i-grid"/></svg><span>Sammlung</span></button>
+      <button type="button" data-tab="shop" id="introShop" aria-controls="shop"><svg class="i coin"><use href="#i-coin"/></svg><span>Shop</span></button>
+      <button type="button" data-tab="more"><svg class="i"><use href="#i-more"/></svg><span>Mehr</span></button>
+    </nav>
   </section>
 
   <aside id="settings" class="glass dense" aria-labelledby="sheetTitle">
@@ -4817,7 +4962,7 @@ function addFiles(list, opts = {}) {
     library.push(item);
     fileIdx = null;
     byId.set(item.id, item);
-    if (state.started && bag.length) bag.splice(Math.floor(Math.random() * (bag.length + 1)), 0, item.id);
+    if (state.started && (bag.length || bgLoad)) bag.splice(Math.floor(Math.random() * (bag.length + 1)), 0, item.id);
     res.added++;
   }
   updateLibraryUI();
@@ -4927,6 +5072,10 @@ function pickNext() {
     }
   }
   bag = bag.filter(id => { const it = byId.get(id); return it && usable(it); });
+  if (!bag.length && bgLoad) {                            // lädt noch: Runde nicht beenden
+    bag = shuffled(library.filter(i => usable(i) && !progress.done.has(i.key) && !progress.skipped.has(i.key) && i.id !== lastId).map(i => i.id));
+    if (!bag.length) bag = shuffled(library.filter(i => usable(i) && i.id !== lastId).map(i => i.id));   // zur Überbrückung
+  }
   if (!bag.length) { newRound(); refillBag(); }
   if (!bag.length) return null;
   const last = bag.length - 1;
@@ -5387,6 +5536,7 @@ const idbClear = () => idbRun('readwrite', s => s.clear());
 
 const sources = [];     // { id, type: 'dir' | 'file', name, handle, state: 'stored' | 'loaded' | 'missing' | 'denied', count }
 let restoring = false;
+let bgLoad = null;                      // { total, done } solange gemerkte Dateien noch im Hintergrund geöffnet werden
 
 /* ── Presets: mehrere gemerkte Auswahlen ──
    Jeder gemerkte Eintrag gehört zu einem Preset (Feld p). Geladen ist immer nur das aktive Preset;
@@ -5814,6 +5964,30 @@ async function collectFromDir(dir, depth = 0, out = [], slow = false) {
   return out;
 }
 
+/** Nur die Namen aller Medien in einem Ordner (mit Unterordnern) – geht viel schneller als jede Datei zu öffnen. */
+async function listDir(dir, out, s, depth = 0) {
+  for await (const h of dir.values()) {
+    if (!h.name || h.name.startsWith('.')) continue;
+    if (h.kind === 'file') { if (isMediaName(h.name)) out.push({ s, h }); }
+    else if (h.kind === 'directory' && depth < 12) await listDir(h, out, s, depth + 1);
+  }
+  return out;
+}
+/** Namen der Medien, die zuerst laden: getaggt, Favorit oder ❤ im Feed. */
+function priorityNames() {
+  const out = new Set(), add = k => { const i = String(k).lastIndexOf('|'); if (i > 0) out.add(String(k).slice(0, i)); };
+  for (const k of favs) add(k);
+  try { const r = window.ShuffleRank && window.ShuffleRank.fileTags ? window.ShuffleRank.fileTags() : null; if (r && r.ft) for (const k of Object.keys(r.ft)) add(k); } catch (_) { /* ohne */ }
+  try { const it = ShuffleSync.xGet().fd.it || {}; for (const [k, e] of Object.entries(it)) if (e && e[0] === 1 && !k.includes('#')) add(k); } catch (_) { /* ohne */ }
+  return out;
+}
+/** fn für alle Einträge, höchstens n gleichzeitig. */
+async function pmap(arr, n, fn) {
+  let i = 0;
+  const lane = async () => { while (i < arr.length) { const x = arr[i++]; await fn(x); } };
+  await Promise.all(Array.from({ length: Math.min(n, arr.length) }, lane));
+}
+
 /** Handle dauerhaft merken (ohne Doppelte). Ein verschwundener Eintrag mit
     gleichem Namen wird ersetzt – meist ist es derselbe, nur verschoben. */
 async function rememberHandle(handle, pid) {
@@ -5950,22 +6124,49 @@ async function restoreSources(byClick) {
       }
       s.perm = p;
     }
-    const files = [];
+    // 1) nur die Namen (schnell)
+    const ents = [], open = [];
     for (const s of todo) {
       if (s.state === 'missing') continue;
       if (s.perm !== 'granted') { s.state = 'denied'; continue; }
       try {
-        const list = s.type === 'dir' ? await collectFromDir(s.handle) : [await s.handle.getFile()];
-        s.state = 'loaded';
-        s.count = list.length;
-        noteSrcFiles(s.id, list);
-        cacheSrc(s.id, list);
-        files.push(...list);
+        if (s.type === 'dir') await listDir(s.handle, ents, s);
+        else ents.push({ s, h: s.handle });
+        s.got = [];
+        open.push(s);
       } catch (err) {
         s.state = err && err.name === 'NotAllowedError' ? 'denied' : 'missing';
       }
     }
-    const res = addFiles(files, { quiet: true });
+    // 2) Reihenfolge: Getaggtes, Favoriten und ❤ zuerst, der Rest gemischt aus allen Ordnern
+    const pri = priorityNames(), mixed = shuffled(ents);
+    const order = [...mixed.filter(e => pri.has(e.h.name)), ...mixed.filter(e => !pri.has(e.h.name))];
+    // 3) öffnen (mehrere gleichzeitig) und in Portionen übergeben: nach den ersten kann es schon losgehen
+    const res = { added: 0, ignored: 0, dupes: 0 };
+    let batch = [], last = performance.now();
+    const hand = () => {
+      if (batch.length) { const r = addFiles(batch, { quiet: true }); res.added += r.added; res.ignored += r.ignored; res.dupes += r.dupes; batch = []; }
+      last = performance.now();
+      updateMemoryUI();
+    };
+    bgLoad = { total: order.length, done: 0 };
+    updateMemoryUI();
+    await pmap(order, 6, async e => {
+      try { const f = await e.h.getFile(); e.s.got.push(f); batch.push(f); }
+      catch (err) { if (e.s.type === 'file') e.s.state = err && err.name === 'NotAllowedError' ? 'denied' : 'missing'; }
+      bgLoad.done++;
+      if (batch.length >= (library.length < 150 ? 40 : 250) || performance.now() - last > 600) hand();
+    });
+    hand();
+    for (const s of open) {
+      if (s.state === 'missing' || s.state === 'denied') { delete s.got; continue; }
+      s.state = 'loaded';
+      s.count = s.got.length;
+      noteSrcFiles(s.id, s.got);
+      cacheSrc(s.id, s.got);
+      delete s.got;
+    }
+    bgLoad = null;
     const missing = todo.filter(s => s.state === 'missing');
     const denied = todo.filter(s => s.state === 'denied');
     const parts = [];
@@ -5977,6 +6178,7 @@ async function restoreSources(byClick) {
     if (parts.length) toast(parts.join(' '), missing.length || denied.length ? 6500 : 4200);
   } finally {
     restoring = false;
+    bgLoad = null;
     updateMemoryUI();
     updateLibraryUI();
     setTimeout(() => { preloadAll(false); }, 300);   // danach die anderen Presets im Hintergrund
@@ -6004,8 +6206,10 @@ function updateMemoryUI() {
   resumeTitle.textContent = pa ? `Preset „${pa.n}“` : 'Deine Dateien vom letzten Mal';
   resumeForget.hidden = !!pa;
   if (waiting.length) {
-    resumeInfo.textContent = [`Gemerkt: ${srcCount(waiting)}.`, progressLine()].filter(Boolean).join(' ');
-    resumeLabel.textContent = restoring ? 'Wird geladen …' : 'Weitermachen';
+    resumeInfo.textContent = bgLoad && bgLoad.total
+      ? `Lädt: ${bgLoad.done.toLocaleString('de-DE')} von ${bgLoad.total.toLocaleString('de-DE')} Dateien.${library.some(usable) ? ' Du kannst schon starten, der Rest kommt im Hintergrund dazu.' : ''}`
+      : [`Gemerkt: ${srcCount(waiting)}.`, progressLine()].filter(Boolean).join(' ');
+    resumeLabel.textContent = restoring ? (bgLoad && bgLoad.total ? `Wird geladen … ${Math.floor((bgLoad.done / bgLoad.total) * 100)} %` : 'Wird geladen …') : 'Weitermachen';
     btnResume.disabled = restoring;
   }
   btnPick.classList.toggle('primary', !waiting.length && !library.some(usable));
@@ -10239,9 +10443,9 @@ function updateModeRow() {
   if (!sb || !fb || !row) return;
   sb.hidden = library.filter(usable).length < 2;
   fb.hidden = mediaIndex().size < 1;
-  const n = 1 + (sb.hidden ? 0 : 1) + (fb.hidden ? 0 : 1);
-  row.classList.toggle('two', n === 2);
-  row.classList.toggle('three', n === 3);
+  const n = (sb.hidden ? 0 : 1) + (fb.hidden ? 0 : 1);
+  row.hidden = n === 0;
+  row.classList.toggle('one', n === 1);
 }
 function updateLibraryUI() {
   const { ni, nv, text } = countText();
@@ -10249,6 +10453,7 @@ function updateLibraryUI() {
   introCount.textContent = text;
   libCount.textContent = library.length ? text : 'noch keine';
   introLib.hidden = library.length === 0;
+  { const ld = document.getElementById('introLead'); if (ld) ld.hidden = library.length > 0 || sources.length > 0; }
   btnStart.hidden = !any;
   updateModeRow();
   pickLabel.textContent = any ? 'Weitere hinzufügen' : 'Dateien wählen';
@@ -10396,7 +10601,7 @@ const PANELS = {
   badges: { el: badgesEl, cls: 'badges-open', btn: badgesOpen, render: () => renderBadges() },
   shop: { el: shopEl, cls: 'shop-open', btn: chipCoins, render: () => renderShop() },
 };
-const PANEL_OPENERS = '#lens, #chipGoal, #chipFav, #introVerlauf, #introFavs, #badgesOpen, #chipCoins, #shopOpen, #introShop, #setShop';
+const PANEL_OPENERS = '#lens, #chipGoal, #chipFav, #introVerlauf, #introFavs, #badgesOpen, #chipCoins, #shopOpen, #introShop, #setShop, #tabbar, #hubDay, #hubCoins, #hubStreak, #hubBadges';
 let openName = null;
 function openPanel(name) {
   if (name === 'progress' && !state.started) return;
@@ -10675,6 +10880,7 @@ let introTodayShown = '';
 function renderIntroToday(gs, n) {
   const show = library.length > 0 || Object.keys(days).length > 0;
   introToday.hidden = !show;
+  renderHubDay(gs, n, show);
   if (!show) return;
   const parts = [gs.hit ? `Tagesziel heute geschafft (Summe ${fmtInt(gs.value)})`
     : blindGoal(gs) ? 'Tagesziel heute: geheim (Blindflug)' : `Tagesziel heute: ${fmtInt(gs.value)} von ${fmtInt(gs.target)}`];
@@ -10691,6 +10897,34 @@ function renderIntroToday(gs, n) {
   if (text === introTodayShown && introToday.firstChild) return;
   introTodayShown = text;
   introToday.replaceChildren(useIcon('i-flame'), text);
+}
+/** Startseite: Karte mit Tagesziel (Ring), Serie und Münzen oben rechts. */
+function renderHubDay(gs, n, show) {
+  const $$ = id => document.getElementById(id), day = $$('hubDay');
+  if (!day) return;
+  $$('hubStreak').hidden = !(n >= 1);
+  $$('hubStreakN').textContent = fmtInt(n);
+  $$('hubCoinsN').textContent = fmtInt(meta.coins);
+  $$('hubCoins').hidden = !(meta.coins > 0 || meta.tot.coins > 0);
+  day.hidden = !show;
+  if (!show) return;
+  const blind = blindGoal(gs), pct = gs.target > 0 ? Math.min(1, gs.value / gs.target) : 0;
+  $$('hubRing').style.strokeDashoffset = String(263.9 * (1 - (gs.hit ? 1 : blind ? 0 : pct)));
+  $$('hubPct').textContent = gs.hit ? '✓' : blind ? '?' : `${Math.floor(pct * 100)} %`;
+  $$('hubDayLabel').textContent = gs.hit ? 'Tagesziel geschafft' : 'Tagesziel heute';
+  $$('hubDayVal').textContent = gs.hit ? `Summe ${fmtInt(gs.value)}` : blind ? 'Geheim (Blindflug)' : `${fmtInt(gs.value)} von ${fmtInt(gs.target)}`;
+  const d = gs.d, sw = shiftWait(), more = [];
+  if (!gs.hit && !(d && d.gl)) more.push('Wird beim ersten Start festgelegt');
+  if (d && d.zd) more.push('Zugabe geschafft');
+  else if (zugabeOn(d)) more.push(`Zugabe ${fmtInt(zugabeVal(d))} von ${fmtInt(zugabeNeed(d))}`);
+  if (sw) more.push(`🌗 Schicht 2 ab ${fmtHour(sw)} Uhr`);
+  for (const e of todayEvs()) more.push(`${EVENTS[e].icon} ${EVENTS[e].name}`);
+  const tk = meta.today.day === dayKey() ? meta.today.tasks : [];
+  if (tk.length) more.push(`Aufgaben ${tk.filter(t => t.done).length} von ${tk.length}`);
+  const m = $$('hubDayMore');
+  m.hidden = !more.length;
+  m.textContent = more.join(', ');
+  day.classList.toggle('hit', !!gs.hit);
 }
 let peekChipTimer = 0;
 function peekChips(ms) {
@@ -11562,6 +11796,7 @@ function renderCoins() {
   chipCoins.hidden = !(meta.coins > 0 || meta.tot.coins > 0);
   if (coinsShown !== meta.coins) { coinsShown = meta.coins; chipCoinsN.textContent = fmtInt(meta.coins); }
   chipCoins.title = `${fmtInt(meta.coins)} Münzen · Shop (B)`;
+  { const hc = document.getElementById('hubCoinsN'); if (hc) { hc.textContent = fmtInt(meta.coins); hc.parentNode.hidden = chipCoins.hidden; } }
   if (openName === 'shop') shopCoins.textContent = fmtInt(meta.coins);
   if (openName === 'today') invCoins.textContent = `🪙 ${fmtInt(meta.coins)} Münzen`;
 }
@@ -12651,10 +12886,7 @@ function renderVideoNote() {
 function renderRangeInfo() {
   renderVideoNote();
   const s = currentLevel(), autoOn = isAuto();
-  introDur.replaceChildren(
-    settings.min === settings.max ? `${settings.min} s je Medium` : `${settings.min} bis ${settings.max} s je Medium`,
-    document.createElement('br'),
-    `Schwierigkeit: ${autoOn ? 'automatisch' : levelName(s)}`);
+  introDur.textContent = `${settings.min === settings.max ? `${settings.min} s je Medium` : `${settings.min} bis ${settings.max} s je Medium`}, Schwierigkeit: ${autoOn ? 'automatisch' : levelName(s)}`;
   const a = rangeFor(settings.min, s, autoOn), b = rangeFor(settings.max, s, autoOn);
   const between = r => `zwischen ${intLo(r)} und ${intHi(r)}`;
   const tail = settings.min === settings.max ? '.' : `, bei ${settings.max} s ${between(b)}.`;
@@ -13186,7 +13418,7 @@ function renderPresets() {
     const sm = document.createElement('small'); sm.textContent = presetInfo(p);
     txt.append(b, sm);
     main.append(dot, txt);
-    if (act) { const t = document.createElement('span'); t.className = 'ps-tag'; t.textContent = lock ? 'heute' : loaded ? 'geladen' : 'aktiv'; main.append(t); }
+    if (act) { const t = document.createElement('span'); t.className = 'ps-tag'; t.textContent = lock ? 'heute' : bgLoad ? 'lädt …' : loaded ? 'geladen' : 'aktiv'; main.append(t); }
     const more = document.createElement('button');
     more.type = 'button'; more.className = 'ib sm'; more.dataset.edit = p.id;
     more.setAttribute('aria-label', `„${p.n}“ bearbeiten`); more.title = 'Bearbeiten';
@@ -13199,6 +13431,7 @@ function renderPresets() {
 }
 /** Preset laden (statt der aktuellen Auswahl). */
 async function usePreset(id) {
+  if (restoring && !state.started) { toast('Moment, das Preset lädt noch.', 2400); return; }
   if (state.started || restoring) return;
   const lock = presetLock();
   if (lock && id !== lock.pr) { toast(`🔒 ${lockText(lock)}`, 5200); return; }
@@ -13683,7 +13916,7 @@ document.addEventListener('pointerdown', e => {
     }
   }
   if (!sheetOpen) return;
-  if (sheet.contains(t) || (t.closest && t.closest('#btnSet, #introSet'))) return;
+  if (sheet.contains(t) || (t.closest && t.closest('#btnSet, #introSet, #tabbar'))) return;
   closeSheet();
   if (stage.contains(t)) swallowTap = true;
   if (intro.contains(t) && !(t.closest && t.closest('.card'))) {
@@ -14349,12 +14582,51 @@ if (ShuffleSync.plOn) ShuffleSync.plOn(() => {    // neue Listen vom PC: Auswahl
   renderPresets();
   updateMemoryUI();
 });
+/* ── Startseite: Bereiche Start, Sammlung, Mehr (und Shop als Fenster) über die Leiste unten ── */
+const HUB = { pg: 'start', intro: true };
+function hubShow(pg) {
+  HUB.pg = pg;
+  for (const [k, id] of [['start', 'pgStart'], ['coll', 'pgColl'], ['more', 'pgMore']]) $(id).hidden = k !== pg;
+  $('intro').scrollTop = 0;
+  hubTabs();
+}
+function hubTabs() {
+  const cur = openName === 'shop' ? 'shop' : HUB.pg;
+  for (const b of $('tabbar').querySelectorAll('[data-tab]')) {
+    const on = b.dataset.tab === cur;
+    b.classList.toggle('on', on);
+    if (on) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+  }
+}
+$('tabbar').addEventListener('click', e => {
+  const b = e.target.closest('[data-tab]');
+  if (!b || b.dataset.tab === 'shop') return;                      // Shop: eigenes Fenster (introShop)
+  closePanel();
+  closeSheet();
+  hubShow(b.dataset.tab);
+});
+new MutationObserver(() => {
+  const intro = app.classList.contains('is-intro');
+  if (intro && !HUB.intro) hubShow('start');                        // zurück vom Spiel: immer auf Start
+  HUB.intro = intro;
+  hubTabs();
+}).observe(app, { attributes: true, attributeFilter: ['class'] });
+$('hubDay').addEventListener('click', () => togglePanel('today'));
+$('hubStreak').addEventListener('click', () => togglePanel('today'));
+$('hubCoins').addEventListener('click', () => togglePanel('shop'));
+$('hubBadges').addEventListener('click', () => togglePanel('badges'));
+$('hubHelp').addEventListener('click', () => openModal(helpEl));
+introDur.addEventListener('click', () => { if (!state.started) openSheet(); });
+hubTabs();
+
 if (TEST.expose) window.__shuf = {
   lib: () => library.map(i => i.key).sort(), pool: () => pool.length, fcur: () => fcur,
   prog: () => ({ round: progress.round, done: [...progress.done].sort(), shown: progress.shown }),
   srcH: () => ({ ...srcH }), publish: () => publishPresets(), fill: () => fillPresetLists(),
   cached: () => [...srcFiles.keys()].length, preloading: () => preloading, idx: () => mediaIndex().size,
   enc: a => hEnc(new Set(a)), dec: t => [...hDec(t)].sort((p, q) => p - q), h32: s => fh32(s),
+  order: () => library.map(i => i.name),
+  bagInfo: () => ({ round: progress.round, bag: bag.length, seen: progress.done.size + progress.skipped.size, cur: state.current ? 1 : 0, lib: library.length, bg: !!bgLoad }),
 };
 window.ShuffleGame = {
   addCoins: n => addCoins(n, { quiet: true }),
@@ -14392,12 +14664,17 @@ $('introAlbum').addEventListener('click', () => {
      gute Plätze im Ranking. Kürzlich Gezeigtes kommt so schnell nicht wieder.
    • Mischung: meist gewichteter Zufall aus den Besten, ein Teil aus dem Mittelfeld, ab und zu ganz zufällig.
      Mehr als zwei hintereinander mit demselben Haupt-Tag gibt es nicht.
+   • Lange Videos (ab 4 Minuten) kommen in Teilen: feste Abschnitte von 30 s bis 3 min, je Datei immer gleich.
+     Ein Teil läuft in Schleife, „Weiter mit Teil X“ schaut an derselben Stelle weiter, Wischen bringt etwas
+     anderes. Beim Ziehen zählt das Video als eins; erst danach wird ein Teil gewählt, bevorzugt ein noch
+     nicht gesehener. Dasselbe Video kommt nie direkt hintereinander. „Weniger“ trifft nur den Teil.
    Tag-Gewichte und ❤ / „Weniger“ werden zwischen den Geräten abgeglichen (x.fd), der Rest bleibt hier. */
 const FD_KEY = 'shuffle-player/feed-v1';
 const fdEl = $('fd'), fdList = $('fdList'), fdHint = $('fdHint'), fdEmpty = $('fdEmpty');
 const FD = { open: false, pool: [], vids: [], imgs: [], used: new Set(), tagInfo: new Map(), rar: {}, w: {}, like: {}, ls: {}, seen: {},
              slides: new Map(), next: 0, active: -1, recent: [], mains: [], sinceSlide: 2, muted: false, hist: false, wake: null,
-             saveT: 0, io: null, tap: null, press: 0, pressed: false, single: 0, hints: 0 };
+             saveT: 0, io: null, tap: null, press: 0, pressed: false, single: 0, hints: 0, dur: {}, segC: new Map(), lastV: '' };
+const FD_SEG_MIN = 240;                         // ab 4 Minuten kommt ein Video in Teilen
 const fdChanged = { w: new Map(), it: new Map() };
 if (TEST.expose) window.__fd = FD;
 function fdLoadLocal() {
@@ -14408,12 +14685,13 @@ function fdLoadLocal() {
       FD.seen = o.seen && typeof o.seen === 'object' ? o.seen : {};
       FD.muted = !!o.mute;
       FD.hints = Math.max(0, Math.floor(Number(o.h) || 0));
+      FD.dur = o.dur && typeof o.dur === 'object' ? o.dur : {};
     }
   } catch (_) { /* neu */ }
 }
 function fdSaveLocal() {
   if (wiping) return;
-  try { localStorage.setItem(FD_KEY, JSON.stringify({ s: FD.ls, seen: FD.seen, mute: FD.muted, h: FD.hints })); } catch (_) { /* voll */ }
+  try { localStorage.setItem(FD_KEY, JSON.stringify({ s: FD.ls, seen: FD.seen, mute: FD.muted, h: FD.hints, dur: FD.dur })); } catch (_) { /* voll */ }
 }
 function fdProfile() {
   let fd = null;
@@ -14453,6 +14731,64 @@ function fdBuildPool() {
   FD.imgs = FD.pool.filter(x => !x.v);
 }
 const fdW = u => (u in FD.w ? FD.w[u] : FD.used.has(u) ? 0.4 : 0);
+/** Feste Teile eines langen Videos ([von, bis] in Sekunden): 30 s bis 3 min, meist um 1–2 min.
+    Der Zufall kommt aus dem Dateischlüssel, deshalb sind die Teile jedes Mal (und auf jedem Gerät) gleich. */
+function fdSegs(k, dur) {
+  const d = Math.floor(Number(dur) || 0);
+  if (d < FD_SEG_MIN) return null;
+  const ck = `${k}@${d}`;
+  if (FD.segC.has(ck)) return FD.segC.get(ck);
+  let x = fh32(k) || 1;
+  const rnd = () => { x ^= x << 13; x ^= x >>> 17; x ^= x << 5; return (x >>> 0) / 4294967296; };
+  for (let i = 0; i < 4; i++) rnd();
+  const out = [];
+  let a = 0;
+  while (d - a >= 1) {
+    let b = a + Math.round(rnd() < 0.7 ? 30 + rnd() * 90 : 120 + rnd() * 60);
+    if (d - b < 30) b = d;                                            // kurzer Rest kommt zum letzten Teil
+    out.push([a, b]);
+    a = b;
+  }
+  const l = out[out.length - 1];
+  if (l[1] - l[0] > 200) { const m = Math.round((l[0] + l[1]) / 2); out.splice(out.length - 1, 1, [l[0], m], [m, l[1]]); }
+  FD.segC.set(ck, out);
+  return out;
+}
+const fdSegsKnown = it => (it.v && FD.dur[it.k] ? fdSegs(it.k, FD.dur[it.k]) : null);
+/** Alle Teile mit „Weniger“ markiert: dann kommt das ganze Video nicht mehr. */
+function fdSegsNo(it) {
+  const sg = fdSegsKnown(it);
+  return !!sg && sg.every((_, i) => FD.like[`${it.k}#${i}`] === -1);
+}
+const fdNo = it => FD.like[it.k] === -1 || fdSegsNo(it);
+/** Welcher Teil: zufällig, bevorzugt noch nie gesehene; sonst lange nicht Gesehenes und gut Angekommenes. */
+function fdChooseSeg(k, segs) {
+  const all = segs.map((_, i) => i);
+  let ok = all.filter(i => FD.like[`${k}#${i}`] !== -1);
+  if (!ok.length) ok = all;
+  const busy = new Set();                                             // schon im Feed vorbereitet: nicht doppelt
+  for (const x of FD.slides.values()) if (x.v && x.seg >= 0 && x.n >= FD.active && x.e.items[0].k === k) busy.add(x.seg);
+  const free = ok.filter(i => !busy.has(i));
+  if (free.length) ok = free;
+  const fresh = ok.filter(i => !FD.seen[`${k}#${i}`]);
+  if (fresh.length) return fresh[Math.floor(Math.random() * fresh.length)];
+  // alle schon gesehen: aus der länger nicht gesehenen Hälfte, gut Angekommenes etwas öfter
+  const at = i => { const z = FD.seen[`${k}#${i}`]; return (z && z[1]) || 0; };
+  const old = ok.slice().sort((p, q) => at(p) - at(q)).slice(0, Math.max(1, Math.ceil(ok.length / 2)));
+  const ws = old.map(i => Math.exp(0.5 * Math.max(-3, Math.min(3, FD.ls[`${k}#${i}`] || 0))));
+  let r = Math.random() * ws.reduce((p, q) => p + q, 0);
+  for (let j = 0; j < old.length; j++) { r -= ws[j]; if (r <= 0) return old[j]; }
+  return old[old.length - 1];
+}
+/** Wie gut kam ein Video an: Anteil geschaut (bei Teilen: vom Teil) – und, fairer bei längeren, die Zeit selbst. */
+function fdSig(sec, len) {
+  const f = len > 0 && Number.isFinite(len) ? sec / len : sec / 15;
+  let sig = sec < 1.5 && f < 0.15 ? -0.6 : f < 0.4 ? -0.2 : f < 0.9 ? 0.3 : f < 1.6 ? 0.8 : 1.2;
+  if (sec >= 60) sig = Math.max(sig, 0.8);
+  else if (sec >= 20) sig = Math.max(sig, 0.3);
+  return sig;
+}
+const fdClock = t => { const v = Math.max(0, Math.floor(t)); return `${Math.floor(v / 60)}:${String(v % 60).padStart(2, '0')}`; };
 function fdMain(it) {
   let best = '', bw = -Infinity;
   for (const u of it.tags) { const w = fdW(u); if (w > bw) { bw = w; best = u; } }
@@ -14466,7 +14802,11 @@ function fdScore(it, now) {
   if (lk === 1) s += 1.5; else if (lk === -1) s -= 5;
   const seen = FD.seen[it.k];
   if (!seen) s += 0.6;                                              // noch nie gezeigt
-  else s -= 1.2 * Math.exp(-(now - seen[1]) / (12 * 36e5));         // kürzlich gesehen: weniger
+  else {
+    s -= 1.2 * Math.exp(-(now - seen[1]) / (12 * 36e5));             // kürzlich gesehen: weniger
+    const sg = fdSegsKnown(it);
+    if (sg && sg.some((_, i) => !FD.seen[`${it.k}#${i}`])) s += 0.3;  // es gibt noch ungesehene Teile
+  }
   s += 0.15 * (FD.rar[it.k] || 0);                                  // gut platziert im Ranking
   return s;
 }
@@ -14474,10 +14814,11 @@ function fdScore(it, now) {
 function fdPick(list, avoid) {
   if (!list.length) return null;
   const now = Date.now(), rec = new Set(FD.recent);
-  let cand = list.filter(it => !rec.has(it.k) && FD.like[it.k] !== -1);
-  if (!cand.length) cand = list.filter(it => FD.like[it.k] !== -1);
+  let cand = list.filter(it => !rec.has(it.k) && !fdNo(it));
+  if (!cand.length) cand = list.filter(it => !fdNo(it));
   if (!cand.length) cand = list.slice();
   if (avoid) { const c2 = cand.filter(it => fdMain(it) !== avoid); if (c2.length) cand = c2; }
+  if (FD.lastV && cand.length > 1) { const c3 = cand.filter(it => it.k !== FD.lastV); if (c3.length) cand = c3; }
   if (cand.length === 1) return cand[0];
   const r = Math.random();
   if (r < 0.1) return cand[Math.floor(Math.random() * cand.length)];
@@ -14500,7 +14841,12 @@ function fdNextEntry() {
   const slide = FD.imgs.length && (!FD.vids.length || (FD.sinceSlide >= 4 && Math.random() < 0.18));
   if (!slide) {
     const it = fdPick(FD.vids, fdAvoid());
-    if (it) { FD.sinceSlide++; return { kind: 'v', items: [it] }; }
+    if (it) {
+      FD.sinceSlide++;
+      const e = { kind: 'v', items: [it], seg: -1 }, sg = fdSegsKnown(it);
+      if (sg) e.seg = fdChooseSeg(it.k, sg);                          // Länge schon bekannt: Teil gleich wählen
+      return e;
+    }
   }
   const seed = fdPick(FD.imgs, fdAvoid());
   if (!seed) return null;
@@ -14510,6 +14856,7 @@ function fdNextEntry() {
   mates = mates.map(it => [it, fdScore(it, now) + Math.random()]).sort((a, b) => b[1] - a[1]).map(x => x[0]);
   return { kind: 's', items: [seed, ...mates.slice(0, Math.floor(Math.random() * 4) + 1)] };
 }
+const fdIcon = (id, cls) => { const sv = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); sv.setAttribute('class', `i${cls ? ` ${cls}` : ''}`); const u = document.createElementNS('http://www.w3.org/2000/svg', 'use'); u.setAttribute('href', `#${id}`); sv.append(u); return sv; };
 function fdChip(u) {
   const t = FD.tagInfo.get(u);
   if (!t) return null;
@@ -14521,32 +14868,51 @@ function fdInfo(s) {
   const it = s.e.items[s.idx], info = s.el.querySelector('.fd-info');
   const tags = mk('span', 'fd-tags');
   for (const u of it.tags) { const c = fdChip(u); if (c) tags.append(c); }
-  info.replaceChildren(mk('b', '', s.e.items.length > 1 ? `${it.f.name} · ${s.idx + 1}/${s.e.items.length}` : it.f.name), tags);
+  const head = [];
+  if (s.segs) {
+    const row = mk('span', 'fd-part');
+    row.append(mk('span', 'fd-pn', `Teil ${s.seg + 1}/${s.segs.length}`));
+    if (s.seg < s.segs.length - 1) {
+      const c = mk('button', `fd-cont${s.hot ? ' hot' : ''}`, `Weiter mit Teil ${s.seg + 2}`);
+      c.type = 'button';
+      c.title = 'Weiter mit dem nächsten Teil (N)';
+      c.append(fdIcon('i-chev-r'));
+      c.addEventListener('click', ev => { ev.stopPropagation(); fdCont(s); });
+      row.append(c);
+    }
+    head.push(row);
+  }
+  info.replaceChildren(...head, mk('b', '', s.e.items.length > 1 ? `${it.f.name} · ${s.idx + 1}/${s.e.items.length}` : it.f.name), tags);
   const lk = s.el.querySelector('.fd-like');
   lk.classList.toggle('on', FD.like[it.k] === 1);
   lk.setAttribute('aria-pressed', String(FD.like[it.k] === 1));
   const dots = s.el.querySelectorAll('.fd-dots i');
   dots.forEach((d, i) => d.classList.toggle('on', i === s.idx));
 }
-const fdIcon = (id, cls) => { const sv = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); sv.setAttribute('class', `i${cls ? ` ${cls}` : ''}`); const u = document.createElementNS('http://www.w3.org/2000/svg', 'use'); u.setAttribute('href', `#${id}`); sv.append(u); return sv; };
 function fdMake(e) {
   const n = FD.next++;
   const el = mk('section', `fd-slide ${e.kind === 'v' ? 'is-vid' : 'is-img'}`);
   el.dataset.n = n;
   const media = mk('div', 'fd-media');
-  const s = { n, el, e, idx: 0, urls: [], loaded: false, v: null, imgs: [], t0: 0, watch: 0, playAt: 0, carT: 0, less: false };
+  const s = { n, el, e, idx: 0, urls: [], loaded: false, v: null, imgs: [], t0: 0, watch: 0, playAt: 0, carT: 0, less: false,
+              segs: null, seg: e.seg != null ? e.seg : -1, segSeen: -1, hot: false, drag: false };
   if (e.kind === 'v') {
     const v = document.createElement('video');
     v.playsInline = true; v.setAttribute('playsinline', ''); v.loop = true; v.preload = 'metadata'; v.muted = FD.muted;
     v.addEventListener('playing', () => { if (FD.active === n && !s.playAt) s.playAt = performance.now(); fdPausedMark(s, false); });
     v.addEventListener('pause', () => { if (s.playAt) { s.watch += performance.now() - s.playAt; s.playAt = 0; } });
-    v.addEventListener('timeupdate', () => { const d = v.duration; s.bar.style.width = d > 0 && Number.isFinite(d) ? `${Math.min(100, (v.currentTime / d) * 100)}%` : '0%'; });
+    v.addEventListener('loadedmetadata', () => fdSegReady(s));
+    v.addEventListener('timeupdate', () => fdTime(s));
     media.append(v);
     s.v = v;
-    const pr = mk('div', 'fd-prog'), bi = mk('i');
+    const sk = mk('div', 'fd-seek'), pr = mk('div', 'fd-prog'), bi = mk('i'), tip = mk('span', 'fd-tip');
+    sk.setAttribute('aria-label', 'Spulen');
     pr.append(bi);
+    sk.append(pr, tip);
     s.bar = bi;
-    el.append(media, pr);
+    s.tip = tip;
+    fdSeekBind(s, sk);
+    el.append(media, sk);
   } else {
     const car = mk('div', 'fd-car');
     for (let i = 0; i < e.items.length; i++) { const im = document.createElement('img'); im.className = 'fd-img'; im.alt = ''; im.draggable = false; im.decoding = 'async'; car.append(im); s.imgs.push(im); }
@@ -14577,7 +14943,109 @@ function fdMake(e) {
   if (FD.recent.length > keep) FD.recent.splice(0, FD.recent.length - keep);
   FD.mains.push(fdMain(e.items[0]));
   if (FD.mains.length > 6) FD.mains.shift();
+  if (e.kind === 'v') FD.lastV = e.items[0].k;
   return s;
+}
+/** Länge des Videos bekannt: lang → in Teile, Teil wählen (falls noch nicht), an den Anfang des Teils. */
+function fdSegReady(s) {
+  const it = s.e.items[0], d = s.v.duration;
+  if (!(d > 0) || !Number.isFinite(d)) return;
+  const sg = fdSegs(it.k, d);
+  if (sg && FD.dur[it.k] !== Math.floor(d)) { FD.dur[it.k] = Math.floor(d); fdSaveSoon(); }
+  else if (!sg && FD.dur[it.k]) delete FD.dur[it.k];
+  s.segs = sg;
+  if (!sg) { s.seg = -1; fdInfo(s); return; }
+  if (s.seg < 0 || s.seg >= sg.length) s.seg = fdChooseSeg(it.k, sg);
+  const [a, b] = sg[s.seg], t = s.v.currentTime;
+  if (t < a || t >= b - 0.3) { try { s.v.currentTime = a; } catch (_) {} }
+  if (FD.active === s.n) fdSegSeen(s);
+  fdInfo(s);
+}
+function fdSegSeen(s) {
+  if (!s.segs || s.segSeen === s.seg) return;
+  s.segSeen = s.seg;
+  const key = `${s.e.items[0].k}#${s.seg}`, z = FD.seen[key];
+  FD.seen[key] = [(z ? z[0] : 0) + 1, Date.now()];
+}
+/** Bereich, in dem gespult wird und den die Leiste zeigt: der Teil oder das ganze Video. */
+function fdRange(s) {
+  if (s.segs) return s.segs[s.seg];
+  const d = s.v.duration;
+  return d > 0 && Number.isFinite(d) ? [0, d] : null;
+}
+function fdTime(s) {
+  const v = s.v, t = v.currentTime;
+  if (s.segs && !s.drag) {
+    const [a, b] = s.segs[s.seg];
+    if (t >= b - 0.05 || t < a - 0.5) {                                // Teil zu Ende: von vorn (Schleife)
+      if (FD.active === s.n && s.t0 && performance.now() - s.t0 > (b - a) * 500) fdSegHot(s);
+      try { v.currentTime = a; } catch (_) {}
+      s.bar.style.width = '0%';
+      return;
+    }
+  }
+  if (s.drag) return;
+  const r = fdRange(s);
+  s.bar.style.width = r ? `${Math.min(100, Math.max(0, ((t - r[0]) / (r[1] - r[0] || 1)) * 100))}%` : '0%';
+}
+/** Teil einmal durch: „Weiter mit Teil X“ hervorheben. */
+function fdSegHot(s) {
+  if (s.hot) return;
+  s.hot = true;
+  const c = s.el.querySelector('.fd-cont');
+  if (c) c.classList.add('hot');
+}
+function fdSeekTo(s, x, el) {
+  const r = fdRange(s);
+  if (!r) return;
+  const box = el.getBoundingClientRect(), f = Math.max(0, Math.min(1, (x - box.left) / (box.width || 1)));
+  const t = r[0] + f * Math.max(0, r[1] - r[0] - 0.3);
+  try { s.v.currentTime = t; } catch (_) {}
+  s.bar.style.width = `${f * 100}%`;
+  s.tip.textContent = `${fdClock(t - r[0])} / ${fdClock(r[1] - r[0])}`;
+  s.tip.style.left = `${Math.max(44, Math.min(box.width - 44, x - box.left))}px`;
+}
+function fdSeekBind(s, sk) {
+  sk.addEventListener('pointerdown', e => {
+    e.stopPropagation();
+    if (FD.active !== s.n || !fdRange(s)) return;
+    e.preventDefault();
+    clearTimeout(FD.press);
+    FD.tap = null;
+    s.drag = true;
+    sk.classList.add('drag');
+    try { sk.setPointerCapture(e.pointerId); } catch (_) { /* egal */ }
+    fdSeekTo(s, e.clientX, sk);
+  });
+  sk.addEventListener('pointermove', e => { if (s.drag) fdSeekTo(s, e.clientX, sk); });
+  const end = () => { if (!s.drag) return; s.drag = false; sk.classList.remove('drag'); };
+  sk.addEventListener('pointerup', end);
+  sk.addEventListener('pointercancel', end);
+  sk.addEventListener('lostpointercapture', end);
+}
+/** Tastatur ← / →: 5 Sekunden spulen (im Teil). */
+function fdNudge(s, dt) {
+  const r = fdRange(s);
+  if (!r) return;
+  try { s.v.currentTime = Math.max(r[0], Math.min(r[1] - 0.3, s.v.currentTime + dt)); } catch (_) { /* egal */ }
+}
+/** „Weiter mit Teil X“: an derselben Stelle weiterschauen. */
+function fdCont(s) {
+  if (!s || !s.segs || s.seg >= s.segs.length - 1 || FD.active !== s.n) return;
+  if (s.playAt) { s.watch += performance.now() - s.playAt; s.playAt = 0; }
+  if (s.t0 && !s.less) fdEval(s, 0.8);                               // wer weiterschauen will, fand den Teil gut
+  s.seg++;
+  s.hot = false;
+  s.t0 = performance.now();
+  s.watch = 0;
+  if (!s.v.paused) s.playAt = performance.now();
+  try { s.v.currentTime = s.segs[s.seg][0]; } catch (_) { /* egal */ }
+  s.bar.style.width = '0%';
+  fdSegSeen(s);
+  fdInfo(s);
+  fdPausedMark(s, false);
+  fdPlay(s);
+  fdSaveSoon();
 }
 function fdFill(k) {
   for (let i = 0; i < k; i++) { const e = fdNextEntry(); if (!e) break; fdMake(e); }
@@ -14623,19 +15091,24 @@ function fdLeave(s) {
   clearTimeout(s.carT);
   if (s.v) { if (s.playAt) { s.watch += performance.now() - s.playAt; s.playAt = 0; } try { s.v.pause(); } catch (_) {} }
   if (s.less || !s.t0) return;
+  fdEval(s);
+  s.t0 = 0;
+}
+function fdEval(s, floor) {
   const sec = (s.v ? s.watch : performance.now() - s.t0) / 1000;
   let sig;
   if (s.v) {
-    const d = s.v.duration, f = d > 0 && Number.isFinite(d) ? sec / d : sec / 15;
-    sig = sec < 1.5 && f < 0.15 ? -0.6 : f < 0.4 ? -0.2 : f < 0.9 ? 0.3 : f < 1.6 ? 0.8 : 1.2;
+    const sg = s.segs && s.segs[s.seg];
+    sig = fdSig(sec, sg ? sg[1] - sg[0] : s.v.duration);
+    if (floor != null) sig = Math.max(sig, floor);
   } else {
     const per = sec / s.e.items.length;
     sig = sec < 1.2 ? -0.5 : per < 2.5 ? -0.1 : per < 6 ? 0.3 : 0.6;
   }
-  s.t0 = 0;
-  fdLearn(s.e.items, sig);
+  fdLearn(s.e.items, sig, s.segs ? [`${s.e.items[0].k}#${s.seg}`] : null);
 }
-function fdLearn(items, sig) {
+function fdLearn(items, sig, parts) {
+  for (const k of parts || []) FD.ls[k] = Math.round(Math.max(-5, Math.min(5, (FD.ls[k] || 0) * 0.9 + sig)) * 1000) / 1000;
   const tags = new Set();
   for (const it of items) {
     FD.ls[it.k] = Math.round(Math.max(-5, Math.min(5, (FD.ls[it.k] || 0) * 0.9 + sig)) * 1000) / 1000;
@@ -14658,8 +15131,15 @@ function fdActivate(n) {
   s.t0 = performance.now(); s.watch = 0; s.playAt = 0;
   const now = Date.now();
   for (const it of s.e.items) { const z = FD.seen[it.k]; FD.seen[it.k] = [(z ? z[0] : 0) + 1, now]; }
-  if (s.v) { try { s.v.currentTime = 0; } catch (_) {} fdPausedMark(s, false); fdPlay(s); }
-  else fdCarArm(s);
+  if (s.v) {
+    s.hot = false;
+    const hc = s.el.querySelector('.fd-cont.hot');
+    if (hc) hc.classList.remove('hot');
+    try { s.v.currentTime = s.segs ? s.segs[s.seg][0] : 0; } catch (_) {}
+    fdSegSeen(s);
+    fdPausedMark(s, false);
+    fdPlay(s);
+  } else fdCarArm(s);
   if (n >= FD.next - 3) fdFill(5);
   fdTrim();
   fdSaveSoon();
@@ -14701,11 +15181,22 @@ function fdLike(s, force) {
   if (on === was) return;
   if (on) FD.like[it.k] = 1; else delete FD.like[it.k];
   fdChanged.it.set(it.k, on ? 1 : 0);
-  fdLearn([it], on ? 1.5 : -1.5);
+  fdLearn([it], on ? 1.5 : -1.5, s.segs ? [`${it.k}#${s.seg}`] : null);
   fdInfo(s);
 }
 function fdLess(s) {
   const it = fdCurItem(s);
+  if (s.segs) {
+    const pk = `${it.k}#${s.seg}`;
+    FD.like[pk] = -1;
+    fdChanged.it.set(pk, -1);
+    fdLearn(s.e.items, -1, [pk]);
+    s.less = true;
+    fdDropQueued(it.k);
+    toast(fdSegsNo(it) ? 'Verstanden: dieses Video kommt nicht mehr.' : 'Verstanden: dieser Teil kommt nicht mehr.', 2400);
+    fdGo(1);
+    return;
+  }
   FD.like[it.k] = -1;
   fdChanged.it.set(it.k, -1);
   fdLearn(s.e.items, -2);
@@ -14738,7 +15229,7 @@ $('fdMute').addEventListener('click', () => {
 $('fdClose').addEventListener('click', () => fdClose());
 // Tippen: einmal Pause/Weiter (Bilder: nächstes), doppelt ❤, lange drücken: weniger davon
 fdList.addEventListener('pointerdown', e => {
-  if (e.target.closest('button')) return;
+  if (e.target.closest('button, .fd-seek')) return;
   FD.tap = { x: e.clientX, y: e.clientY, t: performance.now() };
   FD.pressed = false;
   clearTimeout(FD.press);
@@ -14776,6 +15267,8 @@ window.addEventListener('keydown', e => {
   else if (k === 'ArrowDown' || k === 'PageDown' || k === 'j' || k === 'J') fdGo(1);
   else if (k === 'ArrowUp' || k === 'PageUp' || k === 'k' || k === 'K') fdGo(-1);
   else if (k === ' ') { if (s && s.v) fdTogglePlay(s); else if (s && s.car && s.idx < s.e.items.length - 1) s.car.scrollTo({ left: (s.idx + 1) * s.car.clientWidth, behavior: 'smooth' }); }
+  else if ((k === 'ArrowRight' || k === 'ArrowLeft') && s && s.v) fdNudge(s, k === 'ArrowRight' ? 5 : -5);
+  else if ((k === 'n' || k === 'N') && s && s.segs) fdCont(s);
   else if (k === 'ArrowRight' && s && s.car) s.car.scrollTo({ left: Math.min(s.e.items.length - 1, s.idx + 1) * s.car.clientWidth, behavior: 'smooth' });
   else if (k === 'ArrowLeft' && s && s.car) s.car.scrollTo({ left: Math.max(0, s.idx - 1) * s.car.clientWidth, behavior: 'smooth' });
   else if (k === 'm' || k === 'M') $('fdMute').click();
@@ -14805,7 +15298,7 @@ function fdOpen() {
   closePanel(); closeSheet();
   fdLoadLocal();
   fdProfile();
-  Object.assign(FD, { open: true, active: -1, next: 0, recent: [], mains: [], sinceSlide: 2 });
+  Object.assign(FD, { open: true, active: -1, next: 0, recent: [], mains: [], sinceSlide: 2, lastV: '' });
   FD.slides.clear();
   fdList.replaceChildren();
   if (!FD.io) FD.io = new IntersectionObserver(ents => {
@@ -14819,7 +15312,7 @@ function fdOpen() {
   if (FD.hints < 3) {
     FD.hints++;
     fdHint.textContent = COARSE ? 'Hochwischen für das Nächste · zweimal tippen: ❤ · lange drücken: weniger davon'
-      : 'Mausrad oder ↓ für das Nächste · Doppelklick: ❤ · M: Ton';
+      : 'Mausrad oder ↓ für das Nächste · Doppelklick: ❤ · ← → spulen · M: Ton';
     fdHint.hidden = false;
     setTimeout(() => { fdHint.hidden = true; }, 4500);
   } else fdHint.hidden = true;
@@ -14849,7 +15342,8 @@ function fdClose(fromPop) {
   if (ShuffleSync.on() && ShuffleSync.isBlocked()) ShuffleSync.reopen();   // kam inzwischen ein neuer Stand?
 }
 window.addEventListener('pagehide', () => { if (FD.open) fdSave(); });
-if (TEST.expose) window.__fdt = { next: () => fdNextEntry(), score: it => fdScore(it, Date.now()), main: fdMain, build: fdBuildPool, profile: fdProfile, save: fdSave };
+if (TEST.expose) window.__fdt = { next: () => fdNextEntry(), score: it => fdScore(it, Date.now()), main: fdMain, build: fdBuildPool, profile: fdProfile, save: fdSave,
+  segs: fdSegs, choose: fdChooseSeg, sig: fdSig, cont: () => fdCont(FD.slides.get(FD.active)) };
 $('btnFeed').addEventListener('click', fdOpen);
 
 $('introTags').addEventListener('click', () => {
@@ -15511,7 +16005,8 @@ const fmt = n => Math.round(n).toLocaleString('de-DE');
 const int = v => { const n = Math.floor(Number(v)); return Number.isFinite(n) ? n : 0; };
 const plural = (n, one, many) => `${fmt(n)} ${n === 1 ? one : many}`;
 const norm = s => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, ' ').trim();
-const az = (a, b) => a.n.localeCompare(b.n, 'de', { sensitivity: 'base', numeric: true });
+const AZC = new Intl.Collator('de', { sensitivity: 'base', numeric: true });
+const az = (a, b) => AZC.compare(a.n, b.n);
 const mq = q => (window.matchMedia ? window.matchMedia(q).matches : false);
 const COARSE = mq('(pointer: coarse)');
 const IMG_EXT = /\.(jpe?g|jfif|pjpeg|png|apng|gif|webp|avif|bmp|svg|ico|heic|heif)$/i;
@@ -15534,7 +16029,7 @@ function vibe(ms) { try { if (navigator.vibrate) navigator.vibrate(ms); } catch 
 const KEY = 'shuffle-rank/v1';
 const SORTS = ['best', 'worst', 'name', 'new'];
 const OPS = new Set(['x', '+', 'i']);
-function blank() { return { v: 1, tags: [], ts: 1, rec: [], fs: [], fq: 1, last: 0, ui: { mode: 'list', sort: 'best', hint: 0, fh: 0 } }; }
+function blank() { return { v: 1, tags: [], ts: 1, rec: [], fs: [], fq: 1, last: 0, ui: { mode: 'list', sort: 'best', hint: 0, fh: 0 }, ft: {} }; }
 /* Feste Kennung je Ordner und Tag für den Abgleich mit anderen Geräten (die Nummern i gelten nur auf diesem Gerät).
    Fehlt sie, ist sie aus Gerät und Nummer abgeleitet, genau wie im Abgleich. */
 const SYNC = typeof ShuffleSync !== 'undefined' ? ShuffleSync : null;   // Abgleich (eigenes Skript weiter oben)
@@ -15614,7 +16109,7 @@ function clean(raw) {
 let D = (() => { try { return clean(JSON.parse(localStorage.getItem(KEY) || 'null')); } catch (_) { return blank(); } })();
 let saveT = 0, dirty = false, quotaWarned = false;
 if ((uidFixed || ftFolded) && localStorage.getItem(KEY)) { dirty = true; setTimeout(flush, 0); }   // Kennungen und umgezogene Tags gleich speichern
-function save(now) { dirty = true; clearTimeout(saveT); if (now) flush(); else saveT = setTimeout(flush, 250); }
+function save(now) { dirty = true; clearTimeout(saveT); if (now) flush(); else saveT = setTimeout(flush, 900); }
 function flush() {
   clearTimeout(saveT);
   if (!dirty) return;
@@ -15624,8 +16119,8 @@ function flush() {
 }
 window.addEventListener('pagehide', flush);
 document.addEventListener('visibilitychange', () => { if (document.hidden) flush(); });
-let VER = 0;                       // zählt jede Änderung (für neu zeichnen)
-const bump = () => { VER++; };
+let VER = 0, SVER = 0;             // VER zählt jede Änderung (für neu zeichnen), SVER alles außer Tags an einzelnen Medien
+const bump = () => { VER++; SVER++; };
 const folderById = id => (id === VF_ID ? VF : D.fs.find(f => f.i === id) || null);
 
 /* ═══════════ Tag-Bereich: alles Geladene als eigener Ordner ═══════════ */
@@ -15639,7 +16134,7 @@ const VF_ID = -1;
 const VF = { i: VF_ID, uid: '', n: 'Tags', c: 0, u: 0, ni: 1, it: [], r: null, vf: true };
 const vfIds = new Map();
 let vfNext = 1;
-const LIB = { pre: '', kind: '', presets: [], pc: new Map() };
+const LIB = { pre: '', kind: '', presets: [], pc: new Map(), pk: '' };
 /** VF an das anpassen, was das Spiel gerade geladen hat (Kennungen bleiben in der Sitzung gleich). */
 function libSync() {
   const g = GAME();
@@ -15660,7 +16155,8 @@ function libSync() {
     media.forEach((m, x) => r.files.set(VF.it[x].i, m.file));
     bump();
   }
-  LIB.pc = new Map(LIB.presets.map(p => [p.id, VF.it.filter(it => p.has(it.k)).length]));
+  const pk = LIB.presets.map(p => `${p.id}:${p.size}`).join(',');
+  if (!same || pk !== LIB.pk) { LIB.pk = pk; LIB.pc = new Map(LIB.presets.map(p => [p.id, VF.it.filter(it => p.has(it.k)).length])); }
   return !same;
 }
 function openLib() { libSync(); openFolder(VF); }
@@ -16029,14 +16525,45 @@ function thTx(mode, fn, store = 'th') {
 }
 const thGet = k => thTx('readonly', st => st.get(k)).catch(() => null);
 const thPut = (k, b) => thTx('readwrite', st => st.put(b, k)).catch(() => null);
-const jobs = [];
-let running = 0;
-function job(fn) { return new Promise(res => { jobs.push({ fn, res }); pump(); }); }
+/* Vorschaubilder entstehen in einer Warteschlange: Bilder und Videos in eigenen Spuren (ein langsames Video hält
+   keine Bilder auf), zuletzt sichtbar Gewordenes zuerst, inzwischen weggescrolltes wird übersprungen (kommt wieder
+   dran, sobald es wieder in der Nähe ist). Nach einem Tippen kurz Pause, damit das Tippen sofort wirkt –
+   Wischen zum Scrollen bremst nicht. */
+const jobs = [], SKIP = Symbol('skip');
+let running = 0, runningV = 0, pumpT = 0, rkTouch = 0;
+root.addEventListener('pointerdown', () => { rkTouch = performance.now(); }, true);
+root.addEventListener('pointercancel', () => { rkTouch = 0; pump(); }, true);     // war ein Wischen
+root.addEventListener('keydown', () => { rkTouch = performance.now(); }, true);
+function job(fn, vid, alive) { return new Promise(res => { jobs.push({ fn, res, vid: !!vid, alive }); pump(); }); }
 function pump() {
-  while (running < 2 && jobs.length) {
-    const j = jobs.pop();                         // zuletzt sichtbar geworden zuerst
-    running++;
-    Promise.resolve().then(j.fn).then(j.res, () => j.res(null)).finally(() => { running--; pump(); });
+  const wait = rkTouch + 450 - performance.now();
+  if (wait > 0 && jobs.length) { clearTimeout(pumpT); pumpT = setTimeout(pump, wait + 5); return; }
+  const maxI = COARSE ? 1 : 2;
+  for (let x = jobs.length - 1; x >= 0; x--) {
+    const j = jobs[x];
+    if (j.vid ? runningV >= 1 : running >= maxI) continue;
+    jobs.splice(x, 1);
+    if (j.alive && !j.alive()) { j.res(SKIP); continue; }
+    if (j.vid) runningV++; else running++;
+    Promise.resolve().then(j.fn).then(j.res, () => j.res(null)).finally(() => { if (j.vid) runningV--; else running--; pump(); });
+  }
+  if (!jobs.length && !running && !runningV) prefetchSoon();
+}
+let pfT = 0, pfN = 0, pfF = null;
+function prefetchSoon() { clearTimeout(pfT); pfT = setTimeout(prefetch, 900); }
+function prefetch() {
+  if (jobs.length || running || runningV || document.hidden || !isOpen || topView() !== 'folder' || !FV.f) return;
+  if (pfF !== FV.f) { pfF = FV.f; pfN = 0; }
+  if (pfN >= 600) return;                                                   // genug vorausgeladen
+  const box = $('rkFScroll').getBoundingClientRect(), rows = $('rkItems').children, f = FV.f;
+  let from = 0;
+  for (let x = Math.min(rows.length, FV.shown) - 1; x >= 0; x--) if (rows[x].getBoundingClientRect().top < box.bottom) { from = x; break; }
+  let n = 0;
+  for (let x = from; x < FV.list.length && n < 12; x++) {
+    const it = FV.list[x];
+    if (THU.has(it.k) || TH.has(it.k) || FAIL.has(it.k) || !isLoaded(f, it.i)) continue;
+    thumbUrl(f, it);
+    n++; pfN++;
   }
 }
 function toJpeg(src, w, h) {
@@ -16046,8 +16573,90 @@ function toJpeg(src, w, h) {
   if (src.close) src.close();
   return new Promise(res => { try { c.toBlob(b => res(b), 'image/jpeg', 0.72); } catch (_) { res(null); } });
 }
+/** Kopf einer JPEG lesen (ohne das Foto zu dekodieren): eingebettetes Vorschaubild der Kamera (EXIF), Drehung, Größe. */
+async function jpegInfo(file) {
+  if (!/\.jpe?g$/i.test(file.name || '') && file.type !== 'image/jpeg') return null;
+  const dv = new DataView(await file.slice(0, 196608).arrayBuffer());
+  if (dv.byteLength < 12 || dv.getUint16(0) !== 0xFFD8) return null;
+  const out = { blob: null, orient: 1, w: 0, h: 0 };
+  let p = 2, ex = false;
+  while (p + 4 <= dv.byteLength) {
+    const m = dv.getUint16(p);
+    if ((m & 0xFF00) !== 0xFF00 || m === 0xFFDA || m === 0xFFD9) break;          // Bilddaten beginnen
+    if (m === 0xFFFF) { p++; continue; }                                           // Füllbytes
+    if ((m >= 0xFFD0 && m <= 0xFFD7) || m === 0xFF01) { p += 2; continue; }
+    const len = dv.getUint16(p + 2);
+    if (m === 0xFFE1 && !ex && p + 10 <= dv.byteLength && dv.getUint32(p + 4) === 0x45786966) {   // „Exif“
+      ex = true;
+      const e = exifIfd(dv, p + 10, Math.min(dv.byteLength, p + 2 + len), file);
+      if (e) { out.blob = e.blob; out.orient = e.orient; }
+    } else if (m >= 0xFFC0 && m <= 0xFFCF && m !== 0xFFC4 && m !== 0xFFC8 && m !== 0xFFCC) {   // Bildgröße
+      if (p + 9 <= dv.byteLength) { out.h = dv.getUint16(p + 5); out.w = dv.getUint16(p + 7); }
+      break;
+    }
+    p += 2 + len;
+  }
+  return out;
+}
+function exifIfd(dv, t, end, file) {
+  if (t + 8 > end) return null;
+  const le = dv.getUint16(t) === 0x4949;
+  const u16 = o => dv.getUint16(t + o, le), u32 = o => dv.getUint32(t + o, le);
+  if (u16(2) !== 42) return null;
+  const ifd = (o, want) => {
+    if (!o || t + o + 2 > end) return null;
+    const n = u16(o), tags = {};
+    if (t + o + 2 + n * 12 + 4 > end) return null;
+    for (let i = 0; i < n; i++) {
+      const e = o + 2 + i * 12, tag = u16(e);
+      if (want.includes(tag)) tags[tag] = u16(e + 2) === 3 ? u16(e + 8) : u32(e + 8);
+    }
+    return { tags, next: u32(o + 2 + n * 12) };
+  };
+  const i0 = ifd(u32(4), [0x0112]);
+  if (!i0) return null;
+  const orient = i0.tags[0x0112] || 1, i1 = ifd(i0.next, [0x0201, 0x0202]);
+  const off = i1 && i1.tags[0x0201], len = i1 && i1.tags[0x0202];
+  return { blob: off && len > 1500 ? file.slice(t + off, t + off + len, 'image/jpeg') : null, orient };
+}
+/** Kleines Bild (mit Drehung aus den EXIF-Daten) als JPEG mit höchstens W Breite. */
+function orientJpeg(bmp, orient, W) {
+  const rot = orient === 6 || orient === 8, sw = bmp.width, sh = bmp.height;
+  const s = Math.min(1, W / (rot ? sh : sw)), w = Math.max(1, Math.round((rot ? sh : sw) * s)), hh = Math.max(1, Math.round((rot ? sw : sh) * s));
+  const c = document.createElement('canvas');
+  c.width = w; c.height = hh;
+  const g = c.getContext('2d');
+  if (orient === 3) { g.translate(w, hh); g.rotate(Math.PI); }
+  else if (orient === 6) { g.translate(w, 0); g.rotate(Math.PI / 2); }
+  else if (orient === 8) { g.translate(0, hh); g.rotate(-Math.PI / 2); }
+  g.drawImage(bmp, 0, 0, rot ? hh : w, rot ? w : hh);
+  if (bmp.close) bmp.close();
+  return new Promise(res => { try { c.toBlob(b => res(b), 'image/jpeg', 0.8); } catch (_) { res(null); } });
+}
 async function makeThumb(file, vid) {
   const W = 240;
+  if (!vid) {
+    let ji = null;
+    try { ji = await jpegInfo(file); } catch (_) { ji = null; }
+    if (ji && ji.blob && typeof createImageBitmap === 'function') {             // 1) Vorschaubild der Kamera
+      try {
+        const bmp = await createImageBitmap(ji.blob);
+        if (Math.max(bmp.width, bmp.height) >= 120) return await orientJpeg(bmp, ji.orient, W);
+        if (bmp.close) bmp.close();
+      } catch (_) { /* weiter */ }
+    }
+    if (ji && ji.w && ji.h && typeof ImageDecoder === 'function') {              // 2) JPEG gleich verkleinert dekodieren
+      let dec = null;
+      try {
+        let n = 1;
+        while (n < 8 && Math.ceil((Math.min(ji.w, ji.h) * n) / 8) < W * 1.4) n++;
+        dec = new ImageDecoder({ data: file.stream(), type: 'image/jpeg', desiredWidth: Math.ceil((ji.w * n) / 8), desiredHeight: Math.ceil((ji.h * n) / 8) });
+        const { image } = await dec.decode();
+        const dw = image.displayWidth, dh = image.displayHeight, s = Math.min(1, W / dw);
+        return await toJpeg(image, Math.max(1, Math.round(dw * s)), Math.max(1, Math.round(dh * s)));
+      } catch (_) { /* weiter mit dem ganzen Foto */ } finally { try { if (dec) dec.close(); } catch (_) { /* egal */ } }
+    }
+  }
   if (!vid) {
     if (typeof createImageBitmap === 'function') {
       try { const bmp = await createImageBitmap(file, { resizeWidth: W, resizeQuality: 'medium' }); return await toJpeg(bmp, bmp.width, bmp.height); }
@@ -16077,10 +16686,11 @@ async function makeThumb(file, vid) {
     return await toJpeg(v, W, Math.max(1, Math.round(v.videoHeight * W / v.videoWidth)));
   } catch (_) { return null; } finally { v.removeAttribute('src'); try { v.load(); } catch (_) {} URL.revokeObjectURL(url); }
 }
-function thumbUrl(f, it) {
+function thumbUrl(f, it, alive) {
   const k = it.k;
   let p = TH.get(k);
   if (p) return p;
+  let skipped = false;
   const loaded = isLoaded(f, it.i);
   if ((NEG.has(k) && !loaded) || FAIL.has(k)) return Promise.resolve(null);
   p = (async () => {
@@ -16088,14 +16698,15 @@ function thumbUrl(f, it) {
     if (!blob) {
       const file = rt(f).files.get(it.i);
       if (!file) return null;
-      blob = await job(() => makeThumb(file, it.v));
+      blob = await job(() => makeThumb(file, it.v), it.v, alive);
+      if (blob === SKIP) { skipped = true; return null; }
       if (!blob) { FAIL.add(k); return null; }
       thPut(k, blob);
     }
     return URL.createObjectURL(blob);
   })().catch(() => null);
   TH.set(k, p);
-  p.then(u => { if (u) THU.set(k, u); else { TH.delete(k); if (!FAIL.has(k)) NEG.add(k); } });
+  p.then(u => { if (u) THU.set(k, u); else { TH.delete(k); if (!FAIL.has(k) && !skipped) NEG.add(k); } });
   return p;
 }
 function thEl(f, it, observe) {
@@ -16107,10 +16718,17 @@ function thEl(f, it, observe) {
   if (observe && io) io.observe(s); else fillTh(s);
   return s;
 }
-function fillTh(el) {
+/** Noch in der Nähe des Sichtbaren? (sonst wird das Vorschaubild erst gemacht, wenn man wieder hinscrollt) */
+function nearView(el) {
+  if (!el.isConnected) return false;
+  const sc = $('rkFScroll').getBoundingClientRect(), r = el.getBoundingClientRect();
+  return sc.height > 0 && r.bottom > sc.top - sc.height && r.top < sc.bottom + sc.height;
+}
+function fillTh(el, watch) {
   const fid = +el.dataset.f, id = +el.dataset.i, f = folderById(fid), it = itemOf(f, id);
   if (!it) return;
-  thumbUrl(f, it).then(u => {
+  thumbUrl(f, it, watch ? () => nearView(el) : undefined).then(u => {
+    if (!u && watch && io && el.isConnected && !THU.has(it.k) && !FAIL.has(it.k) && !NEG.has(it.k)) { io.observe(el); return; }   // übersprungen: später
     if (!u || !el.isConnected || +el.dataset.i !== id || +el.dataset.f !== fid) return;
     let img = el.querySelector('img');
     if (!img) { img = mk('img'); img.alt = ''; img.draggable = false; img.decoding = 'async'; el.append(img); }
@@ -16119,7 +16737,7 @@ function fillTh(el) {
   });
 }
 const io = 'IntersectionObserver' in window
-  ? new IntersectionObserver(es => { for (const e of es) if (e.isIntersecting) { io.unobserve(e.target); fillTh(e.target); } }, { root: $('rkFScroll'), rootMargin: '600px 0px' })
+  ? new IntersectionObserver(es => { for (const e of es) if (e.isIntersecting) { io.unobserve(e.target); fillTh(e.target, true); } }, { root: $('rkFScroll'), rootMargin: '600px 0px' })
   : null;
 function thumbsGc() {
   setTimeout(async () => {
@@ -16384,7 +17002,9 @@ function setTag(f, it, tid, on) {
   const key = `${f.i}:${it.i}`;
   if (!LT.cur || LT.cur.key !== key) { LT.prev = LT.cur; LT.cur = { key, f: f.i, i: it.i }; }
   f.u = Date.now();
-  bump(); save();
+  VER++;
+  if (FV.f === f) FV.dirty.add(it.i); else SVER++;                 // in der offenen Liste: nur diese Zeile neu
+  save();
   return true;
 }
 function copySource(f, it) {
@@ -16677,10 +17297,11 @@ $('rkImp').addEventListener('change', async e => {
 });
 
 /* ═══════════ Ordner ═══════════ */
-const FV = { f: null, q: '', inc: new Set(), exc: new Set(), none: false, sel: null, list: [], drawn: -1, scroll: 0 };
+const FV = { f: null, q: '', inc: new Set(), exc: new Set(), none: false, sel: null, list: [], drawn: -1, scroll: 0,
+             shown: 0, ctx: null, sdrawn: -1, dirty: new Set() };
 function openFolder(f) {
   if (!f) return;
-  if (FV.f !== f) { FV.q = ''; FV.inc.clear(); FV.exc.clear(); FV.none = false; FV.sel = null; $('rkQ').value = ''; $('rkQClear').hidden = true; FV.scroll = 0; $('rkFScroll').scrollTop = 0; }
+  if (FV.f !== f) { FV.q = ''; FV.inc.clear(); FV.exc.clear(); FV.none = false; FV.sel = null; $('rkQ').value = ''; $('rkQClear').hidden = true; FV.scroll = 0; FV.shown = 0; $('rkFScroll').scrollTop = 0; }
   FV.f = f; FV.drawn = -1;
   if (!f.vf) D.last = f.i;
   pushView('folder');
@@ -16708,7 +17329,7 @@ function renderFolder() {
     $('rkStatus').hidden = false;
     renderStatus();
   }
-  if (FV.drawn !== VER) renderList();
+  if (FV.drawn !== VER && !patchList()) renderList();
   renderSelBar();
   if (!f.vf) autoResume(f);
 }
@@ -16724,20 +17345,20 @@ function renderLibF() {
 function renderLibStatus() {
   const box = $('rkStatus');
   box.className = 'rk-status';
-  if (VF.it.length && Object.keys(D.ft).length) { box.replaceChildren(); box.hidden = true; return; }
+  if (VF.it.length && Object.keys(D.ft || {}).length) { box.replaceChildren(); box.hidden = true; return; }
   box.hidden = false;
   box.replaceChildren(mk('h3', '', VF.it.length ? 'So taggst du' : 'Noch nichts geladen'),
     mk('p', '', VF.it.length ? 'Tippe ein Medium an, um es groß zu sehen und zu taggen, oder nimm „Taggen“ für eins nach dem anderen. Mit „Auswählen“ taggst du mehrere auf einmal. Tags gehören zur Datei und gelten überall.'
       : 'Hier erscheint alles, was Shuffle gerade geladen hat. Lade auf dem Startbildschirm ein Preset oder wähle Dateien aus.'));
 }
-$('rkLibPre').addEventListener('change', e => { LIB.pre = e.target.value; FV.drawn = -1; renderFolder(); });
+$('rkLibPre').addEventListener('change', e => { LIB.pre = e.target.value; FV.drawn = -1; FV.shown = 0; renderFolder(); });
 $('rkLibF').addEventListener('click', e => {
   const b = e.target.closest('[data-kind]');
   if (!b) return;
   LIB.kind = b.dataset.kind;
-  FV.drawn = -1; renderFolder();
+  FV.drawn = -1; FV.shown = 0; renderFolder();
 });
-function renderList() { renderFChips(); renderItems(); FV.drawn = VER; }
+function renderList() { renderFChips(); renderItems(FV.shown); FV.drawn = VER; }   // gleich viele Zeilen wie vorher (Scroll-Position)
 function renderStatus() {
   const f = FV.f, s = eng(f), n = f.it.length, ld = loadedCount(f), box = $('rkStatus');
   box.className = 'rk-status';
@@ -16909,6 +17530,12 @@ function renderFChips() {
   host.replaceChildren(...out);
   host.hidden = !out.length;
 }
+const normC = new Map();
+function normN(s) {
+  let v = normC.get(s);
+  if (v === undefined) { v = norm(s); if (normC.size > 80000) normC.clear(); normC.set(s, v); }
+  return v;
+}
 const filterOn = () => !!(norm(FV.q) || FV.none || FV.inc.size || FV.exc.size || (FV.f && FV.f.vf && (LIB.pre || LIB.kind)));
 function filtered() {
   const f = FV.f, q = norm(FV.q), rk = ranksOf(f), s = eng(f);
@@ -16919,7 +17546,7 @@ function filtered() {
       if (LIB.kind === 'i' && it.v) return false;
       if (pre && !pre.has(it.k)) return false;
     }
-    if (q && !norm(it.n).includes(q)) return false;
+    if (q && !normN(it.n).includes(q)) return false;
     if (FV.none && it.t.length) return false;
     for (const t of FV.inc) if (!it.t.includes(t)) return false;
     for (const t of FV.exc) if (it.t.includes(t)) return false;
@@ -16936,13 +17563,9 @@ function filtered() {
   else arr.sort(byNew);
   return arr;
 }
-function renderItems() {
-  const f = FV.f, host = $('rkItems');
-  if (!f) return;
-  const list = filtered(), rk = ranksOf(f), s = eng(f), sort = effSort(rk), fil = filterOn();
-  FV.list = list;
-  $('rkSortLabel').textContent = SORT_SHORT[sort];
-  $('rkSort').setAttribute('aria-label', `Sortiert: ${SORT_LABEL[sort]}`);
+/** Alles, was jede Zeile braucht (Plätze, Filter-Plätze, Warteschlange). */
+function listCtx(f, list) {
+  const rk = ranksOf(f), s = eng(f), sort = effSort(rk), fil = filterOn();
   // Platz innerhalb des Filters (bei Gleichstand gleicher Platz)
   const fpos = new Map(), rc = new Map();
   if (rk) {
@@ -16954,50 +17577,70 @@ function renderItems() {
     }
   }
   const inQ = s ? new Set([...s.q, ...(s.ins ? [s.ins.id] : [])]) : new Set();
-  if (io) io.disconnect();                          // alte Kacheln nicht weiter beobachten
-  const grid = D.ui.mode === 'grid';
-  host.className = `rk-items ${grid ? 'grid' : 'list'}${FV.sel ? ' rk-sel-on' : ''}`;
-  const frag = document.createDocumentFragment();
-  for (const it of list) {
-    const r = rk ? rk.get(it.i) : undefined;
-    const num = r == null ? (rk ? 'neu' : '') : String(fil ? fpos.get(it.i) : r);
-    const eq = r != null && rc.get(r) > 1;
-    const pcls = r == null ? ' none' : `${!fil && r <= 3 ? ` p${r}` : ''}${eq ? ' eq' : ''}`;
-    const miss = !isLoaded(f, it.i);
-    const el = mk('button', grid ? 'rk-tile' : 'rk-row');
-    el.type = 'button'; el.dataset.i = it.i;
-    if (FV.sel && FV.sel.has(it.i)) el.classList.add('sel');
-    const chk = mk('span', 'rk-check'); chk.append(ico('i-check'));
-    if (grid) {
-      el.append(thEl(f, it, true), mk('span', `rk-pos${pcls}`, num));
-      if (it.v) el.append(ico('i-video'));
-      if (it.v) el.lastChild.setAttribute('class', 'i rk-vmark');
-      if (it.t.length) { const dots = mk('span', 'rk-dots'); for (const t of it.t.slice(0, 6)) { const tg = TAGS.get(t); if (tg) { const d = mk('i'); d.style.setProperty('--c', PAL[tg.c]); dots.append(d); } } el.append(dots); }
-      if (miss) el.append(mk('span', 'rk-miss-mark', 'fehlt'));
-      el.append(chk);
-    } else {
-      const meta = mk('span', 'rk-meta');
-      meta.append(mk('b', '', it.n));
-      if (it.t.length) {
-        const tl = mk('span', 'rk-rtags');
-        for (const t of it.t.slice(0, 3)) { const tg = TAGS.get(t); if (tg) { const x = mk('i', '', tg.n); x.style.setProperty('--c', PAL[tg.c]); tl.append(x); } }
-        if (it.t.length > 3) tl.append(mk('em', '', `+${it.t.length - 3}`));
-        meta.append(tl);
-      }
-      const info = [];
-      if (fil && r != null) info.push(`Platz ${fmt(r)} gesamt`);
-      if (r == null && s && inQ.has(it.i)) info.push(s.order ? 'neu, wird einsortiert' : 'kommt nach dem Ranking dran');
-      if (it.v) info.push('Video');
-      const sm = mk('small', '', info.join(' · '));
-      if (miss) { if (info.length) sm.append(' · '); sm.append(mk('span', 'miss', 'nicht geladen')); }
-      if (info.length || miss) meta.append(sm);
-      if (rk) el.append(mk('span', `rk-pos${pcls}`, num));
-      el.append(thEl(f, it, true), meta, chk);
+  return { f, rk, s, sort, fil, fpos, rc, inQ, grid: D.ui.mode === 'grid' };
+}
+function itemEl(c, it) {
+  const { f, rk, s, fil, fpos, rc, inQ, grid } = c;
+  const r = rk ? rk.get(it.i) : undefined;
+  const num = r == null ? (rk ? 'neu' : '') : String(fil ? fpos.get(it.i) : r);
+  const eq = r != null && rc.get(r) > 1;
+  const pcls = r == null ? ' none' : `${!fil && r <= 3 ? ` p${r}` : ''}${eq ? ' eq' : ''}`;
+  const miss = !isLoaded(f, it.i);
+  const el = mk('button', grid ? 'rk-tile' : 'rk-row');
+  el.type = 'button'; el.dataset.i = it.i;
+  if (FV.sel && FV.sel.has(it.i)) el.classList.add('sel');
+  const chk = mk('span', 'rk-check'); chk.append(ico('i-check'));
+  if (grid) {
+    el.append(thEl(f, it, true), mk('span', `rk-pos${pcls}`, num));
+    if (it.v) el.append(ico('i-video'));
+    if (it.v) el.lastChild.setAttribute('class', 'i rk-vmark');
+    if (it.t.length) { const dots = mk('span', 'rk-dots'); for (const t of it.t.slice(0, 6)) { const tg = TAGS.get(t); if (tg) { const d = mk('i'); d.style.setProperty('--c', PAL[tg.c]); dots.append(d); } } el.append(dots); }
+    if (miss) el.append(mk('span', 'rk-miss-mark', 'fehlt'));
+    el.append(chk);
+  } else {
+    const meta = mk('span', 'rk-meta');
+    meta.append(mk('b', '', it.n));
+    if (it.t.length) {
+      const tl = mk('span', 'rk-rtags');
+      for (const t of it.t.slice(0, 3)) { const tg = TAGS.get(t); if (tg) { const x = mk('i', '', tg.n); x.style.setProperty('--c', PAL[tg.c]); tl.append(x); } }
+      if (it.t.length > 3) tl.append(mk('em', '', `+${it.t.length - 3}`));
+      meta.append(tl);
     }
-    frag.append(el);
+    const info = [];
+    if (fil && r != null) info.push(`Platz ${fmt(r)} gesamt`);
+    if (r == null && s && inQ.has(it.i)) info.push(s.order ? 'neu, wird einsortiert' : 'kommt nach dem Ranking dran');
+    if (it.v) info.push('Video');
+    const sm = mk('small', '', info.join(' · '));
+    if (miss) { if (info.length) sm.append(' · '); sm.append(mk('span', 'miss', 'nicht geladen')); }
+    if (info.length || miss) meta.append(sm);
+    if (rk) el.append(mk('span', `rk-pos${pcls}`, num));
+    el.append(thEl(f, it, true), meta, chk);
   }
+  return el;
+}
+/* Die Liste kommt in Portionen: erst so viele, wie auf ein paar Bildschirme passen, der Rest beim Scrollen.
+   So geht das Öffnen, Filtern und Zurückkommen auch mit Tausenden Medien sofort. */
+const CHUNK = COARSE ? 90 : 160;
+function renderItems(keep) {
+  const f = FV.f, host = $('rkItems');
+  if (!f) return;
+  const list = filtered(), cx = listCtx(f, list);
+  FV.list = list;
+  FV.ctx = cx;
+  $('rkSortLabel').textContent = SORT_SHORT[cx.sort];
+  $('rkSort').setAttribute('aria-label', `Sortiert: ${SORT_LABEL[cx.sort]}`);
+  if (io) io.disconnect();                          // alte Kacheln nicht weiter beobachten
+  host.className = `rk-items ${cx.grid ? 'grid' : 'list'}${FV.sel ? ' rk-sel-on' : ''}`;
+  const n = Math.min(list.length, Math.max(CHUNK, keep || 0));
+  const frag = document.createDocumentFragment();
+  for (let x = 0; x < n; x++) frag.append(itemEl(cx, list[x]));
+  FV.shown = n;
+  const rk = cx.rk, s = cx.s, fil = cx.fil;
   if (!list.length) frag.append(mk('p', 'rk-empty', f.it.length ? `Nichts gefunden. Ändere die Suche oder die ${f.vf ? 'Filter' : 'Suche'}.`.replace('Suche oder die Suche', 'Suche') : f.vf ? 'Hier ist noch nichts. Lade auf dem Startbildschirm Medien.' : 'Hier ist noch nichts. Lade oben Medien.'));
   host.replaceChildren(frag);
+  FV.sdrawn = SVER;
+  FV.dirty.clear();
+  moreArm();
   const c = $('rkCount');
   c.replaceChildren();
   if (f.it.length) {
@@ -17007,6 +17650,42 @@ function renderItems() {
     else if (!rk && s) c.append(mk('span', '', 'Plätze gibt es, wenn das Ranking fertig ist'));
   }
   c.hidden = !f.it.length;
+}
+const moreEl = mk('div', 'rk-more');
+const moreIO = 'IntersectionObserver' in window
+  ? new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) renderMore(); }, { root: $('rkFScroll'), rootMargin: '1400px 0px' })
+  : null;
+function moreArm() {
+  if (moreIO) moreIO.unobserve(moreEl);
+  if (!FV.f || FV.shown >= FV.list.length) { moreEl.remove(); return; }
+  $('rkItems').append(moreEl);
+  if (moreIO) moreIO.observe(moreEl);                 // meldet sich gleich, falls schon in der Nähe
+  else renderMore();
+}
+function renderMore() {
+  const c = FV.ctx;
+  if (!c || c.f !== FV.f || FV.shown >= FV.list.length || !moreEl.isConnected) { moreEl.remove(); return; }
+  const n = Math.min(FV.list.length, FV.shown + CHUNK), frag = document.createDocumentFragment();
+  for (let x = FV.shown; x < n; x++) frag.append(itemEl(c, FV.list[x]));
+  FV.shown = n;
+  moreEl.before(frag);
+  moreArm();
+}
+/** Nach Tag-Änderungen: nur die geänderten Zeilen neu, solange Liste und Reihenfolge gleich bleiben. */
+function patchList() {
+  const f = FV.f, host = $('rkItems');
+  if (!f || FV.drawn < 0 || FV.sdrawn !== SVER || !FV.ctx || FV.ctx.f !== f || !FV.dirty.size) return false;
+  const list = filtered();
+  if (list.length !== FV.list.length) return false;
+  for (let x = 0; x < list.length; x++) if (list[x] !== FV.list[x]) return false;
+  for (const id of FV.dirty) {
+    const old = host.querySelector(`:scope > [data-i="${id}"]`), it = itemOf(f, id);
+    if (old && it) old.replaceWith(itemEl(FV.ctx, it));
+  }
+  FV.dirty.clear();
+  renderFChips();
+  FV.drawn = VER;
+  return true;
 }
 function clearFilter() {
   FV.q = ''; $('rkQ').value = ''; $('rkQClear').hidden = true;
@@ -17083,7 +17762,7 @@ $('rkSelAll').addEventListener('click', () => {
 $('rkSelEnd').addEventListener('click', () => back());
 $('rkSelTags').addEventListener('click', () => {
   if (!FV.sel || !FV.sel.size) return;
-  openPicker(FV.f, [...FV.sel], { onChange: () => { FV.drawn = -1; } , after: () => { renderFolder(); } });
+  openPicker(FV.f, [...FV.sel], { after: () => { renderFolder(); } });
 });
 $('rkSelMore').addEventListener('click', async () => {
   const f = FV.f, ids = [...FV.sel], n = ids.length;
