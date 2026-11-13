@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="shuffle-version" content="52">
+<meta name="shuffle-version" content="54">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <meta name="color-scheme" content="dark">
@@ -634,8 +634,8 @@ input[type="range"]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 3px rgba
 .pill:active { transform: scale(.97); }
 .pill:disabled { opacity: .35; cursor: not-allowed; transform: none; }
 .pill.sm { height: 36px; padding: 0 13px; font-size: 13.5px; }
-.pill.primary { background: rgba(255, 255, 255, .94); border-color: transparent; color: #000; font-weight: 650; text-shadow: none; }
-@media (hover: hover) { .pill.primary:hover { background: #fff; } }
+.pill.primary { background: var(--gold); border-color: transparent; color: #1d1400; font-weight: 650; text-shadow: none; }
+@media (hover: hover) { .pill.primary:hover { background: #ffd98a; } }
 
 .skipbox { margin-top: 14px; }
 .skipbox .note { margin: 0 0 8px; color: var(--fg-2); }
@@ -1436,13 +1436,31 @@ input[type="range"]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 3px rgba
 .ev-ico { font-size: 22px; line-height: 1; text-align: center; }
 .day-ev b { display: block; font-size: 13.5px; font-weight: 650; }
 .day-ev div span { display: block; color: var(--fg-2); }
-.inv { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-.inv span {
-  display: inline-flex; align-items: center; height: 30px; padding: 0 11px; border-radius: 999px;
-  background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .1);
-  font-size: 13px; color: var(--fg); font-variant-numeric: tabular-nums; white-space: nowrap;
+/* Vorrat: Kacheln mit großer Zahl */
+.inv { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
+.inv > span {
+  display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 7px; align-items: center; min-width: 0;
+  padding: 9px 10px; border-radius: 14px; background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .09);
+  color: var(--fg); font-variant-numeric: tabular-nums;
 }
-.goal-actions { flex-wrap: wrap; }
+.inv > span[hidden] { display: none; }
+.inv-i { grid-row: 1 / 3; font-size: 19px; line-height: 1; }
+.inv b { font: 700 17px/1.1 var(--font-num); }
+.inv small { font-size: 11.5px; line-height: 1.25; color: var(--fg-3); overflow-wrap: anywhere; -webkit-hyphens: auto; hyphens: auto; }
+/* Knöpfe unter dem Vorrat: zwei gleich breite Spalten */
+.goal-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.goal-actions .pill { width: 100%; min-width: 0; height: 40px; padding: 0 10px; }
+.goal-actions .pill[hidden] { display: none; }
+/* Lange Erklärungen: zum Aufklappen */
+.more-box { margin: 16px 0 2px; border-top: 1px solid var(--hair); }
+.more-box summary {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 2px 4px; cursor: pointer; list-style: none;
+  font-size: 13.5px; font-weight: 600; color: var(--fg-2);
+}
+.more-box summary::-webkit-details-marker { display: none; }
+.more-box summary::after { content: ""; width: 8px; height: 8px; margin-right: 4px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg) translate(-2px, -2px); transition: transform .2s; }
+.more-box[open] summary::after { transform: rotate(-135deg) translate(-2px, -2px); }
+.more-box .note { margin-top: 6px; }
 .goal-actions .em { font-size: 16px; line-height: 1; }
 .goal-actions .dim { color: var(--fg-3); font-weight: 500; }
 /* Abzeichen */
@@ -1571,12 +1589,25 @@ svg.i.coin { width: 16px; height: 16px; display: inline-block; vertical-align: -
 /* Shop */
 #shop { width: min(560px, calc(100vw - 2 * var(--gap))); }
 #app.shop-open #shop { opacity: 1; visibility: visible; pointer-events: auto; transform: none; }
-.shop-bal { display: flex; align-items: center; gap: 10px; margin: 4px 0 0; }
-.shop-bal svg.i.coin { width: 34px; height: 34px; vertical-align: 0; }
-.shop-bal b { font: 750 34px/1 var(--font-num); color: var(--gold); letter-spacing: -.02em; font-variant-numeric: tabular-nums; text-shadow: 0 0 18px rgba(255, 207, 107, .3); }
-.shop-bal span { font-size: 14px; color: var(--fg-2); }
+/* Shop: Kopf bleibt beim Scrollen stehen (Name, Münzen, Sprungmarken) */
+#shop { padding-top: 0; }
+#shop .sheet-head {
+  position: sticky; top: 0; z-index: 3; flex-wrap: wrap; gap: 8px; margin: 0 -18px 4px; padding: 12px 10px 10px 18px;
+  background: rgba(16, 16, 20, .94); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border-bottom: 1px solid var(--hair);
+}
+#shop .sheet-head h2 { flex: 1; }
+.shop-bal { display: flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px 0 9px; border-radius: 999px; background: rgba(255, 207, 107, .1); border: 1px solid rgba(255, 207, 107, .3); }
+.shop-bal svg.i.coin { width: 18px; height: 18px; vertical-align: 0; }
+.shop-bal b { font: 750 16px/1 var(--font-num); color: var(--gold); font-variant-numeric: tabular-nums; }
+.shop-nav { flex: 1 0 100%; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin-right: -10px; padding-right: 10px; }
+.shop-nav::-webkit-scrollbar { display: none; }
+.shop-nav button {
+  flex: none; height: 30px; padding: 0 12px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, .12); background: rgba(255, 255, 255, .05);
+  color: var(--fg-2); font: 600 12.5px/1 var(--font); cursor: pointer;
+}
+@media (hover: hover) { .shop-nav button:hover { color: var(--fg); background: rgba(255, 255, 255, .1); } }
 .shop-ev { margin: 10px 0 0; padding: 8px 12px; border-radius: 12px; font-size: 13px; line-height: 1.4; background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .1); }
-.shop-h { display: flex; align-items: baseline; gap: 8px; margin: 18px 0 8px; font-size: 13.5px; font-weight: 650; color: var(--fg); }
+.shop-h { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; margin: 20px 0 8px; font-size: 15px; font-weight: 700; color: var(--fg); }
 .shop-h small { font-size: 12px; font-weight: 400; color: var(--fg-3); }
 .shop-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(136px, 1fr)); gap: 8px; }
 .shop-item {
@@ -1591,6 +1622,14 @@ svg.i.coin { width: 16px; height: 16px; display: inline-block; vertical-align: -
 .si-name small { display: block; font-size: 11.5px; line-height: 1.3; color: var(--fg-3); }
 .si-text { flex: 1; margin: 0; font-size: 12.5px; line-height: 1.38; color: var(--fg-2); }
 .pill.buy { width: 100%; gap: 5px; }
+/* Upgrades: kompakte Zeilen, Preis rechts */
+#shopUps { display: grid; gap: 8px; }
+#shopUps .shop-item { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 10px; row-gap: 3px; align-items: center; padding: 10px 10px 10px 11px; }
+#shopUps .si-top { grid-column: 1; }
+#shopUps .si-text, #shopUps .si-next { grid-column: 1; margin: 0; font-size: 12px; line-height: 1.35; }
+#shopUps .si-text { color: var(--fg-2); }
+#shopUps .si-next { color: var(--fg-3); }
+#shopUps .pill.buy { grid-column: 2; grid-row: 1 / span 3; width: auto; min-width: 88px; }
 .pill.buy:disabled { font-size: 12.5px; font-weight: 500; }
 .pill.armed { background: rgba(255, 207, 107, .22); border-color: rgba(255, 207, 107, .65); }
 .pill .coin { width: 15px; height: 15px; }
@@ -1953,7 +1992,8 @@ body.rk-open #app { visibility: hidden; }
   padding: calc(var(--sat) + 8px) 8px 8px;
 }
 .rk-ht { flex: 1; min-width: 0; padding: 0 4px; }
-.rk-title { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: -.01em; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rk-title { margin: 0; font-size: 21px; font-weight: 750; letter-spacing: -.02em; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#rkDuel .rk-title, #rkView .rk-title, #rkPro .rk-title, #rkGuess .rk-title { font-size: 17px; font-weight: 700; letter-spacing: -.01em; }
 .rk-ht small { display: block; font-size: 12.5px; color: var(--fg-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-variant-numeric: tabular-nums; }
 .rk-head > .rk-title { flex: 1; min-width: 0; padding: 0 4px; }
 .rk-scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; padding: 4px 16px calc(var(--sab) + 28px); }
@@ -2037,16 +2077,24 @@ body.rk-open #app { visibility: hidden; }
 /* Ordnerliste */
 .rk-folders { display: grid; gap: 10px; }
 .rk-fcard {
-  display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; align-items: center; width: 100%;
-  padding: 14px 14px 13px 16px; border-radius: 18px; border: 1px solid var(--rk-line); background: var(--rk-s1);
+  display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 3px 12px; align-items: center; width: 100%;
+  padding: 12px 12px 12px 12px; border-radius: 18px; border: 1px solid rgba(255, 255, 255, .09); background: rgba(255, 255, 255, .05); color: var(--fg);
   text-align: left; cursor: pointer; transition: transform .12s ease, background-color .15s;
 }
 .rk-fcard:active { transform: scale(.985); background: var(--rk-s2); }
 .rk-fcard b { font-size: 16.5px; font-weight: 650; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.rk-fcard .rk-fmeta { grid-column: 1; font-size: 13px; color: var(--fg-3); }
-.rk-fcard .rk-fstate { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; margin-top: 6px; font-size: 13px; color: var(--fg-2); font-variant-numeric: tabular-nums; }
+.rk-fcard b { grid-column: 2; }
+.rk-fcard .rk-fmeta { grid-column: 2; font-size: 13px; color: var(--fg-3); }
+.rk-fcard .rk-fstate { grid-column: 2 / -1; display: flex; align-items: center; gap: 10px; margin-top: 4px; font-size: 13px; color: var(--fg-2); font-variant-numeric: tabular-nums; }
+.rk-fico { grid-column: 1; grid-row: 1 / span 3; align-self: center; width: 44px; height: 44px; border-radius: 13px; display: grid; place-items: center; background: rgba(255, 255, 255, .07); color: var(--fg-2); }
+.rk-fico svg { width: 21px; height: 21px; }
+.rk-fcard.done .rk-fico, .rk-fico.al { background: rgba(255, 207, 107, .12); color: var(--rk-acc); }
+.rk-fcard.going .rk-fico { color: #fff; }
+.rk-alcard { margin-top: 10px; }
+#rkNew { height: 52px; margin-top: 10px; border: 1.5px dashed rgba(255, 255, 255, .22); background: transparent; color: var(--fg-2); }
+@media (hover: hover) { #rkNew:hover { color: var(--fg); border-color: rgba(255, 255, 255, .4); } }
 .rk-fcard .rk-fstate .rk-mini { flex: 1; }
-.rk-fcard > svg { grid-row: 1 / 3; grid-column: 2; color: var(--fg-3); }
+.rk-fcard > svg { grid-row: 1 / 3; grid-column: 3; color: var(--fg-3); }
 .rk-fcard.done .rk-fstate { color: var(--rk-acc); }
 .rk-mini { height: 5px; border-radius: 99px; background: rgba(255, 255, 255, .09); overflow: hidden; }
 .rk-mini i { display: block; height: 100%; width: calc(var(--p, 0) * 100%); border-radius: inherit; background: var(--rk-acc); }
@@ -2102,6 +2150,8 @@ body.rk-open #app { visibility: hidden; }
 .rk-fchips::-webkit-scrollbar { display: none; }
 .rk-count { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 30px; margin: 8px 2px 6px; font-size: 13px; color: var(--fg-3); font-variant-numeric: tabular-nums; }
 .rk-count .link { padding: 4px 0; font-size: 13px; }
+.rk-count { flex-wrap: wrap; row-gap: 0; }
+.rk-count > span + span { flex: 1 0 100%; font-size: 12px; line-height: 1.4; }
 
 /* Tags als Knöpfe */
 .rk-chip {
@@ -2708,7 +2758,10 @@ body.rk-open #app { visibility: hidden; }
     <div class="hist-axis" id="histAxis" aria-hidden="true"></div>
     <p class="hist-info" id="histInfo" aria-live="polite"></p>
     <dl class="records" id="records"></dl>
-    <p class="note">Jeden Tag wird ein neues Ziel ausgelost: eine Zeit zwischen 15 und 60 Minuten, umgerechnet in eine Summe. Wie viele Minuten es sind, erfährst du, wenn du das Ziel geschafft hast. Ab und zu kommt ein großer Tag mit 1,5 Stunden, sonst gibt es jeden Tag zwei Tagesereignisse, immer mindestens ein fieses oder eine Katastrophe. Überstehst du eine Katastrophe, gibt es 150 Münzen extra. Bis das Ziel geschafft ist, kosten Überspringen, Abbrechen und Entfernen das Doppelte der Zahl als Strafe, jede Pause die einfache Zahl, und solange die Pause dauert, kommt jede Minute noch einmal die Zahl dazu. Goldene Medien zählen doppelt (übersprungen kosten sie auch doppelt), Medien aus Blei nur halb. Gold kommt öfter, je mehr du am Stück schaffst, Blei öfter nach einer Strafe. Was du nicht schaffst, kommt am nächsten Tag zur Hälfte als Schulden drauf, und deine Strafen des Tages kommen dann noch einmal voll dazu (zusammen höchstens so viel wie ein normales Tagesziel). Für jedes geschaffte Ziel gibt es einen Joker, alle 7 Tage in Folge einen Serienschutz, dazu Münzen und eine Truhe. Alle 5 Minuten am Stück ohne Überspringen und Pause gibt es Münzen, nach 25 Minuten einen Joker. Jeden Tag warten drei Aufgaben, und fast jeden Tag taucht irgendwann ein Boss auf. Danach kannst du eine Zugabe starten: noch ein halbes Ziel für einen weiteren Joker (Strafen gibt es auch dort, Schulden nicht). Einer deiner Favoriten ist jeden Tag Favorit des Tages: Er kommt sicher einmal dran und zählt doppelt. Bei Zielen über 20 Minuten gibt es zwischendurch eine Pause, über 45 Minuten zwei. Der erste Start am Tag beginnt mit 30 Sekunden bis 2 Minuten Aufwärmen ohne Zahl und Wertung, danach geht es mit einem Countdown los. Ein Tag geht bis 4 Uhr morgens. Vor dem ersten Start kannst du eine Tageswette abschließen: Klappt dein Vorhaben, gibt es deinen Einsatz mal der Quote zurück. Ganz selten kommt ein Regenbogen-Medium, schaffst du es, wartet eine Überraschung.</p>
+    <details class="more-box">
+      <summary>So läuft ein Tag</summary>
+      <p class="note">Jeden Tag wird ein neues Ziel ausgelost: eine Zeit zwischen 15 und 60 Minuten, umgerechnet in eine Summe. Wie viele Minuten es sind, erfährst du, wenn du das Ziel geschafft hast. Ab und zu kommt ein großer Tag mit 1,5 Stunden, sonst gibt es jeden Tag zwei Tagesereignisse, immer mindestens ein fieses oder eine Katastrophe. Überstehst du eine Katastrophe, gibt es 150 Münzen extra. Bis das Ziel geschafft ist, kosten Überspringen, Abbrechen und Entfernen das Doppelte der Zahl als Strafe, jede Pause die einfache Zahl, und solange die Pause dauert, kommt jede Minute noch einmal die Zahl dazu. Goldene Medien zählen doppelt (übersprungen kosten sie auch doppelt), Medien aus Blei nur halb. Gold kommt öfter, je mehr du am Stück schaffst, Blei öfter nach einer Strafe. Was du nicht schaffst, kommt am nächsten Tag zur Hälfte als Schulden drauf, und deine Strafen des Tages kommen dann noch einmal voll dazu (zusammen höchstens so viel wie ein normales Tagesziel). Für jedes geschaffte Ziel gibt es einen Joker, alle 7 Tage in Folge einen Serienschutz, dazu Münzen und eine Truhe. Alle 5 Minuten am Stück ohne Überspringen und Pause gibt es Münzen, nach 25 Minuten einen Joker. Jeden Tag warten drei Aufgaben, und fast jeden Tag taucht irgendwann ein Boss auf. Danach kannst du eine Zugabe starten: noch ein halbes Ziel für einen weiteren Joker (Strafen gibt es auch dort, Schulden nicht). Einer deiner Favoriten ist jeden Tag Favorit des Tages: Er kommt sicher einmal dran und zählt doppelt. Bei Zielen über 20 Minuten gibt es zwischendurch eine Pause, über 45 Minuten zwei. Der erste Start am Tag beginnt mit 30 Sekunden bis 2 Minuten Aufwärmen ohne Zahl und Wertung, danach geht es mit einem Countdown los. Ein Tag geht bis 4 Uhr morgens. Vor dem ersten Start kannst du eine Tageswette abschließen: Klappt dein Vorhaben, gibt es deinen Einsatz mal der Quote zurück. Ganz selten kommt ein Regenbogen-Medium, schaffst du es, wartet eine Überraschung.</p>
+    </details>
   </aside>
 
   <aside id="favs" class="panel glass dense" aria-labelledby="favsTitle">
@@ -2727,16 +2780,19 @@ body.rk-open #app { visibility: hidden; }
   <aside id="shop" class="panel glass dense" aria-labelledby="shopTitle">
     <div class="sheet-head">
       <h2 id="shopTitle">Shop</h2>
+      <div class="shop-bal" title="Deine Münzen"><svg class="i coin"><use href="#i-coin"/></svg><b id="shopCoins">0</b></div>
       <button type="button" class="ib sm" id="btnShopClose" aria-label="Shop schließen"><svg class="i"><use href="#i-close"/></svg></button>
+      <nav class="shop-nav" id="shopNav" aria-label="Bereiche im Shop">
+        <button type="button" data-go="shopItems">Hilfen</button><button type="button" data-go="shopUps">Upgrades</button><button type="button" data-go="wheelBox">Glücksrad</button><button type="button" data-go="shopThemes">Designs</button><button type="button" data-go="shopSounds">Takt-Töne</button>
+      </nav>
     </div>
-    <div class="shop-bal"><svg class="i coin"><use href="#i-coin"/></svg><b id="shopCoins">0</b><span>Münzen</span></div>
     <p class="shop-ev" id="shopEv" hidden></p>
     <h3 class="shop-h">Hilfen <small>zweimal tippen zum Kaufen</small></h3>
     <ul class="shop-grid" id="shopItems"></ul>
     <h3 class="shop-h">Upgrades <small>bleiben für immer, jede Stufe wird teurer</small></h3>
     <ul class="shop-ups" id="shopUps"></ul>
     <h3 class="shop-h">Glücksrad</h3>
-    <div class="wheel-box">
+    <div class="wheel-box" id="wheelBox">
       <div class="wheel">
         <svg viewBox="-100 -100 200 200" aria-hidden="true" focusable="false"><g id="wheelRot"></g><circle class="rim" r="94"/><circle class="hub" r="14"/></svg>
         <i class="wheel-pin" aria-hidden="true"></i>
@@ -2750,7 +2806,10 @@ body.rk-open #app { visibility: hidden; }
     <ul class="shop-themes" id="shopThemes"></ul>
     <h3 class="shop-h">Takt-Töne</h3>
     <ul class="shop-sounds" id="shopSounds"></ul>
-    <p class="note">Münzen gibt es fürs Schauen (eine je 100 Summe), fürs Tagesziel und die Serie, für Tagesaufgaben, alle 5 Minuten am Stück, für Bosse, Rekorde, Abzeichen, die Truhe nach dem Ziel und den Wochenrückblick. Bei den Abzeichen kannst du mit Münzen Hinweise auf geheime Abzeichen kaufen.</p>
+    <details class="more-box">
+      <summary>Wie bekomme ich Münzen?</summary>
+      <p class="note">Münzen gibt es fürs Schauen (eine je 100 Summe), fürs Tagesziel und die Serie, für Tagesaufgaben, alle 5 Minuten am Stück, für Bosse, Rekorde, Abzeichen, die Truhe nach dem Ziel und den Wochenrückblick. Bei den Abzeichen kannst du mit Münzen Hinweise auf geheime Abzeichen kaufen.</p>
+    </details>
     <div class="th-preview" id="thPreview" hidden>
       <div class="thp-lens" aria-hidden="true"><svg viewBox="0 0 100 100"><circle class="track" cx="50" cy="50" r="44"/><circle class="bar" cx="50" cy="50" r="44"/></svg><span>42</span></div>
       <div class="thp-beat" aria-hidden="true"><i></i><b></b></div>
@@ -3292,7 +3351,7 @@ body.rk-open #app { visibility: hidden; }
       <p class="rk-lead" id="rkHomeLead">Lege einen Ranking-Ordner an und lade Bilder oder Videos hinein. Dann trittst du sie im 1v1 gegeneinander an, Runde für Runde, bis jedes seinen festen Platz hat. Getaggt wird im eigenen Bereich „Tags“ (oben rechts).</p>
       <div class="rk-folders" id="rkFolders"></div>
       <button type="button" class="pill rk-new" id="rkNew"><svg class="i"><use href="#i-plus"/></svg>Neuer Ranking-Ordner</button>
-      <button type="button" class="pill rk-new al-entry" id="rkAlbumBtn"><svg class="i"><use href="#i-star-fill"/></svg>Sammelalbum</button>
+      <button type="button" class="rk-fcard rk-alcard" id="rkAlbumBtn"><span class="rk-fico al"><svg class="i"><use href="#i-star-fill"/></svg></span><b>Sammelalbum</b><span class="rk-fmeta" id="rkAlbumMeta">Karten, die du beim Spielen sammelst</span><svg class="i"><use href="#i-chev-r"/></svg></button>
       <p class="rk-fine">Die Medien bleiben, wo sie sind, und werden jedes Mal neu geladen. Gespeichert werden nur Ranking, Tags und kleine Vorschaubilder. Die App erkennt jedes Medium am Dateinamen und an der Größe wieder.</p>
       <p class="rk-fine" id="rkSyncFine" hidden>☁ Rankings und Tags kommen über „Geräte abgleichen“ auch auf deine anderen Geräte. Die Medien selbst lädst du dort aus deinem eigenen Ordner.</p>
     </div>
@@ -11037,17 +11096,17 @@ function renderToday() {
     return row;
   }));
   renderFotd();
-  invJoker.textContent = `🃏 ${meta.jokers} Joker${hasEv('verbot') ? ' · heute verboten' : ''}`;
+  invTile(invJoker, '🃏', meta.jokers, hasEv('verbot') ? 'Joker, heute verboten' : 'Joker');
   invJoker.title = `Joker: überspringen ohne Strafe (${COARSE ? 'nach oben wischen' : 'Taste J'}). Einen gibt es für jedes geschaffte Tagesziel, höchstens ${JOKER_MAX}.`;
-  invShield.textContent = `🛡️ ${meta.shields} Serienschutz`;
+  invTile(invShield, '🛡️', meta.shields, 'Serienschutz');
   invShield.title = `Serienschutz: fängt einen verpassten Tag auf. Einen gibt es alle ${SHIELD_EVERY} Tage in Folge, höchstens ${SHIELD_MAX}.`;
-  invCoins.textContent = `🪙 ${fmtInt(meta.coins)} Münzen`;
+  invTile(invCoins, '🪙', meta.coins, 'Münzen');
   invPcard.hidden = !meta.items.pcard;
-  invPcard.textContent = `☕ ${meta.items.pcard} Pausenkarte${meta.items.pcard === 1 ? '' : 'n'}`;
+  invTile(invPcard, '☕', meta.items.pcard, meta.items.pcard === 1 ? 'Pausenkarte' : 'Pausenkarten');
   invUmb.hidden = !meta.items.umb;
-  invUmb.textContent = `☂️ ${meta.items.umb} Schirm${meta.items.umb === 1 ? '' : 'e'}`;
+  invTile(invUmb, '☂️', meta.items.umb, meta.items.umb === 1 ? 'Schirm' : 'Schirme');
   invSpin.hidden = !meta.items.spin;
-  invSpin.textContent = `🎡 ${meta.items.spin} Freidreh${meta.items.spin === 1 ? '' : 's'}`;
+  invTile(invSpin, '🎡', meta.items.spin, meta.items.spin === 1 ? 'Freidreh' : 'Freidrehs');
   renderTodayTasks();
   renderRerollBtn(todayReroll);
   const tb = meta.today.day === dayKey() ? meta.today.boss : null, bdef = tb ? BOSS_BY_ID.get(tb.id) : null;
@@ -11809,13 +11868,20 @@ function coinIcon() { const s = useIcon('i-coin'); s.classList.add('coin'); retu
 
 /* Münzen oben links (öffnet den Shop) */
 let coinsShown = -1;
+/** Vorrat im Fenster „Heute“: Symbol, Anzahl groß, Name klein. */
+function invTile(el, icon, n, label) {
+  const b = el.querySelector('b');
+  if (b && el.dataset.l === label && el.firstChild && el.firstChild.textContent === icon) { b.textContent = fmtInt(n); return; }
+  el.dataset.l = label;
+  el.replaceChildren(mk('span', 'inv-i', icon), mk('b', '', fmtInt(n)), mk('small', '', label));
+}
 function renderCoins() {
   chipCoins.hidden = !(meta.coins > 0 || meta.tot.coins > 0);
   if (coinsShown !== meta.coins) { coinsShown = meta.coins; chipCoinsN.textContent = fmtInt(meta.coins); }
   chipCoins.title = `${fmtInt(meta.coins)} Münzen · Shop (B)`;
   { const hc = document.getElementById('hubCoinsN'); if (hc) { hc.textContent = fmtInt(meta.coins); hc.parentNode.hidden = chipCoins.hidden; } }
   if (openName === 'shop') shopCoins.textContent = fmtInt(meta.coins);
-  if (openName === 'today') invCoins.textContent = `🪙 ${fmtInt(meta.coins)} Münzen`;
+  if (openName === 'today') invTile(invCoins, '🪙', meta.coins, 'Münzen');
 }
 function bumpCoins() {
   if (REDUCED || chipCoins.hidden) return;
@@ -13777,6 +13843,14 @@ window.addEventListener('rk:closed', () => {    // zurück aus dem Ranking: was 
 });
 setShop.addEventListener('click', () => openPanel('shop'));
 btnShopClose.addEventListener('click', closePanel);
+$('shopNav').addEventListener('click', e => {
+  const b = e.target.closest('[data-go]');
+  if (!b) return;
+  const t = document.getElementById(b.dataset.go), sec = t && (t.previousElementSibling && t.previousElementSibling.classList.contains('shop-h') ? t.previousElementSibling : t);
+  if (!sec) return;
+  const head = shopEl.querySelector('.sheet-head');
+  shopEl.scrollTo({ top: sec.offsetTop - (head ? head.offsetHeight : 0) - 6, behavior: REDUCED ? 'auto' : 'smooth' });
+});
 badgeList.addEventListener('click', e => { const b = e.target.closest('button[data-hint]'); if (b) buyHint(b.dataset.hint); });
 chipChain.addEventListener('click', () => toast(`⛓️ ${fmtMins(meta.chain)} am Stück. Alle ${CHAIN_STEP / 60} Minuten ohne Überspringen, Pause und Abbrechen gibt es ${chainCoins()} Münzen, alle ${CHAIN_JOKER / 60} Minuten einen Joker.`, 5200));
 chipGold.addEventListener('click', () => toast(`✨ Goldstunde: Noch ${fmtSpan(meta.goldLeft)} kommt Gold dreimal so oft.`, 3600));
@@ -17286,10 +17360,15 @@ function renderHome() {
     const line = mk('span', 'rk-fstate');
     line.append(mk('span', '', st.label));
     if (st.p != null) { const m = mk('span', 'rk-mini'), i = mk('i'); i.style.setProperty('--p', st.p.toFixed(3)); m.append(i); line.append(m); }
-    b.append(mk('b', '', f.n), mk('span', 'rk-fmeta', metaLine(f)), ico('i-chev-r'), line);
+    const fi = mk('span', 'rk-fico');
+    fi.append(ico(st.done ? 'i-trophy' : st.p != null ? 'i-play' : 'i-folder'));
+    b.append(fi, mk('b', '', f.n), mk('span', 'rk-fmeta', metaLine(f)), ico('i-chev-r'), line);
     if (st.done) b.classList.add('done');
+    else if (st.p != null) b.classList.add('going');
     return b;
   }));
+  { let n = 0; try { n = Object.keys((SYNC && SYNC.xGet ? SYNC.xGet().al : null) || {}).length; } catch (_) { n = 0; }
+    $('rkAlbumMeta').textContent = n ? `${fmt(n)} ${n === 1 ? 'Karte' : 'Karten'} gesammelt` : 'Karten, die du beim Spielen sammelst'; }
   $('rkHomeLead').hidden = fs.length > 0;
   $('rkSyncFine').hidden = !(SYNC && SYNC.on());
 }
