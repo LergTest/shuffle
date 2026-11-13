@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="shuffle-version" content="54">
+<meta name="shuffle-version" content="56">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <meta name="color-scheme" content="dark">
@@ -1914,7 +1914,7 @@ svg.i.coin { width: 16px; height: 16px; display: inline-block; vertical-align: -
 @media (max-width: 370px) { .mode-row.three { flex-wrap: wrap; } .mode-row.three .fd-entry { flex-basis: 100%; } }
 #fd { position: fixed; inset: 0; z-index: 60; background: #000; color: #fff; overflow: hidden; font: 15px/1.4 var(--font); -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
 body.fd-open { overflow: hidden; }
-.fd-list { position: absolute; inset: 0; overflow-y: scroll; scroll-snap-type: y mandatory; overscroll-behavior: contain; scrollbar-width: none; }
+.fd-list { position: absolute; inset: 0; overflow-y: scroll; scroll-snap-type: y mandatory; overscroll-behavior: contain; scrollbar-width: none; overflow-anchor: none; }
 .fd-list::-webkit-scrollbar { display: none; }
 .fd-slide { position: relative; height: 100%; scroll-snap-align: start; scroll-snap-stop: always; overflow: hidden; background: #000; }
 .fd-media { position: absolute; inset: 0; z-index: 1; display: flex; align-items: center; justify-content: center; }
@@ -2569,6 +2569,13 @@ body.rk-open #app { visibility: hidden; }
   position: fixed; inset: 0; z-index: 90; display: flex; align-items: center; justify-content: center;
   background: rgba(0, 0, 0, .45);
 }
+#tabGone {
+  position: fixed; inset: 0; z-index: 95; display: grid; place-items: center; padding: 24px; background: rgba(0, 0, 0, .82);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
+#tabGone > div { max-width: 340px; display: grid; gap: 14px; text-align: center; color: var(--fg); font: 15px/1.5 var(--font); }
+#tabGone b { font-size: 18px; }
+#tabGone p { margin: 0; color: var(--fg-2); }
 #syncSplash span {
   padding: 12px 18px; border-radius: 99px; background: rgba(28, 28, 32, .94); border: 1px solid rgba(255, 255, 255, .14);
   color: #fff; font: 600 14px/1.2 var(--font);
@@ -4020,7 +4027,7 @@ function merge(L, R, B) {
 }
 const uni = (x, y) => [...new Set([...(Array.isArray(x) ? x : []), ...(Array.isArray(y) ? y : [])])];
 const cnt = (hb, wv, ov, bv) => (hb ? n0(wv) + Math.max(0, n0(ov) - n0(bv)) : Math.max(n0(wv), n0(ov)));
-const bal = (hb, wv, ov, bv) => (hb ? Math.max(0, n0(wv) + n0(ov) - n0(bv)) : n0(wv));
+const bal = (hb, wv, ov, bv) => (hb ? Math.max(0, n0(wv) + n0(ov) - n0(bv)) : Math.max(n0(wv), n0(ov)));
 function mergeDays(w, o) {
   const A = P(w[DAYS]), B = P(o[DAYS]);
   if (!A || !A.days) return o[DAYS];
@@ -4051,9 +4058,22 @@ function mergeMeta(w, o, b, wt, ot, hb) {
   const perKey = (x, y, z, f) => { const r = { ...(x || {}) }; for (const k of Object.keys(y || {})) r[k] = f(hb, (x || {})[k], y[k], (z || {})[k]); return r; };
   const up = { ...(w.up || {}) };
   for (const [k, v] of Object.entries(o.up || {})) up[k] = Math.max(n0(up[k]), n0(v));
+  const fix = { coins: 0, jokers: 0, shields: 0 };
+  const wt0 = w.today || {}, ot0 = o.today || {}, bt0 = bm.today || {};
+  if (hb && wt0.day && wt0.day === ot0.day && ot0.day !== bt0.day) {   // es gilt der Tag des einen Geräts: die Wirkungen des anderen zurück
+    const oe = Array.isArray(ot0.evs) ? ot0.evs : [];
+    fix.coins += n0(ot0.tax);                                        // Steuerprüfung
+    if (oe.includes('geschenk')) fix.jokers -= 1;
+    if (oe.includes('dieb')) fix.jokers += 1;
+    if (oe.includes('engel')) fix.shields -= 1;
+    fix.shields += n0(ot0.saved);                                    // Serienschutz für verpasste Tage
+    if (ot0.pot && typeof ot0.pot === 'object') { fix.coins -= n0(ot0.pot.c); fix.jokers -= n0(ot0.pot.j); }   // Blindflug-Topf
+    if (ot0.betPrev && ot0.betPrev.st === 'won') fix.coins -= n0(ot0.betPrev.w);                              // Wette vom Vortag
+  }
+  const bal2 = (k, f) => Math.max(0, (hb ? n0(w[k]) + n0(o[k]) - n0(bm[k]) : Math.max(n0(w[k]), n0(o[k]))) + f);
   return JSON.stringify({
     ...w, tot, badges, up,
-    coins: bal(hb, w.coins, o.coins, bm.coins), jokers: bal(hb, w.jokers, o.jokers, bm.jokers), shields: bal(hb, w.shields, o.shields, bm.shields),
+    coins: bal2('coins', fix.coins), jokers: bal2('jokers', fix.jokers), shields: bal2('shields', fix.shields),
     items: perKey(w.items, o.items, bm.items, bal),
     themes: uni(w.themes, o.themes), sounds: uni(w.sounds, o.sounds), hints: uni(w.hints, o.hints),
     seen: uni(w.seen, o.seen), bossSeen: uni(w.bossSeen, o.bossSeen),
@@ -4214,7 +4234,7 @@ function reconcile(r) {
     put(K.note, JSON.stringify(note));
     return { ok: true, adopted: true };
   }
-  put(K.pend, JSON.stringify({ s: next, rk: R.rk, base: nb, push, note }));
+  put(K.pend, JSON.stringify({ s: next, rk: R.rk, base: nb, push, note, was: local, wrk: lrk }));   // was/wrk: Stand hier beim Abgleich
   block({ merged: mine, rk: !mine && R.merged, only: gameSame ? 'rk' : '', from: r.p.dn, at: r.p.at });
   return { ok: true, reload: true };
 }
@@ -4251,6 +4271,7 @@ async function pushInner() {
   if (!force) {
     const st = remoteState(r);
     if (st === 'new') return reconcile(r);
+    if (st === 'stale') { ok(); status(); clearTimeout(pushTimer); pushTimer = 0; schedule(FAST ? 200 : 5000); return { ok: true, stale: true }; }
     if (r && st === 'same' && base) { base.etag = r.etag; base.pl = r.pl; }
   }
   const rpl = r ? r.pl : base ? base.pl : undefined;          // Preset-Listen in der Cloud
@@ -4357,10 +4378,10 @@ async function connect(text) {
     return { state: 'reload', rk: true, from: r.p.dn, at: r.p.at };
   }
   pendingLink = { c, r };
-  if (!hasPlay(local)) return choose('remote');
+  if (!hasPlay(local)) return choose('remote', true);
   return { state: 'choose', local: summary(local), remote: summary(r.p.s), from: r.p.dn, at: r.p.at };
 }
-async function choose(mode) {
+async function choose(mode, keepLists) {
   const pl = pendingLink;
   pendingLink = null;
   if (!pl) throw E('input');
@@ -4373,9 +4394,13 @@ async function choose(mode) {
     return { state: 'linked', ok: res.ok, err: res.err };
   }
   const local = readLocal();
-  const next = mode === 'merge' ? merge(local, r.p.s, null) : mode === 'local' ? local : r.p.s;
+  let next = mode === 'merge' ? merge(local, r.p.s, null) : mode === 'local' ? local : r.p.s;
+  if (mode === 'remote' && keepLists && typeof local[LISTS] === 'string') {   // noch nicht gespielt, aber Favoriten/Ausgeschlossene: die bleiben
+    const ml = mergeLists(P(r.p.s[LISTS]), P(local[LISTS]), null, r.p.s[LISTS], local[LISTS]);
+    if (typeof ml === 'string' && ml !== r.p.s[LISTS]) next = { ...r.p.s, [LISTS]: ml };
+  }
   linkUp(c, b);
-  put(K.pend, JSON.stringify({ s: next, rk, base: b, push: mode !== 'remote' || rk !== r.p.rk, note: null }));
+  put(K.pend, JSON.stringify({ s: next, rk, base: b, push: mode !== 'remote' || rk !== r.p.rk || next !== r.p.s, note: null }));
   block(null);
   return { state: 'reload', merged: mode === 'merge', rk: mode === 'local', from: r.p.dn, at: r.p.at };
 }
@@ -4392,10 +4417,19 @@ function applyPending() {
   const pd = P(get(K.pend));
   del(K.pend);
   if (!pd || !pd.s || !pd.base || typeof pd.s !== 'object') return;
-  writeLocal(pd.s);
-  if (typeof pd.rk === 'string') writeRank(pd.rk);
+  let s = pd.s, rk = pd.rk, push = !!pd.push;
+  if (pd.was && typeof pd.was === 'object') {         // seit dem Abgleich hier weitergespielt (bis das Fenster zu war): dazunehmen
+    const cur = readLocal();
+    if (!same(cur, pd.was)) { s = merge(cur, pd.s, pd.was); push = true; }
+  }
+  if (typeof pd.wrk === 'string' && typeof rk === 'string') {
+    const cr = readRank();
+    if (cr !== pd.wrk) { rk = mergeRank(cr, rk, pd.wrk); push = true; }
+  }
+  writeLocal(s);
+  if (typeof rk === 'string') writeRank(rk);
   base = pd.base; saveBase();
-  if (pd.push) pushAfterBoot = true;
+  if (push) pushAfterBoot = true;
   if (pd.note) put(K.note, JSON.stringify(pd.note));
 }
 function splash(on) {
@@ -4465,7 +4499,8 @@ return {
   pairCode: () => (cfg ? `SHUF-${cfg.gist}-${cfg.token}` : ''),
   qrSvg,
   suspend() { block(null); },
-  forceNext() { put(K.force, '1'); },
+  forceNext() { del(K.pend); del(K.note); put(K.force, '1'); },
+  dropPending() { del(K.pend); del(K.note); },
   /** Album, Überleben, Rang-Raten: lesen (immer frisch) und speichern (wird dann hochgeladen). */
   xGet: () => JSON.parse(readX()),
   xSet(o) { put(XKEY, rkJ(xObj(o))); },
@@ -4487,7 +4522,7 @@ return {
   },
   rankBind(h) { rkHooks = h; },
   rankUid: rkUid,
-  _t: { readRank, mergeRank, rkLocal, rkCanon, RK0, readX, xMerge, X0, readPl, plMerge, PL0, packPl, unpackPl },
+  _t: { readRank, mergeRank, rkLocal, rkCanon, RK0, readX, xMerge, X0, readPl, plMerge, PL0, packPl, unpackPl, merge },
 };
 })();
 
@@ -4992,6 +5027,7 @@ let ambientUntil = 0;
 const IMG_EXT = /\.(jpe?g|jfif|pjpeg|png|apng|gif|webp|avif|bmp|svg|ico|heic|heif)$/i;
 const VID_EXT = /\.(mp4|m4v|webm|mov|ogv|mkv|3gp)$/i;
 const library = [];
+let libGen = 0;                      // zählt jedes Leeren der Liste: ein älteres Laden im Hintergrund legt danach nichts mehr hinein
 let fileIdx = null;                  // Schlüssel → Datei aus allem Geladenen (wird bei Bedarf neu gebaut)
 const byId = new Map();
 const seen = new Set();
@@ -5038,7 +5074,7 @@ function addFiles(list, opts = {}) {
     library.push(item);
     fileIdx = null;
     byId.set(item.id, item);
-    if (state.started && (bag.length || bgLoad)) bag.splice(Math.floor(Math.random() * (bag.length + 1)), 0, item.id);
+    if (state.started && (bag.length || bgLoad) && !progress.done.has(key) && !progress.skipped.has(key)) bag.splice(Math.floor(Math.random() * (bag.length + 1)), 0, item.id);
     res.added++;
   }
   updateLibraryUI();
@@ -5191,6 +5227,7 @@ function unloadLibrary() {
   img.removeAttribute('src');
   for (const it of library) URL.revokeObjectURL(it.url);
   library.length = 0;
+  libGen++;
   fileIdx = null;
   byId.clear();
   seen.clear();
@@ -5611,7 +5648,7 @@ const idbDelete = id => idbRun('readwrite', s => s.delete(id));
 const idbClear = () => idbRun('readwrite', s => s.clear());
 
 const sources = [];     // { id, type: 'dir' | 'file', name, handle, state: 'stored' | 'loaded' | 'missing' | 'denied', count }
-let restoring = false;
+let restoring = false, restoreGen = -1, restoreP = null;
 let bgLoad = null;                      // { total, done } solange gemerkte Dateien noch im Hintergrund geöffnet werden
 
 /* ── Presets: mehrere gemerkte Auswahlen ──
@@ -6178,7 +6215,12 @@ async function initMemory() {
 
 /** Gemerkte Dateien laden. byClick = vom Nutzer ausgelöst: darf nach Erlaubnis
     fragen und startet danach die Wiedergabe. */
-async function restoreSources(byClick) {
+function restoreSources(byClick) {
+  if (restoring) return restoreGen !== libGen && restoreP ? restoreP.then(() => restoreSources(byClick)) : Promise.resolve();   // altes Laden läuft aus, dann das neue
+  restoreGen = libGen;
+  return (restoreP = restoreRun(byClick));
+}
+async function restoreRun(byClick) {
   if (restoring) return;
   const todo = sources.filter(s => s.state !== 'loaded');
   if (!todo.length) { if (byClick && library.some(usable)) start(); return; }
@@ -6220,7 +6262,9 @@ async function restoreSources(byClick) {
     // 3) öffnen (mehrere gleichzeitig) und in Portionen übergeben: nach den ersten kann es schon losgehen
     const res = { added: 0, ignored: 0, dupes: 0 };
     let batch = [], last = performance.now();
+    const stale = () => restoreGen !== libGen;
     const hand = () => {
+      if (stale()) { batch = []; return; }
       if (batch.length) { const r = addFiles(batch, { quiet: true }); res.added += r.added; res.ignored += r.ignored; res.dupes += r.dupes; batch = []; }
       last = performance.now();
       updateMemoryUI();
@@ -6228,12 +6272,14 @@ async function restoreSources(byClick) {
     bgLoad = { total: order.length, done: 0 };
     updateMemoryUI();
     await pmap(order, 6, async e => {
+      if (stale()) return;
       try { const f = await e.h.getFile(); e.s.got.push(f); batch.push(f); }
       catch (err) { if (e.s.type === 'file') e.s.state = err && err.name === 'NotAllowedError' ? 'denied' : 'missing'; }
       bgLoad.done++;
       if (batch.length >= (library.length < 150 ? 40 : 250) || performance.now() - last > 600) hand();
     });
     hand();
+    if (stale()) return;
     for (const s of open) {
       if (s.state === 'missing' || s.state === 'denied') { delete s.got; continue; }
       s.state = 'loaded';
@@ -6362,7 +6408,15 @@ function favList() {
 }
 const favCount = () => { let n = 0; for (const it of library) if (usable(it) && favs.has(it.key)) n++; return n; };
 /** Das gerade laufende Medium (null, solange das nächste lädt). */
-const curItem = () => (state.started && state.current && !state.current.finished ? state.current.item : null);
+const curItem = () => (state.started && state.current && !state.current.finished && !state.switching ? state.current.item : null);
+/** Gewählt, aber noch nicht zu sehen (lädt noch): ohne Wertung zurück in den Stapel. */
+function dropUnshown() {
+  const c = state.current;
+  if (!state.switching || !c || c.finished) return false;
+  c.finished = true;
+  if (!c.warm) backToBag(c.item, c.run);
+  return true;
+}
 
 /** Favorit an oder aus. at = Bildschirmpunkt für das Herz (Doppeltippen), sonst die Mitte. */
 function setFav(item, on, at) {
@@ -6409,6 +6463,7 @@ function runUndo() {
 function excludeCurrent(noFreeze) {
   const cur = state.current;
   if (!state.started || !cur || cur.finished || state.switching || go.on) return false;
+  if (staleDay()) { freshDay(); return false; }     // seit gestern pausiert: nichts mehr in den neuen Tag eintragen
   const item = cur.item, wasFav = favs.has(item.key);
   finishCurrent('excluded');
   excluded.add(item.key);
@@ -6487,6 +6542,7 @@ function queueFav(first) {
 function switchRun(mode, first) {
   if (mode === 'fav' && !favCount()) { toast('Unter den geladenen Dateien ist noch kein Favorit.'); return; }
   if (!state.started) { start({ mode, first }); return; }
+  if (staleDay()) { freshDay(); return; }
   const cur = state.current && !state.current.finished ? state.current : null;
   const changed = mode !== runMode;
   if (first && cur && !state.switching && cur.item.id === first.id) first = null;      // läuft schon
@@ -6546,7 +6602,7 @@ const pad2 = n => String(n).padStart(2, '0');
 const DAY_START_H = 4;      // Tageswechsel um 4 Uhr morgens
 const calKey = d => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
 /** Kalenderdatum des Tages, zu dem ein Zeitpunkt zählt (vor 4 Uhr morgens noch der Vortag). */
-const logicalDate = (ms = Date.now()) => new Date(ms - DAY_START_H * 36e5);
+const logicalDate = (ms = Date.now()) => { const t = new Date(ms); if (t.getHours() < DAY_START_H) t.setDate(t.getDate() - 1); return t; };   // auch an Tagen mit Zeitumstellung genau um 4 Uhr
 const dayKey = () => calKey(logicalDate());
 const keyUTC = k => { const [y, m, d] = k.split('-').map(Number); return Date.UTC(y, m - 1, d); };
 const dayGap = (a, b) => Math.round((keyUTC(b) - keyUTC(a)) / 864e5);
@@ -6678,7 +6734,9 @@ function loadDays() {
       ht: num(v.ht), cn: num(v.cn), ce: num(v.ce), cs: num(v.cs), pen: Math.floor(num(v.pen)), big: v.big === true,
       br: Array.isArray(v.br) ? v.br.filter(b => b && typeof b === 'object').slice(0, 2)
         .map(b => ({ at: clamp(num(b.at), 0, 1), len: clamp(Math.round(num(b.len)), 1, 3600), done: b.done === true })) : [],
-      bk: v.bk && typeof v.bk === 'object' && Number.isFinite(Number(v.bk.until)) ? { i: Math.floor(num(v.bk.i)), until: Number(v.bk.until) } : null,
+      bk: v.bk && typeof v.bk === 'object' && Number.isFinite(Number(v.bk.until))
+        ? (Number(v.bk.i) === -1 ? { i: -1, until: Number(v.bk.until), len: clamp(Math.round(num(v.bk.len)), 1, 86400) }   // Schichtpause
+          : { i: Math.floor(num(v.bk.i)), until: Number(v.bk.until) }) : null,
       debt: Math.floor(num(v.debt)), evs: evList(v.evs, v.ev), gd: Math.floor(num(v.gd)), ld: Math.floor(num(v.ld)),
       jk: Math.floor(num(v.jk)), ps: Math.floor(num(v.ps)), ab: Math.floor(num(v.ab)), pc: Math.floor(num(v.pc)), sh: v.sh === true, jw: Math.floor(num(v.jw)), jf: v.jf === true,
       sw: Number(v.sw) === 1 ? 1 : Number(v.sw) === -1 ? -1 : 0, hc: num(v.hc),
@@ -6736,7 +6794,7 @@ let goalPreview = { sig: '', gv: 0, debt: 0 };
 function goalTarget() {
   const d = todayRec(false);
   if (d && d.gl) return goalAll(d);
-  if (state.started) return goalAll(lockGoal());   // läuft gerade (auch nach dem Tageswechsel um 4 Uhr)
+  if (state.started && !staleDay()) return goalAll(lockGoal());   // läuft gerade (auch durch 4 Uhr hindurch); pausiert über 4 Uhr erst beim Weiterspielen
   ensureDay();
   const k = dayKey();
   const sig = `${k}|${isBigDay() ? 'gross' : ''}|${todayEvs().join(',')}|${todayDebt()}|${settings.min}|${settings.max}|${settings.peak}|${settings.weight}|${settings.mode}|${settings.difficulty}|${Object.keys(days).length}`;
@@ -6777,6 +6835,17 @@ function pastBests(today) {
 
 let lastPenalty = 0;          // Strafe des zuletzt verbuchten Mediums (für den Hinweis beim Entfernen)
 /** Ein abgeschlossenes Medium in den heutigen Tag eintragen ('done', 'skip', 'joker', 'abort', 'fail', 'excluded', 'abandon'). */
+/** Sudden Death: Das erste Überspringen, Abbrechen oder Entfernen vor dem Ziel lässt das Tagesziel um die Hälfte wachsen. */
+function suddenDeath(d) {
+  const evs = dayEvs(d);
+  if (!evs.includes('sudden') || d.sd || d.hit || !d.gl) return;
+  d.sd = true;
+  d.sdx = niceRound(d.gv * 0.5);
+  d.gv += d.sdx;
+  toast(evs.includes('blind') ? '🧨 Sudden Death! Dein Tagesziel ist um die Hälfte gewachsen.'
+    : `🧨 Sudden Death! Dein Tagesziel ist um die Hälfte gewachsen: +${fmtInt(d.sdx)}.`, 5200, null, true);
+  vibrate([60, 60, 60]);
+}
 function recordDay(cur, how, secs) {
   if (how === 'abandon' && secs < 0.5) return;
   const d = todayRec(true);
@@ -6838,14 +6907,7 @@ function recordDay(cur, how, secs) {
     if (cur.rainbow) rainbowWin(d);
   } else {
     if (cur.rainbow && ['skip', 'joker', 'abort', 'excluded'].includes(how)) toast('🌈 Schade, der Regenbogen ist verblasst.', 2800, null, true);
-    if (evs.includes('sudden') && !d.sd && !before && d.gl && ['skip', 'joker', 'abort', 'excluded'].includes(how)) {   // Sudden Death
-      d.sd = true;
-      d.sdx = niceRound(d.gv * 0.5);
-      d.gv += d.sdx;
-      toast(evs.includes('blind') ? '🧨 Sudden Death! Dein Tagesziel ist um die Hälfte gewachsen.'
-        : `🧨 Sudden Death! Dein Tagesziel ist um die Hälfte gewachsen: +${fmtInt(d.sdx)}.`, 5200, null, true);
-      vibrate([60, 60, 60]);
-    }
+    if (!before && ['skip', 'joker', 'abort', 'excluded'].includes(how)) suddenDeath(d);
     if (how === 'skip' || how === 'joker') d.sk += 1;
     if (how === 'joker') { d.jk += 1; meta.tot.jk += 1; }
     if (how === 'abort') d.ab += 1;
@@ -6867,6 +6929,7 @@ function recordDay(cur, how, secs) {
     if (!meta.goldLeft) toast('✨ Die Goldstunde ist vorbei.', 2800);
   }
   bossOnMedium(cur, how, secs, gain);
+  checkDeadline(d);
   syncHit(d);
   const hitNow = d.hit && !before;
   if (hitNow) {
@@ -7314,7 +7377,7 @@ const BOSS_INTRO_MS = 3600;
 const SHOP = [
   { id: 'joker', icon: '🃏', name: 'Joker', price: 300, text: 'Überspringen ohne Strafe. Im Bosskampf flieht der Boss dann auch nicht.' },
   { id: 'shield', icon: '🛡️', name: 'Serien­schutz', price: 500, text: 'Fängt einen verpassten Tag auf, deine Serie hält.' },
-  { id: 'pcard', icon: '☕', name: 'Pausen­karte', price: 100, text: 'Deine nächste Pause kostet keine Strafe.' },
+  { id: 'pcard', icon: '☕', name: 'Pausen­karte', price: 100, text: 'Bei deiner nächsten Pause fällt die Strafe fürs Drücken weg. Jede Minute Pause kostet trotzdem.' },
   { id: 'umb', icon: '☂️', name: 'Schirm', price: 150, text: 'Fängt die nächste Strafe fürs Überspringen, Abbrechen oder Entfernen ab.' },
   { id: 'goldh', icon: '✨', name: 'Gold­stunde', price: 150, text: 'Ab sofort 10 Minuten lang dreimal so oft Gold.' },
 ];
@@ -7684,6 +7747,7 @@ function rollKind() {
 function ensureDay() {
   const k = dayKey();
   if (meta.today.day === k) return false;
+  if (!(state.started && state.playing)) chainBreak();
   const saved = TEST.plain ? 0 : settleShields(k);
   const dpart = TEST.plain ? null : debtParts(k), debt = dpart ? dpart.all : 0;
   const bigDay = isBigDay();
@@ -8104,9 +8168,9 @@ function tickPauseRun() {
 }
 /** Pause vorbei (weiter, zurück zum Start, neuer Tag). */
 function stopPauseRun(quiet) {
-  if (!meta.pr) return;
-  chargePauseRun(true);
   const r = meta.pr;
+  if (!r) return;
+  chargePauseRun(true);
   meta.pr = null;
   clearInterval(pauseTimer);
   saveDays();
@@ -8118,9 +8182,9 @@ function stopPauseRun(quiet) {
 }
 /** Beim Öffnen: Lief noch eine Pause, als die App zu war? Bis jetzt nachtragen (höchstens bis 4 Uhr). */
 function settlePauseRun() {
-  if (!meta.pr) return;
-  chargePauseRun(true);
   const r = meta.pr;
+  if (!r) return;
+  chargePauseRun(true);
   meta.pr = null;
   saveDays();
   saveMeta();
@@ -8190,7 +8254,7 @@ function settleAway() {
   saveMeta();
   if (Date.now() - a.at < AWAY_GRACE) return;            // nur kurz neu geladen
   const bossGone = !!meta.boss;
-  if (bossGone) bossDrop();                              // mitten im Bosskampf aufgehört: der Boss ist weg
+  if (bossGone) bossDrop(a.day === dayKey());            // mitten im Bosskampf aufgehört: der Boss ist weg
   meta.run = 0;
   chainBreak();
   saveMeta();
@@ -8198,6 +8262,7 @@ function settleAway() {
   if (!d || !d.gl || (d.hit && !zugabeOn(d))) { if (bossGone) awayNote = 'Letztes Mal hast du mitten in einem Bosskampf aufgehört: Der Boss ist entwischt.'; return; }
   const base = skipBase(a.n, a.gold, dayEvs(d));
   const p = d.hit ? chargeZugabe(d, base, 'away') : chargePenalty(d, base, 'away');
+  if (!d.hit && a.day === dayKey()) suddenDeath(d);
   d.ab += 1;
   saveDays();
   saveMeta();
@@ -8303,7 +8368,7 @@ function costLines() {
     else Object.assign(out, { t: hasEv('blind') ? 'Strafe: ?' : `−${fmtInt(p)} Strafe`, cls: '' });
   }
   const B = meta.boss, bd = bossDef(), cur = state.current;
-  if (B && bd && !bd.timer && B.day === dayKey()) {
+  if (B && bd && bossSkips(bd) && B.day === dayKey()) {
     if (bossFleeAt(bd) - B.skips <= 1) out.extra = `${bd.icon} Boss haut ab`;
     else if (bd.heal || bd.regrow) out.extra = `${bd.icon} Boss erholt sich`;
   }
@@ -8446,10 +8511,9 @@ function settleBet(pd) {
    abgerechnet (für den Tag davor), dann zurück zum Start mit Tageskarte und Aufwärmen.
    Wer über 4 Uhr hinweg durchschaut, schaut einfach weiter. */
 let playDay = '';           // Tag, an dem zuletzt abgespielt wurde
-const staleDay = () => state.started && !!playDay && playDay !== dayKey();
+const staleDay = () => state.started && !state.playing && !!playDay && playDay !== dayKey();   // beim Spielen geht es über 4 Uhr einfach weiter
 function freshDay() {
   pausedByHide = false;
-  playDay = '';
   const cur = state.current;
   if (cur && !cur.finished) {                          // kommt später wieder dran, ohne heute etwas einzutragen
     cur.finished = true;
@@ -8457,6 +8521,7 @@ function freshDay() {
   }
   settleAway();                                        // mitten im Medium weg: Strafe für den Tag davor
   backToIntro();
+  playDay = '';
   ensureDay();
   renderGoalUI();
   saveProgress(true);
@@ -8784,6 +8849,7 @@ function nextInvader() {
   if (openName === 'today') renderToday();
 }
 const bossFleeAt = def => (hasEv('invasion') ? 1 : def.flee || 1);
+const bossSkips = def => !def.timer || hasEv('invasion');   // Überspringen zählt beim Boss (Sanduhr-Boss nur bei Invasion)
 function pickBoss(big) {
   const tiers = big ? BOSS_TIERS_BIG : BOSS_TIERS;
   let r = Math.random() * tiers.reduce((a, [, w]) => a + w, 0), tier = tiers[0][0];
@@ -8874,7 +8940,7 @@ function bossOnMedium(cur, how, secs, gain) {
     B.jk += 1;
     bossFx('joker');
   } else if (how === 'skip' || how === 'abort' || how === 'excluded') {
-    if (!def.timer) {
+    if (bossSkips(def)) {
       B.skips += 1;
       if (B.skips >= bossFleeAt(def)) return bossFlee(how);
       if (def.heal) B.hp = Math.min(B.max, B.hp + Math.round(B.max * def.heal));
@@ -8945,11 +9011,17 @@ function bossFlee(why) {
   return { fled: true };
 }
 /** Neuer Tag oder App mitten im Kampf zu: Der Boss ist weg (ohne Strafe). */
-function bossDrop() {
+function bossDrop(today) {
   if (!meta.boss) return;
   const def = bossDef();
   meta.boss = null;
   if (def) meta.tot.fled += 1;
+  if (today && def && meta.today.day === dayKey() && meta.today.boss && meta.today.boss.id === def.id) {
+    meta.today.boss.st = 'fled';
+    const d = todayRec(false);
+    if (d) { d.bo = 'fled'; d.bi = def.id; saveDays(); }
+    nextInvader();
+  }
   saveMeta();
   renderBossHud();
 }
@@ -9450,6 +9522,7 @@ async function showNext(attempt = 0, noFreeze = false) {
   if (!state.started) return;
   const my = ++token;
   const wasSwitching = state.switching;
+  if (wasSwitching && attempt === 0) dropUnshown();
   state.switching = true;
   cancelClicks();
   setLoading(true);
@@ -9537,8 +9610,9 @@ async function present(plan, my) {
   const fd = warm ? null : favOfDay();
   if (fd && !meta.today.favShown && plan.item.id === fd.id) {   // Favorit des Tages: golden (außer bei Pechsträhne)
     plan.fotd = true;
-    plan.gold = !hasEv('pech');
-    plan.lead = plan.alch = false;
+    plan.gold = !hasEv('pech') && !hasEv('blutmond');
+    plan.lead = hasEv('blutmond');
+    plan.alch = false;
     meta.today.favShown = true;
     saveMeta();
   }
@@ -9585,6 +9659,7 @@ async function present(plan, my) {
   lv.commit();
   if (plan.run === 'all' && !warm) { progress.shown += 1; saveProgress(); }
   if (warm) showWarm(); else showNumber(plan);
+  if (pauseDue) { pauseDue = false; if (!state.playing) pausePenalty(); }
   updateFavUI(false);
   renderProgress();
   revealFrame();
@@ -9601,8 +9676,10 @@ function elapsed(now) {
   return Math.max(0, vid.currentTime - cur.start);
 }
 
+let pauseDue = false;             // pausiert, während das nächste Medium lud: Strafe, sobald es zu sehen ist
 function setPlaying(on) {
   on = !!on && !onBreak;          // während einer Pause läuft nichts
+  if (on) pauseDue = false;
   if (on && meta.pr) stopPauseRun();             // weiter: laufende Pausenstrafe abrechnen
   if (!on && go.on) cancelGo();   // Countdown nach dem Aufwärmen beginnt beim Weiterspielen neu
   if (state.playing !== on) {
@@ -9613,7 +9690,8 @@ function setPlaying(on) {
         if (on) state.clockFrom = performance.now();
         else { state.clockBase = elapsed(); state.clockFrom = null; }
       } else if (on) {
-        safePlay().catch(() => {});
+        if (vid.ended) setTimeout(() => { if (state.current === cur && !cur.finished && state.playing && !state.switching) { finishCurrent('done'); nextOrBoss(); } }, 0);
+        else safePlay().catch(() => {});
       } else {
         vid.pause();
       }
@@ -9633,7 +9711,7 @@ function togglePlay(withFlash) {
   const pausing = state.playing;
   setPlaying(!state.playing);
   if (withFlash) flash(state.playing ? 'play' : 'pause');
-  if (pausing && !state.playing) pausePenalty();   // jede Pause kostet die Zahl des laufenden Mediums
+  if (pausing && !state.playing) { if (state.switching) pauseDue = true; else pausePenalty(); }   // jede Pause kostet die Zahl des laufenden Mediums (lädt es noch: sobald es da ist)
 }
 
 /** Überspringen (Taste, Knopf, Wischen nach links). */
@@ -9643,7 +9721,7 @@ function skip(withFlash, noFreeze) {
   if (skipLocked()) { toast('🚷 Kein Zurück: Bis dein Ziel geschafft ist, kannst du heute nicht überspringen.', 3200); vibrate([30, 40, 30]); return false; }
   if (withFlash) flash('next');
   vibrate(12);
-  finishCurrent('skip');
+  if (!state.switching) finishCurrent('skip');   // lädt noch: das nächste kommt einfach später
   showNext(0, noFreeze);
   pokeUI();
   return true;
@@ -9667,6 +9745,7 @@ function start(opts = {}) {
   }
   runMode = opts.mode === 'fav' && favCount() ? 'fav' : 'all';
   if (runMode === 'fav') queueFav(opts.first || null);
+  if (progress.round === 0) newRound();
   if (!bag.length && progress.round > 0) {
     // gespeicherte Runde fortsetzen: nur Dateien, die in dieser Runde noch nicht dran waren
     bag = shuffled(library.filter(i => usable(i) && !progress.done.has(i.key) && !progress.skipped.has(i.key)).map(i => i.id));
@@ -9697,6 +9776,9 @@ function backToIntro() {
   warming = false;
   app.classList.remove('is-warm');
   if (onBreak) { onBreak = false; clearInterval(breakTimer); stopBreakShow(); app.classList.remove('on-break', 'on-shift'); }   // läuft beim nächsten Start weiter
+  if (state.loadingItem && !state.loadingWarm) backToBag(state.loadingItem, state.loadingRun);   // lud gerade: kommt in der Runde noch
+  else if (state.switching) dropUnshown();
+  pauseDue = false;
   state.started = false;
   setPlaying(false);
   state.switching = false;
@@ -9742,7 +9824,7 @@ function recordFailure(item, err) {
     height: item.kind === 'video' ? vid.videoHeight : 0,
   };
   console.warn('[Shuffle] Fehler bei', item.name, item.lastError);
-  if (kind !== 'image' && kind !== 'unsupported' && item.fails < 2) {
+  if (kind !== 'unsupported' && item.fails < 2) {
     toast(`„${item.name}“ lädt gerade nicht und wird später noch einmal versucht.`);
     return;
   }
@@ -10605,7 +10687,9 @@ function renderLeave() {
 }
 function leaveToIntro() {
   if (!state.started) return;
+  if (staleDay()) { freshDay(); return; }          // seit gestern pausiert: zählt für gestern, dann frisch
   const keep = meta.pr;
+  chainBreak();                                    // „am Stück“ endet mit dem Verlassen
   if (curItem()) finishCurrent(state.playing ? 'abort' : 'abandon');
   meta.pr = null;                                  // backToIntro würde die Pause sonst beenden
   closeSheet();
@@ -11483,7 +11567,7 @@ function skipCosts() {
 /** Lohnt ein Joker gerade? Solange Überspringen Strafe kostet – oder ein Boss beim Überspringen fliehen würde. */
 function jokerMatters() {
   const bd = bossDef();
-  return skipCosts() || !!(bd && !bd.timer);
+  return skipCosts() || !!(bd && bossSkips(bd));
 }
 /** Warum gerade kein Joker geht ('' = geht). */
 function jokerBlock() {
@@ -14246,6 +14330,10 @@ window.addEventListener('keydown', e => {
     return;
   }
   if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.repeat && e.key !== 'ArrowUp' && e.key !== 'ArrowDown') {   // gehaltene Taste: nicht zigmal überspringen, entfernen …
+    if (state.started && (e.key === ' ' || e.key === 'ArrowRight') && !typing) e.preventDefault();
+    return;
+  }
   if (modalOpen) {
     if (e.key === 'Escape') { e.preventDefault(); closeModal(); }
     return;
@@ -14289,7 +14377,27 @@ window.addEventListener('keydown', e => {
 /* Video-Ereignisse */
 vid.addEventListener('ended', () => {
   const c = state.current;
-  if (state.started && c && c.kind === 'video' && !state.switching && !swipeBusy && !go.on) { finishCurrent('done'); nextOrBoss(); }
+  if (state.started && state.playing && c && c.kind === 'video' && !state.switching && !swipeBusy && !go.on) { finishCurrent('done'); nextOrBoss(); }
+});
+vid.addEventListener('pause', () => {
+  const c = state.current;
+  if (!state.started || !state.playing || !c || c.kind !== 'video' || c.finished || state.switching || document.hidden) return;
+  setTimeout(() => {                               // eigenes Pausieren hat state.playing schon umgestellt
+    if (!state.started || !state.playing || state.current !== c || c.finished || state.switching || swipeBusy || go.on || onBreak
+      || bossIntroOn || !vid.paused || vid.ended || document.hidden) return;
+    togglePlay(false);
+    if (state.playing) safePlay().catch(() => {});  // Pause gerade nicht erlaubt (Eiszeit): weiter
+  }, 0);
+});
+vid.addEventListener('play', () => {
+  const c = state.current;
+  if (!state.started || state.playing || !c || c.kind !== 'video' || state.switching) return;
+  setTimeout(() => {
+    if (!state.started || state.playing || state.current !== c || state.switching || vid.paused) return;
+    if (onBreak || c.finished || bossIntroOn) { vid.pause(); return; }
+    togglePlay(false);
+    if (!state.playing && !vid.paused) vid.pause();
+  }, 0);
 });
 vid.addEventListener('timeupdate', () => {
   const c = state.current;
@@ -14306,10 +14414,16 @@ vid.addEventListener('error', () => {
 /* Im Hintergrund pausieren, beim Zurückkehren fortsetzen. Wer mitten im Medium länger
    als 10 Sekunden weg war, hat es abgebrochen: Das zählt wie Überspringen. */
 let pausedByHide = false;
-window.addEventListener('pagehide', () => { if (meta.pr) chargePauseRun(true); markAway(); saveWarm(state.current, state.current ? clamp(elapsed(), 0, state.current.D) : 0); saveProgress(true); });
+function saveForLeave() {                          // wie beim Schließen der App
+  if (meta.pr) chargePauseRun(true);
+  markAway();
+  if (state.current && !state.current.finished && !state.switching) saveWarm(state.current, clamp(elapsed(), 0, state.current.D));
+  saveProgress(true);
+}
+window.addEventListener('pagehide', saveForLeave);
 document.addEventListener('visibilitychange', () => {
   if (document.hidden && meta.pr) chargePauseRun(true);
-  if (document.hidden) { saveProgress(true); if (state.current && !state.current.finished) saveWarm(state.current, clamp(elapsed(), 0, state.current.D)); }
+  if (document.hidden) { saveProgress(true); if (state.current && !state.current.finished && !state.switching) saveWarm(state.current, clamp(elapsed(), 0, state.current.D)); }
   if (document.hidden) {
     if (state.started && state.playing) { markAway(); pausedByHide = true; setPlaying(false); }
   } else if (staleDay()) {
@@ -14629,7 +14743,7 @@ function syncGate(opts) {
   if (syncGating) return;
   syncGating = true;
   toast('☁ Spielstand wird abgeglichen …', 9000, null, true);
-  ShuffleSync.check().then(r => {
+  Promise.race([ShuffleSync.check().catch(() => ({ ok: false })), new Promise(r => setTimeout(() => r({ ok: false }), 25000))]).then(r => {
     syncGating = false;
     if (r && r.reload) return;                 // Fenster „Neuer Stand“ ist offen
     hideToast();
@@ -14710,6 +14824,47 @@ $('hubHelp').addEventListener('click', () => openModal(helpEl));
 introDur.addEventListener('click', () => { if (!state.started) openSheet(); });
 hubTabs();
 
+/* ── Zwei Tabs: nur einer spielt. Der neue übernimmt; der alte speichert wie beim Schließen und hört auf. ── */
+let tabOff = false;
+(() => {
+  if (typeof BroadcastChannel !== 'function') return;
+  let bc;
+  try { bc = new BroadcastChannel('shuffle-tabs'); } catch (_) { return; }
+  const me = Math.random().toString(36).slice(2);
+  bc.onmessage = e => {
+    const m = e.data || {};
+    if (!m || m.id === me) return;
+    if (m.t === 'hi' && !tabOff) {
+      tabOff = true;
+      saveForLeave();
+      if (state.started) { setPlaying(false); vid.pause(); }
+      wiping = true;                                   // ab jetzt speichert nur noch der neue Tab
+      try { ShuffleSync.suspend(); } catch (_) {}
+      try { if (window.ShuffleRank && window.ShuffleRank.hold) window.ShuffleRank.hold(true); } catch (_) {}
+      const el = document.createElement('div');
+      el.id = 'tabGone';
+      el.setAttribute('role', 'alertdialog');
+      const box = document.createElement('div'), b = document.createElement('b'), p = document.createElement('p'), btn = document.createElement('button');
+      b.textContent = 'Shuffle ist jetzt in einem anderen Tab offen';
+      p.textContent = 'Damit sich die Stände nicht überschreiben, spielt nur ein Tab. Dein Stand ist gespeichert.';
+      btn.type = 'button'; btn.className = 'pill primary'; btn.textContent = 'Hier weitermachen';
+      btn.addEventListener('click', () => location.reload());
+      box.append(b, p, btn);
+      el.append(box);
+      document.body.append(el);
+      bc.postMessage({ t: 'bye', id: me });
+    } else if (m.t === 'bye' && !state.started && !tabOff) {
+      // der alte Tab hat gerade noch gespeichert: einmal neu laden, damit hier alles davon da ist
+      let again = false;
+      try { again = sessionStorage.getItem('shuffle-tab-reload') === '1'; sessionStorage.setItem('shuffle-tab-reload', '1'); } catch (_) { again = true; }
+      if (!again) location.reload();
+    }
+  };
+  bc.postMessage({ t: 'hi', id: me });
+  setTimeout(() => { try { sessionStorage.removeItem('shuffle-tab-reload'); } catch (_) {} }, 5000);
+})();
+
+if (TEST.expose) window.__ev = s => eval(s);      // eslint-disable-line no-eval
 if (TEST.expose) window.__shuf = {
   lib: () => library.map(i => i.key).sort(), pool: () => pool.length, fcur: () => fcur,
   prog: () => ({ round: progress.round, done: [...progress.done].sort(), shown: progress.shown }),
@@ -14755,7 +14910,8 @@ $('introAlbum').addEventListener('click', () => {
      gute Plätze im Ranking. Kürzlich Gezeigtes kommt so schnell nicht wieder.
    • Mischung: meist gewichteter Zufall aus den Besten, ein Teil aus dem Mittelfeld, ab und zu ganz zufällig.
      Mehr als zwei hintereinander mit demselben Haupt-Tag gibt es nicht.
-   • Lange Videos (ab 4 Minuten) kommen in Teilen: feste Abschnitte von 30 s bis 3 min, je Datei immer gleich.
+   • Lange Videos (über 1,5 Minuten) kommen in Teilen: feste Abschnitte von 12 s bis 1,5 min, selten einer bis 3 min,
+     je Datei immer gleich.
      Ein Teil läuft in Schleife, „Weiter mit Teil X“ schaut an derselben Stelle weiter, Wischen bringt etwas
      anderes. Beim Ziehen zählt das Video als eins; erst danach wird ein Teil gewählt, bevorzugt ein noch
      nicht gesehener. Dasselbe Video kommt nie direkt hintereinander. „Weniger“ trifft nur den Teil.
@@ -14764,8 +14920,10 @@ const FD_KEY = 'shuffle-player/feed-v1';
 const fdEl = $('fd'), fdList = $('fdList'), fdHint = $('fdHint'), fdEmpty = $('fdEmpty');
 const FD = { open: false, pool: [], vids: [], imgs: [], used: new Set(), tagInfo: new Map(), rar: {}, w: {}, like: {}, ls: {}, seen: {},
              slides: new Map(), next: 0, active: -1, recent: [], mains: [], sinceSlide: 2, muted: false, hist: false, wake: null,
-             saveT: 0, io: null, tap: null, press: 0, pressed: false, single: 0, hints: 0, dur: {}, segC: new Map(), lastV: '' };
-const FD_SEG_MIN = 240;                         // ab 4 Minuten kommt ein Video in Teilen
+             saveT: 0, io: null, tap: null, press: 0, pressed: false, single: 0, hints: 0, dur: {}, segC: new Map(), lastV: '', sv: 2 };
+const FD_SEG_MIN = 91;                          // über 1,5 Minuten kommt ein Video in Teilen
+const FD_PART = [12, 90], FD_LONG = [120, 180], FD_LONG_P = 0.1;   // Teil meist 12 s bis 1,5 min, jeder zehnte länger (2 bis 3 min)
+const fdPk = (k, i) => `${k}#b${i}`;           // Schlüssel eines Teils („b“: Aufteilung seit v56; ohne: die alte bis v55)
 const fdChanged = { w: new Map(), it: new Map() };
 if (TEST.expose) window.__fd = FD;
 function fdLoadLocal() {
@@ -14777,12 +14935,13 @@ function fdLoadLocal() {
       FD.muted = !!o.mute;
       FD.hints = Math.max(0, Math.floor(Number(o.h) || 0));
       FD.dur = o.dur && typeof o.dur === 'object' ? o.dur : {};
+      FD.sv = Math.floor(Number(o.sv) || 1);
     }
   } catch (_) { /* neu */ }
 }
 function fdSaveLocal() {
   if (wiping) return;
-  try { localStorage.setItem(FD_KEY, JSON.stringify({ s: FD.ls, seen: FD.seen, mute: FD.muted, h: FD.hints, dur: FD.dur })); } catch (_) { /* voll */ }
+  try { localStorage.setItem(FD_KEY, JSON.stringify({ s: FD.ls, seen: FD.seen, mute: FD.muted, h: FD.hints, dur: FD.dur, sv: FD.sv })); } catch (_) { /* voll */ }
 }
 function fdProfile() {
   let fd = null;
@@ -14822,16 +14981,40 @@ function fdBuildPool() {
   FD.imgs = FD.pool.filter(x => !x.v);
 }
 const fdW = u => (u in FD.w ? FD.w[u] : FD.used.has(u) ? 0.4 : 0);
-/** Feste Teile eines langen Videos ([von, bis] in Sekunden): 30 s bis 3 min, meist um 1–2 min.
-    Der Zufall kommt aus dem Dateischlüssel, deshalb sind die Teile jedes Mal (und auf jedem Gerät) gleich. */
+/** Zufall aus dem Dateischlüssel: jedes Mal (und auf jedem Gerät) derselbe. */
+function fdRnd(k) {
+  let x = fh32(k) || 1;
+  const rnd = () => { x ^= x << 13; x ^= x >>> 17; x ^= x << 5; return (x >>> 0) / 4294967296; };
+  for (let i = 0; i < 4; i++) rnd();
+  return rnd;
+}
+/** Feste Teile eines langen Videos ([von, bis] in Sekunden): meist 12 s bis 1,5 min, selten einer bis 3 min.
+    Lückenlos von Anfang bis Ende; ein kurzer Rest wird nie ein eigener Teil unter 12 s. Bleibt nur ein Teil
+    (selten bei Videos bis 3 min), kommt das Video ganz. */
 function fdSegs(k, dur) {
   const d = Math.floor(Number(dur) || 0);
   if (d < FD_SEG_MIN) return null;
   const ck = `${k}@${d}`;
   if (FD.segC.has(ck)) return FD.segC.get(ck);
-  let x = fh32(k) || 1;
-  const rnd = () => { x ^= x << 13; x ^= x >>> 17; x ^= x << 5; return (x >>> 0) / 4294967296; };
-  for (let i = 0; i < 4; i++) rnd();
+  const rnd = fdRnd(`${k}|v2`), out = [];
+  let a = 0;
+  while (a < d) {
+    const long = rnd() < FD_LONG_P, [lo, hi] = long ? FD_LONG : FD_PART;
+    let b = a + Math.round(lo + rnd() * (hi - lo));
+    if (b >= d) b = d;
+    else if (d - b < FD_PART[0]) b = d - a <= hi ? d : d - FD_PART[0];   // kurzer Rest: zum Teil dazu, sonst ein letzter Teil mit 12 s
+    out.push([a, b]);
+    a = b;
+  }
+  const res = out.length > 1 ? out : null;
+  FD.segC.set(ck, res);
+  return res;
+}
+/** Die alte Aufteilung (bis v55: ab 4 min, 30 s bis 3 min) – nur noch, um Gesehenes und „Weniger“ zu übertragen. */
+function fdSegsV1(k, dur) {
+  const d = Math.floor(Number(dur) || 0);
+  if (d < 240) return null;
+  const rnd = fdRnd(k);
   const out = [];
   let a = 0;
   while (d - a >= 1) {
@@ -14842,31 +15025,51 @@ function fdSegs(k, dur) {
   }
   const l = out[out.length - 1];
   if (l[1] - l[0] > 200) { const m = Math.round((l[0] + l[1]) / 2); out.splice(out.length - 1, 1, [l[0], m], [m, l[1]]); }
-  FD.segC.set(ck, out);
   return out;
+}
+/** Einmal nach dem Update: was zu den alten Teilen gemerkt ist, gilt für die neuen Teile, die darin liegen
+    (gesehen, Bewertung, „Weniger“). Gleiches Ergebnis auf jedem Gerät, die alten Einträge bleiben unberührt. */
+function fdMigrate() {
+  if (FD.sv >= 2) return;
+  FD.sv = 2;
+  for (const [k, dd] of Object.entries(FD.dur)) {
+    const d = Math.floor(Number(dd) || 0), o = fdSegsV1(k, d), n = fdSegs(k, d);
+    if (!o || !n) continue;
+    n.forEach(([a, b], j) => {
+      let best = -1, ov = 0;
+      o.forEach(([p, q], i) => { const x = Math.min(b, q) - Math.max(a, p); if (x > ov) { ov = x; best = i; } });
+      if (best < 0 || ov < (b - a) / 2) return;
+      const ok = `${k}#${best}`, nk = fdPk(k, j);
+      if (FD.seen[ok] && !FD.seen[nk]) FD.seen[nk] = FD.seen[ok];
+      if (FD.ls[ok] != null && FD.ls[nk] == null) FD.ls[nk] = FD.ls[ok];
+      if (FD.like[ok] === -1 && FD.like[nk] == null) { FD.like[nk] = -1; fdChanged.it.set(nk, -1); }
+    });
+  }
+  fdSaveLocal();
+  if (fdChanged.it.size) fdSaveSoon();
 }
 const fdSegsKnown = it => (it.v && FD.dur[it.k] ? fdSegs(it.k, FD.dur[it.k]) : null);
 /** Alle Teile mit „Weniger“ markiert: dann kommt das ganze Video nicht mehr. */
 function fdSegsNo(it) {
   const sg = fdSegsKnown(it);
-  return !!sg && sg.every((_, i) => FD.like[`${it.k}#${i}`] === -1);
+  return !!sg && sg.every((_, i) => FD.like[fdPk(it.k, i)] === -1);
 }
 const fdNo = it => FD.like[it.k] === -1 || fdSegsNo(it);
 /** Welcher Teil: zufällig, bevorzugt noch nie gesehene; sonst lange nicht Gesehenes und gut Angekommenes. */
 function fdChooseSeg(k, segs) {
   const all = segs.map((_, i) => i);
-  let ok = all.filter(i => FD.like[`${k}#${i}`] !== -1);
+  let ok = all.filter(i => FD.like[fdPk(k, i)] !== -1);
   if (!ok.length) ok = all;
   const busy = new Set();                                             // schon im Feed vorbereitet: nicht doppelt
   for (const x of FD.slides.values()) if (x.v && x.seg >= 0 && x.n >= FD.active && x.e.items[0].k === k) busy.add(x.seg);
   const free = ok.filter(i => !busy.has(i));
   if (free.length) ok = free;
-  const fresh = ok.filter(i => !FD.seen[`${k}#${i}`]);
+  const fresh = ok.filter(i => !FD.seen[fdPk(k, i)]);
   if (fresh.length) return fresh[Math.floor(Math.random() * fresh.length)];
   // alle schon gesehen: aus der länger nicht gesehenen Hälfte, gut Angekommenes etwas öfter
-  const at = i => { const z = FD.seen[`${k}#${i}`]; return (z && z[1]) || 0; };
+  const at = i => { const z = FD.seen[fdPk(k, i)]; return (z && z[1]) || 0; };
   const old = ok.slice().sort((p, q) => at(p) - at(q)).slice(0, Math.max(1, Math.ceil(ok.length / 2)));
-  const ws = old.map(i => Math.exp(0.5 * Math.max(-3, Math.min(3, FD.ls[`${k}#${i}`] || 0))));
+  const ws = old.map(i => Math.exp(0.5 * Math.max(-3, Math.min(3, FD.ls[fdPk(k, i)] || 0))));
   let r = Math.random() * ws.reduce((p, q) => p + q, 0);
   for (let j = 0; j < old.length; j++) { r -= ws[j]; if (r <= 0) return old[j]; }
   return old[old.length - 1];
@@ -14896,7 +15099,7 @@ function fdScore(it, now) {
   else {
     s -= 1.2 * Math.exp(-(now - seen[1]) / (12 * 36e5));             // kürzlich gesehen: weniger
     const sg = fdSegsKnown(it);
-    if (sg && sg.some((_, i) => !FD.seen[`${it.k}#${i}`])) s += 0.3;  // es gibt noch ungesehene Teile
+    if (sg && sg.some((_, i) => !FD.seen[fdPk(it.k, i)])) s += 0.3;  // es gibt noch ungesehene Teile
   }
   s += 0.15 * (FD.rar[it.k] || 0);                                  // gut platziert im Ranking
   return s;
@@ -15086,7 +15289,7 @@ function fdSegReady(s) {
 function fdSegSeen(s) {
   if (!s.segs || s.segSeen === s.seg) return;
   s.segSeen = s.seg;
-  const key = `${s.e.items[0].k}#${s.seg}`, z = FD.seen[key];
+  const key = fdPk(s.e.items[0].k, s.seg), z = FD.seen[key];
   FD.seen[key] = [(z ? z[0] : 0) + 1, Date.now()];
 }
 /** Bereich, in dem gespult wird und den die Leiste zeigt: der Teil oder das ganze Video. */
@@ -15238,7 +15441,7 @@ function fdEval(s, floor) {
     const per = sec / s.e.items.length;
     sig = sec < 1.2 ? -0.5 : per < 2.5 ? -0.1 : per < 6 ? 0.3 : 0.6;
   }
-  fdLearn(s.e.items, sig, s.segs ? [`${s.e.items[0].k}#${s.seg}`] : null);
+  fdLearn(s.e.items, sig, s.segs ? [fdPk(s.e.items[0].k, s.seg)] : null);
 }
 function fdLearn(items, sig, parts) {
   for (const k of parts || []) FD.ls[k] = Math.round(Math.max(-5, Math.min(5, (FD.ls[k] || 0) * 0.9 + sig)) * 1000) / 1000;
@@ -15314,13 +15517,13 @@ function fdLike(s, force) {
   if (on === was) return;
   if (on) FD.like[it.k] = 1; else delete FD.like[it.k];
   fdChanged.it.set(it.k, on ? 1 : 0);
-  fdLearn([it], on ? 1.5 : -1.5, s.segs ? [`${it.k}#${s.seg}`] : null);
+  fdLearn([it], on ? 1.5 : -1.5, s.segs ? [fdPk(it.k, s.seg)] : null);
   fdInfo(s);
 }
 function fdLess(s) {
   const it = fdCurItem(s);
   if (s.segs) {
-    const pk = `${it.k}#${s.seg}`;
+    const pk = fdPk(it.k, s.seg);
     FD.like[pk] = -1;
     fdChanged.it.set(pk, -1);
     fdLearn(s.e.items, -1, [pk]);
@@ -15396,6 +15599,7 @@ fdList.addEventListener('pointerup', e => {
 window.addEventListener('keydown', e => {
   if (!FD.open || e.ctrlKey || e.metaKey || e.altKey) return;
   const s = FD.slides.get(FD.active), k = e.key;
+  if (e.repeat && /^[ lLnNmM]$/.test(k)) { e.preventDefault(); return; }
   if (k === 'Escape') fdClose();
   else if (k === 'ArrowDown' || k === 'PageDown' || k === 'j' || k === 'J') fdGo(1);
   else if (k === 'ArrowUp' || k === 'PageUp' || k === 'k' || k === 'K') fdGo(-1);
@@ -15431,6 +15635,7 @@ function fdOpen() {
   closePanel(); closeSheet();
   fdLoadLocal();
   fdProfile();
+  fdMigrate();
   Object.assign(FD, { open: true, active: -1, next: 0, recent: [], mains: [], sinceSlide: 2, lastV: '' });
   FD.slides.clear();
   fdList.replaceChildren();
@@ -15476,7 +15681,7 @@ function fdClose(fromPop) {
 }
 window.addEventListener('pagehide', () => { if (FD.open) fdSave(); });
 if (TEST.expose) window.__fdt = { next: () => fdNextEntry(), score: it => fdScore(it, Date.now()), main: fdMain, build: fdBuildPool, profile: fdProfile, save: fdSave,
-  segs: fdSegs, choose: fdChooseSeg, sig: fdSig, cont: () => fdCont(FD.slides.get(FD.active)), name: fdName };
+  segs: fdSegs, segsV1: fdSegsV1, pk: fdPk, migrate: fdMigrate, choose: fdChooseSeg, sig: fdSig, cont: () => fdCont(FD.slides.get(FD.active)), name: fdName };
 $('btnFeed').addEventListener('click', fdOpen);
 
 $('introTags').addEventListener('click', () => {
@@ -15850,6 +16055,7 @@ window.addEventListener('keydown', e => {
   e.stopImmediatePropagation();                    // das Spiel darunter hört nicht mit
   if (e.ctrlKey || e.metaKey || e.altKey) return;
   const k = e.key;
+  if (e.repeat) { if (k === ' ' || k === 'ArrowRight' || k === 'ArrowUp' || k === 'Backspace') e.preventDefault(); return; }
   if (!SV.run) { if (k === 'Escape') { e.preventDefault(); svClose(); } return; }
   if (!svPanel.hidden) {
     if (k === 'Escape' || (k === ' ' && !(e.target && e.target.closest && e.target.closest('button')))) { e.preventDefault(); svResume(); }
@@ -15886,17 +16092,23 @@ function backupData() {
       const k = localStorage.key(i);
       if (k && k.startsWith('shuffle-player/') && k !== 'shuffle-player/test') s[k] = localStorage.getItem(k);
     }
+    const rk = localStorage.getItem(RANK_KEY);
+    if (rk) s[RANK_KEY] = rk;                      // Rankings und Tags
   } catch (_) { /* ohne Speicher gibt es nichts zu sichern */ }
   return { app: 'shuffle-backup', v: 1, at: Date.now(), s };
 }
+const RANK_KEY = 'shuffle-rank/v1';
 function doRestore(d) {
   ShuffleSync.suspend();         // bis zum Neuladen nichts mehr hochladen
+  ShuffleSync.dropPending();     // ein wartender Stand aus der Cloud würde die Sicherung sonst überschreiben
   wiping = true;                 // und nichts mehr speichern
+  try { if (typeof d.s[RANK_KEY] === 'string' && window.ShuffleRank && window.ShuffleRank.hold) window.ShuffleRank.hold(); } catch (_) {}
   try {
     const old = [];
     for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.startsWith('shuffle-player/') && k !== 'shuffle-player/test') old.push(k); }
     for (const k of old) localStorage.removeItem(k);
     for (const [k, v] of Object.entries(d.s)) if (k.startsWith('shuffle-player/') && k !== 'shuffle-player/test' && typeof v === 'string') localStorage.setItem(k, v);
+    if (typeof d.s[RANK_KEY] === 'string') localStorage.setItem(RANK_KEY, d.s[RANK_KEY]);   // ältere Sicherungen ohne Rankings: die bleiben
   } catch (_) { toast('Die Sicherung ließ sich nicht ganz laden.'); }
   if (ShuffleSync.on()) ShuffleSync.forceNext();   // gilt danach auch auf den anderen Geräten
   location.reload();
@@ -15928,8 +16140,9 @@ syncPairBtn.addEventListener('click', () => openSyncDlg('pair'));
 syncNowBtn.addEventListener('click', async () => {
   if (syncNowBtn.disabled) return;
   syncNowBtn.disabled = true;
-  const r = await ShuffleSync.syncNow();
-  syncNowBtn.disabled = false;
+  let r = null;
+  try { r = await ShuffleSync.syncNow(); } catch (_) { r = { ok: false }; }
+  finally { syncNowBtn.disabled = false; }
   renderSync();
   if (r && r.reload) return;
   toast(r && r.ok ? '☁ Abgeglichen.' : syncErrText(r && r.err), 4200);
@@ -16243,9 +16456,10 @@ let D = (() => { try { return clean(JSON.parse(localStorage.getItem(KEY) || 'nul
 let saveT = 0, dirty = false, quotaWarned = false;
 if ((uidFixed || ftFolded) && localStorage.getItem(KEY)) { dirty = true; setTimeout(flush, 0); }   // Kennungen und umgezogene Tags gleich speichern
 function save(now) { dirty = true; clearTimeout(saveT); if (now) flush(); else saveT = setTimeout(flush, 900); }
+let held = false;                  // Sicherung wird geladen: bis zum Neuladen nichts mehr speichern
 function flush() {
   clearTimeout(saveT);
-  if (!dirty) return;
+  if (!dirty || held) return;
   dirty = false;
   try { localStorage.setItem(KEY, JSON.stringify(D)); }
   catch (_) { if (!quotaWarned) { quotaWarned = true; toast('Speichern hat nicht geklappt, der Speicher des Browsers ist voll.', 5000); } }
@@ -16274,7 +16488,8 @@ function libSync() {
   const media = g && g.allMedia ? g.allMedia() : [];
   LIB.presets = g && g.tagPresets ? g.tagPresets() : [];
   if (LIB.pre && !LIB.presets.some(p => p.id === LIB.pre)) LIB.pre = '';
-  const same = media.length === VF.it.length && media.every((m, x) => VF.it[x].k === m.k);
+  const vr = RT.get(VF_ID);
+  const same = media.length === VF.it.length && media.every((m, x) => VF.it[x].k === m.k) && (!media.length || !!(vr && vr.files.size));
   if (!same) {
     VF.it = media.map(m => {
       let id = vfIds.get(m.k);
@@ -16483,8 +16698,10 @@ function ranksOf(f) {
   const s = eng(f);
   if (!s || !s.order) return null;
   if (s._rk && s._rkv === s.ver) return s._rk;
-  const m = new Map();
-  s.order.forEach((id, i) => { m.set(id, i && s.eq.has(pk(s.order[i - 1], id)) ? m.get(s.order[i - 1]) : i + 1); });
+  const m = new Map(), par = new Map();
+  const top = x => { while (par.has(x)) x = par.get(x); return x; };
+  for (const p of s.eq) { const [a, b] = String(p).split(',').map(Number); const ra = top(a), rb = top(b); if (ra !== rb) par.set(ra, rb); }
+  s.order.forEach((id, i) => { m.set(id, i && top(s.order[i - 1]) === top(id) ? m.get(s.order[i - 1]) : i + 1); });
   s._rk = m; s._rkv = s.ver;
   return m;
 }
@@ -17291,7 +17508,10 @@ function toast(msg, ms = 2600) {
   toastT = setTimeout(() => el.classList.remove('show'), ms);
 }
 /** Kleines Fenster: Titel, Text, optional Eingabe/eigener Inhalt, Knöpfe. Löst nach dem Schließen auf. */
-function dialog(o) {
+let dlgQ = Promise.resolve();
+/** Fenster nacheinander: ein zweites wartet, bis das erste zu ist (sonst bleibt eine Ebene hängen). */
+function dialog(o) { const p = dlgQ.then(() => dialogNow(o)); dlgQ = p.catch(() => {}); return p; }
+function dialogNow(o) {
   return new Promise(resolve => {
     const box = $('rkDlg'), inn = box.firstElementChild;
     inn.replaceChildren();
@@ -17429,7 +17649,7 @@ $('rkImp').addEventListener('change', async e => {
     buttons: [{ label: 'Laden und ersetzen', kind: 'primary', act: 'ok' }, { label: 'Abbrechen', act: null }],
   });
   if (r.act !== 'ok') return;
-  D = nd; RT.clear(); retag(); bump(); save(true);
+  D = nd; rtRebuild(); retag(); bump(); save(true);
   renderHome();
   toast('Sicherung geladen.');
 });
@@ -17605,6 +17825,7 @@ $('rkFMore').addEventListener('click', async () => {
     toast('Ranking zurückgesetzt.');
   } else if (r.act === 'del') {
     D.fs = D.fs.filter(x => x !== f);
+    { const o = RT.get(f.i); if (o) for (const u of o.urls.values()) URL.revokeObjectURL(u); }
     RT.delete(f.i);
     forgetSources(f);
     if (FV.f === f) FV.f = null;
@@ -18744,6 +18965,7 @@ window.addEventListener('keydown', e => {
   const layer = topLayer(), v = topView();
   if ((e.ctrlKey || e.metaKey) && !e.altKey && (e.key === 'z' || e.key === 'Z') && !typing && v === 'duel' && !layer) { e.preventDefault(); undoDuel(); return; }
   if (typing || e.ctrlKey || e.metaKey || e.altKey || layer) return;
+  if (e.repeat && (v === 'duel' || v === 'guess' || v === 'pro')) { e.preventDefault(); return; }   // gehaltene Taste: nur eine Entscheidung
   if ((e.key === 'f' || e.key === 'F') && FS_OK) { e.preventDefault(); toggleFs(); return; }
   let ok = true;
   if (v === 'guess') {
@@ -18770,7 +18992,16 @@ window.addEventListener('keydown', e => {
     switch (e.key) {
       case 'ArrowLeft': vNav(-1); break;
       case 'ArrowRight': vNav(1); break;
-      case 't': case 'T': { const f = VW.f, id = VW.ids[VW.idx]; if (f && id != null) openPicker(f, [id], { onChange: () => renderStrip($('rkVStrip'), f, itemOf(f, id)) }); break; }
+      case 't': case 'T': {
+        const f = VW.f, id = VW.ids[VW.idx], it = f && id != null ? itemOf(f, id) : null;
+        if (!it) break;
+        if (f.vf) { openPicker(f, [id], { onChange: () => renderStrip($('rkVStrip'), f, itemOf(f, id)) }); break; }
+        libSync();                                   // Ranking-Ordner: Tags gehören zur Datei, also über den Tag-Bereich
+        const li = rt(VF).byKey.get(it.k);
+        if (li) openPicker(VF, [li.i]);
+        else toast('Dieses Medium ist im Spiel gerade nicht geladen. Tags gehen, sobald es geladen ist.', 3200);
+        break;
+      }
       default: ok = false;
     }
   } else ok = false;
@@ -18789,6 +19020,7 @@ window.addEventListener('drop', async e => {
   dd = 0; root.classList.remove('rk-drag');
   const f = curFolder();
   if (!f) { toast('Öffne zuerst einen Ranking-Ordner, dann kannst du Medien hineinziehen.'); return; }
+  if (f.vf) { toast('Im Tag-Bereich ist alles, was im Spiel geladen ist. Neue Dateien fügst du auf dem Startbildschirm hinzu.', 4200); return; }
   const dt = e.dataTransfer;
   const entries = Array.from(dt.items || []).filter(it => it.kind === 'file').map(it => (it.webkitGetAsEntry ? it.webkitGetAsEntry() : null)).filter(Boolean);
   const fallback = Array.from(dt.files || []);
@@ -19178,12 +19410,12 @@ GC.forEach((c, i) => c.media.addEventListener('click', () => guessChoose(i)));
 /* ═══════════ Abgleich mit anderen Geräten ═══════════
    Neue Rankings aus der Cloud kommen nur, solange das Ranking zu ist (sonst nach dem Neuladen). Schon geladene Medien
    bleiben geladen (über Dateiname + Größe). */
-function reloadFromSync() {
-  clearTimeout(saveT); dirty = false;
-  let nd;
-  try { nd = clean(JSON.parse(localStorage.getItem(KEY) || 'null')); } catch (_) { nd = blank(); }
-  const old = new Map(RT);
-  D = nd; RT.clear();
+/** D wurde ersetzt (Abgleich, Sicherung): geladene Dateien über Dateiname + Größe übernehmen, alte Adressen freigeben,
+    den Tag-Bereich (alles im Spiel Geladene) unverändert behalten. */
+function rtRebuild() {
+  const old = new Map(RT), ov = old.get(VF_ID);
+  RT.clear();
+  if (ov) { RT.set(VF_ID, ov); old.delete(VF_ID); }
   for (const f of D.fs) {
     const o = old.get(f.i);
     if (!o) continue;
@@ -19191,6 +19423,12 @@ function reloadFromSync() {
     for (const [id, file] of o.files) { const it = o.map.get(id), y = it && r.byKey.get(it.k); if (y) r.files.set(y.i, file); }
   }
   for (const o of old.values()) for (const u of o.urls.values()) URL.revokeObjectURL(u);
+}
+function reloadFromSync() {
+  clearTimeout(saveT); dirty = false;
+  let nd;
+  try { nd = clean(JSON.parse(localStorage.getItem(KEY) || 'null')); } catch (_) { nd = blank(); }
+  D = nd; rtRebuild();
   retag(); bump();
   if (isOpen) refresh();
 }
@@ -19206,9 +19444,11 @@ window.ShuffleRank = {
     return { tags: D.tags.map(t => ({ uid: t.uid, n: t.n, c: PAL[t.c] })), ft, rar };
   },
   ask: dialog,
+  hold(keep) { if (keep) flush(); held = true; clearTimeout(saveT); dirty = false; },
   rarityOf,
   isOpen: () => isOpen,
-  _t: { D: () => D, eng, folderById, itemOf, ranksOf, eEstimate, estimateN, duelNow, VER: () => VER, flush, thumbUrl, GS: () => GS, rarities, loadedCount, openFolder },
+  _t: { D: () => D, eng, folderById, itemOf, ranksOf, eEstimate, estimateN, duelNow, VER: () => VER, flush, thumbUrl, GS: () => GS, rarities, loadedCount, openFolder, rt, libSync, VF, reloadFromSync, openViewer,
+       DU: () => DU, cards: () => CARDS.map(c => c.id), topView, openGuess, openDuel, startRanking },
 };
 })();
 </script>
